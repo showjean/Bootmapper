@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:BootMapperContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                           xmlns:s="library://ns.adobe.com/flex/spark" 
+                           xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*" 
+                           initialize="initDesktop()"
+                           width="400" height="300">
+    
+    <fx:Script>
+        <![CDATA[
+            
+            import mx.events.CloseEvent;
+            import mx.events.FlexEvent;
+            
+            import spark.components.Alert;
+            
+            [Bindable]
+            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.5.0"
+            
+            private var isBootmapper:Boolean = false;
+            private var optionsData:Object;
+            
+            private function loadOptionsData():void
+            {
+                var gRequest:URLRequest = new URLRequest();	
+                gRequest.url = "json/options.json"
+                var gJsonLoader:JSONLoader = new JSONLoader();
+                try {
+                    gJsonLoader.load(gRequest, __onLoadOptions);
+                } catch (error:Error) {
+                    Alert.show("Unable to load requested document.");
+                }	
+            }
+            override protected function __start():void
+            {
+                loadOptionsData();
+            }
+            protected function __startDesktop():void
+            {
+//                trace("hex-", HexParser.convertToHex("00ff0088ff00ffff00ff00008800ff0000ff00ffaaFF00FF00FF0000FFAA", 30, 373));
+                // 00ff0088ff00ffff00ff00008800ff0000ff00ffaa
+                this.tabbar.selectedIndex = 0;
+                __onValueCommit(null);
+                
+//                Alert.show("Welcome.\n"+VERSION_CLIENT, "", 4, null, __closeAlert);
+                this.enabled = true;
+            }
+            
+            private function __onInitTabUI(event:FlexEvent):void
+            {
+                __onValueCommit(null);
+            }
+            
+            private function __onKeyUp(event:KeyboardEvent):void
+            {
+                trace(this.name, event.keyCode);
+            }
+            
+            private function __closeAlert(event:Event):void
+            {
+                //                this.focusManager.setFocus();
+                this.systemManager.stage.focus = null;
+            }
+            
+            private function initDesktop():void
+            {
+                
+                this.tabbar.selectedIndex = -1;
+                
+            }
+            
+            protected function _onClick(e:MouseEvent):void
+            {
+                
+                var gStr:String;
+                var gBool:Boolean;
+                switch(e.currentTarget){
+                    case this.btn_upload:
+                        // keymap에서 현재 keymap의 hex data를 줄 바꿈 없이 가져온다.
+                        gStr = this.keymap.getHexData();
+                        gBool = this.cb_reboot.selected
+                        
+                        /*var gKeymapLen:int = this.keymap.getCurrnetKeymapLength();
+                        // gb = 15 * 8 * 4 = 480
+                        var gInfo:HexInfoKeymap = this.keymap.currentHexFileInfo;
+                        var gKeymapLen:int = gInfo.columns * gInfo.rows * gInfo.layers;
+                        if(gKeymapLen != gKeymapLen){  // ps2avrGB, U
+                            Alert.show("invalid keymap target");
+                            return;
+                        }*/
+                        break;
+                    case this.btn_upload_macro:
+                        gStr = this.macro.getHexData();
+                        gBool = this.cb_reboot_macro.selected
+                        
+//                        trace("mac : ", gStr.split(":").join("\n:"));
+//                        trace(gStr.length);
+                        
+                        /*var gMacroLen:int = this.macro.getCurrnetMacroLength();
+                        // gb = 4 * 42 * 12 = 480                        
+                        if(168 != gMacroLen){ // ps2avrGB, U
+                            Alert.show("invalid macro target");
+                            return;
+                        }*/
+                        break;
+                }
+               
+            
+                Alert.show(
+                    "GO?", 
+                    "Confirm", 
+                    Alert.YES|Alert.NO, 
+                    this, 
+                    function (event:CloseEvent):void { 
+                        
+                        if(event.detail == Alert.YES){                        
+                            if(gStr) {
+                                GBManager.getInstance().writeFlash(gStr, __print, gBool);
+                                showWaiting("processing...");
+                            }
+                        }
+                    
+                    }, 
+                    null, 
+                    Alert.YES, 
+                    null
+                ); 
+                
+            }
+            
+            protected function showWaiting(xMsg:String, xTitle:String = ""):void{
+                
+                WaitAlert.getInstance().showWaiting(xMsg, xTitle);
+                
+            }
+            protected function removeWaiting():void{
+                WaitAlert.getInstance().removeWaiting();
+            }
+            
+            protected function _onClickBootmapper(event:MouseEvent):void
+            {
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-bootmapper");
+                if(isBootmapper){
+                    processArgs.push("stop");
+                }else{
+                    processArgs.push("start");                    
+                }
+                isBootmapper = !isBootmapper;
+                
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
+            protected function __print (xSuc:int, xStr:String):void {
+//                trace(this.name, xStr);
+                /*
+                #define SUCCESS_INDEX_LED2_INFO 3
+                #define SUCCESS_INDEX_DEVICE_READY 4
+                #define SUCCESS_INDEX_DEVICE_ACTION 5
+                #define SUCCESS_INDEX_BOOTMAPPER_START 6
+                #define SUCCESS_INDEX_BOOTMAPPER_STOP 7
+                SUCCESS_INDEX_KEYMAP_DOWNLOAD 8
+                */
+                var gObj:Object = JSON.parse(xStr);
+                if(xSuc == 1){  // complete
+                    trace("complete : ", gObj.message);
+                    removeWaiting();
+                }else if(xSuc == 0){    // error
+                    //                    trace(gObj.message);
+                    removeWaiting();
+                    Alert.show(gObj.message, "error");
+                }else if(xSuc == 2){    // warning
+                    
+                    // 어떤 것이든 업로드가 시작되면 초기화
+                    isBootmapper = false;
+                    this.cb_bootmapper_state.selected = false; 
+                    
+                    showWaiting(gObj.message, "uploading...");
+//                    trace("warning : ", gObj.message);
+                }else if(xSuc == 6){    // bootmapper start
+                    this.cb_bootmapper_state.selected = true;
+                }else if(xSuc == 7){    // bootmapper stop
+                    this.cb_bootmapper_state.selected = false;  
+                }else if(xSuc == 8){    // keymap download
+                    removeWaiting();
+                    //                    trace(String(gObj.result).toUpperCase());
+                    //                    trace(String(gObj.result).length/2);  
+                    
+                    this.keymap.applySerializeData(gObj.result);
+                }else if(xSuc == 9){    // macro download
+                    removeWaiting();
+//                    trace(String(gObj.result).toUpperCase());
+//                    trace(String(gObj.result).length/2); 
+                    
+                    this.macro.applySerializeData(gObj.result);
+                }
+            }
+            
+            
+            protected function _onClickDownload(event:MouseEvent):void
+            {
+                switch(event.currentTarget){
+                    case this.btn_download:
+                        GBManager.getInstance().downloadKeymap(this.keymap.currentHexFileInfo, __print);
+                        break;
+                    case this.btn_download_macro:
+                        GBManager.getInstance().downloadMacro(this.macro.currentMacroInfo, __print);
+                        break;
+                }
+                showWaiting("downloading...");
+            }
+            
+            protected function __changeTarget(event:Event):void
+            {
+                if(event == null) return;
+                
+                if(event.currentTarget == this.keymap){
+                    if(this.keymap.currentHexFileInfo.targetName.indexOf("ps2avrGB") > -1){
+                        this.grp_gb_keymap_control.enabled = true;
+                    }else{
+                        this.grp_gb_keymap_control.enabled = false;                    
+                    }
+                }else if(event.currentTarget == this.macro){
+                    if(this.keymap.currentHexFileInfo.targetName.indexOf("ps2avrGB") > -1){
+                        this.grp_gb_macro_control.enabled = true;
+                    }else{
+                        this.grp_gb_macro_control.enabled = false;                    
+                    }
+                }
+            }
+            
+            private function __onLoadOptions(event:Event):void
+            {
+                switch(event.type){
+                    case Event.COMPLETE:
+                        try{
+                            var gURLoader:URLLoader = URLLoader(event.target);
+//                            							 trace(this, gURLoader.data);
+                            optionsData = JSON.parse(gURLoader.data);
+                            
+                            __startDesktop();                           
+                            
+                        }catch(e:Error){
+                            trace(this, e);
+                        }
+                        
+                        break;
+                    
+                    case ProgressEvent.PROGRESS:
+                        break;
+                    default:
+                        Alert.show("__onLoadJson: " + event.toString());
+                        break;
+                }
+            }
+            
+            private function __onValueCommit(event:Event):void
+            {
+                //                trace(this.tabbar.selectedIndex, (this.options)?this.options.isReady():"");
+                //                trace(this.keymap, this.macro, this.options);
+                // TODO Auto-generated method stub
+                if(bootMapperData){
+                    if(this.keymap && this.viewStack.selectedChild == this.nc_keymap && !this.keymap.isReady()){
+                        this.keymap.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
+                        this.keymap.setData(bootMapperData);
+                        this.keymap.init();
+                    }else if(this.macro && this.viewStack.selectedChild == this.nc_macro && !this.macro.isReady()){
+                        this.macro.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
+                        this.macro.setData(bootMapperData);
+                        this.macro.init();
+                    }else if(this.options && this.viewStack.selectedChild == this.nc_options && !this.options.isReady()){
+                        this.options.setData(optionsData);
+                        this.options.init();
+                    }
+                }
+            }
+            
+        ]]>
+    </fx:Script>
+    <fx:Declarations>
+        <!-- Place non-visual elements (e.g., services, value objects) here -->
+    </fx:Declarations>
+    
+    <s:Group id="grp_ui" width="100%" height="100%">
+        <s:layout>
+            <s:VerticalLayout gap="0">
+                
+            </s:VerticalLayout>
+        </s:layout>
+        <s:Spacer height="5"/>
+        <s:HGroup width="100%" verticalAlign="bottom">    
+            <s:Spacer width="100%"/>        
+            <s:Label id="lb_mapper_version" text="{VERSION_CLIENT}"/>
+            <s:Spacer width="10"/>
+            <s:TabBar id="tabbar" width="400" dataProvider="{viewStack}"
+                      valueCommit="__onValueCommit(event)"/>			
+        </s:HGroup>
+        <mx:ViewStack id="viewStack" width="100%" height="100%" borderStyle="solid" paddingBottom="4"
+                      paddingLeft="4" paddingRight="4" paddingTop="4">	
+            <s:NavigatorContent id="nc_keymap" label="Key Mapper">
+                <s:VGroup  width="100%" height="100%">
+                    <s:HGroup width="100%" id="grp_gb_keymap_control">                        
+                        <s:Button id="btn_download" label="download" click="_onClickDownload(event)" />
+                        <s:Spacer width="200" />
+                        <s:Button id="btn_upload" label="upload" click="_onClick(event)" />
+                        <s:CheckBox id="cb_reboot" label="reboot after uploading" />
+                        <s:Button id="btn_bootmapper" label="toggle bootmapper" click="_onClickBootmapper(event)" />
+                        <s:CheckBox id="cb_bootmapper_state" enabled="false" />
+                    </s:HGroup>
+                    <s:Spacer height="5" />
+                    <local:Keymap id="keymap" width="100%" height="100%" initialize="__onInitTabUI(event)" />
+                    <s:Spacer height="15" />
+                </s:VGroup>
+            </s:NavigatorContent>
+            
+            <!-- <s:NavigatorContent id="nc_layout" label="Layout" enabled="false">
+                <s:VGroup  width="100%" height="100%">                   
+                    <s:Spacer height="5" />
+                    <local:KeyLayout id="keylayout" width="100%" height="100%" initialize="__onInitTabUI(event)" />
+                    <s:Spacer height="15" />
+                </s:VGroup>
+            </s:NavigatorContent> -->
+            
+            <s:NavigatorContent id="nc_macro" label="Custom Macro">
+                <s:VGroup  width="100%" height="100%">
+                    <s:HGroup width="100%" id="grp_gb_macro_control">                        
+                        <s:Button id="btn_download_macro" label="download" click="_onClickDownload(event)" />
+                        <s:Spacer width="200" />                        
+                        <s:Button id="btn_upload_macro" label="upload" click="_onClick(event)" />
+                        <s:CheckBox id="cb_reboot_macro" label="reboot after uploading" />
+                    </s:HGroup>
+                    <s:Spacer height="5" />
+                    <local:Macro id="macro" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
+                </s:VGroup>
+            </s:NavigatorContent>
+            
+            <s:NavigatorContent id="nc_options" label="Options">
+                <s:VGroup  width="100%" height="100%">
+                    
+                    <local:RgbOptions id="options" width="100%" height="900"  initialize="__onInitTabUI(event)"/>
+                </s:VGroup>
+            </s:NavigatorContent>
+        </mx:ViewStack>
+    </s:Group>
+</local:BootMapperContainer>

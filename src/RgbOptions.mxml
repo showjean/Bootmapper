@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:TabUI xmlns:fx="http://ns.adobe.com/mxml/2009" 
+             xmlns:s="library://ns.adobe.com/flex/spark" 
+             xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+             xmlns:local="*" xmlns:ns="http://flex.apache.org/experimental/ns" >
+    
+    <fx:Script>
+        <![CDATA[
+            import mx.collections.ArrayList;
+            import mx.events.CloseEvent;
+            import mx.events.ColorPickerEvent;
+            
+            import spark.components.Alert;
+            import spark.events.IndexChangeEvent;
+            
+            protected var rainbowFadeTypeDataProvider:ArrayList;
+            private var __optionsData:Object;
+            
+            override public function setData(xObj:Object):void{
+                
+                __optionsData = xObj;
+                
+            }
+            
+            override public function init():void
+            {			
+                _isReady = true;
+                                
+//                rainbowFadeTypeDataProvider = new ArrayList([{label:"fading", data:0}, {label:"immediately", data:1}, {label:"sequential", data:2}]);
+                rainbowFadeTypeDataProvider = new ArrayList(__optionsData.rainbowModes);
+                this.ddl_rainbow_fade_type.dataProvider = rainbowFadeTypeDataProvider;
+                
+                this.cb_lednum.dataProvider = new ArrayList(__optionsData.numOfRgbLeds);
+            }
+            
+            protected function parseInfo(xInfoArr:Array):void{
+                trace(xInfoArr);
+                //[10,4,186, 136,255,0, 255,136,0 ,255,255,255, 0,255,0,0,0,255,0,255,170,255,0,0,0,0,0,255,255,255,255,255,0]
+                //num, mode, brightness, colol1,2,3, rainbow, key color1
+                this.cb_lednum.selectedItem = xInfoArr[0];
+                this.radio_grp_led_mode.selectedIndex = xInfoArr[1];
+                this.slider_brightness.value = xInfoArr[2];
+                
+                this.color_picker1.selectedColor  = (xInfoArr[3]<<8) + (xInfoArr[4]<<16) + (xInfoArr[5]);
+                this.color_picker2.selectedColor  = (xInfoArr[6]<<8) + (xInfoArr[7]<<16) + (xInfoArr[8]);
+                this.color_picker3.selectedColor  = (xInfoArr[9]<<8) + (xInfoArr[10]<<16) + (xInfoArr[11]);
+                
+                var gOffset:int = 0;
+                for(var i:int = 0 ; i < 7; ++i){
+                    gOffset = i * 3;
+                    this["color_picker_rainbow"+(i+1)].selectedColor = (xInfoArr[12+gOffset]<<8) + (xInfoArr[13+gOffset]<<16) + (xInfoArr[14+gOffset]);
+                }
+                this.radio_grp_led_keymode.selectedIndex = xInfoArr[33];
+                trace(this.name, "this.radio_grp_led_keymode.selectedIndex: ", this.radio_grp_led_keymode.selectedIndex);
+                this.color_picker_key1.selectedColor  = (xInfoArr[34]<<8) + (xInfoArr[35]<<16) + (xInfoArr[36]);
+                this.ddl_rainbow_fade_type.selectedIndex = xInfoArr[37] == 255 ? 0 : xInfoArr[37];
+            }
+            
+            protected function showWaiting(xMsg:String, xTitle:String = ""):void{
+                
+                WaitAlert.getInstance().showWaiting(xMsg, xTitle);
+                
+            }
+            protected function removeWaiting():void{
+                WaitAlert.getInstance().removeWaiting();
+            }
+            
+            protected function __printForBootloader(xSuc:int, xStr:String):void
+            {
+                // bootloader <-> app
+                if(xSuc == 1){  // complete
+                    // 부트로더, 키보드 간에 전환이 성공하면 ui는 비활성화;
+                    __setUiEnabled(false);
+                }
+                
+                __print(xSuc, xStr);
+            }
+            
+            protected function __print (xSuc:int, xStr:String):void {
+                /*
+                #define SUCCESS_INDEX_LED2_INFO 3
+                #define SUCCESS_INDEX_DEVICE_READY 4
+                #define SUCCESS_INDEX_DEVICE_ACTION 5
+                */
+                var gObj:Object = JSON.parse(xStr);
+                if(xSuc == 1){  // complete
+                    trace("complete : ", gObj.message);
+                    removeWaiting();
+                }else if(xSuc == 0){    // error
+//                    trace(gObj.message);
+                    removeWaiting();
+                    Alert.show(gObj.message, "error");
+                }else if(xSuc == 2){    // warning                    
+                    showWaiting(gObj.message, "uploading...");
+                    trace("warning : ", gObj.message);
+                }else if(xSuc == 3){    // led2 info
+                    
+                    parseInfo(gObj.result);
+                    
+                    __setUiEnabled(true);
+                  
+                }else if(xSuc == 5){    // SUCCESS_INDEX_DEVICE_ACTION
+//                    trace(gObj.message);
+                    __setUiEnabled(false);
+                }
+            }
+            
+            protected function __setUiEnabled(xEnabled:Boolean):void
+            {
+                this.btn_connect.enabled = !xEnabled;
+                this.btn_disconnect.enabled = xEnabled;
+                this.grp_ui.enabled = xEnabled;
+            }
+            
+            protected function _onClick(event:MouseEvent):void
+            {
+                var processArgs:Vector.<String> = new Vector.<String>();
+                
+                var gListener:Function = __print;
+                
+                switch(event.currentTarget){
+                    case this.btn_connect:
+                        processArgs.push("-ready");
+                        var processArgs2:Vector.<String> = new Vector.<String>();
+                        processArgs2.push("-info");
+                        
+                        GBManager.getInstance().runRelayProecss(new <Vector.<String>>[processArgs, processArgs2], gListener);
+                        return;
+                        
+                    case this.btn_disconnect:
+                        processArgs.push("-action");
+                        break;
+                    case this.btn_bootloader:
+                        processArgs.push("-bootloader");
+                        showWaiting("Waiting...");
+                        gListener = __printForBootloader;
+                        break;
+                    case this.btn_app:
+                        processArgs.push("-app");
+                        break;                   
+                    case this.btn_save_num:
+                        //.exe -led num VAL
+                        processArgs.push("-led");
+                        processArgs.push("num");
+                        processArgs.push(this.cb_lednum.selectedItem);
+                        break;
+                }
+                
+                
+                GBManager.getInstance().runProcess(processArgs, gListener);
+            }
+            protected function _onClickEeprom(event:MouseEvent):void
+            {
+                var processArgs:Vector.<String> = new Vector.<String>();
+                
+                switch(event.currentTarget){
+                    
+                    case this.btn_clear_num:
+                        processArgs.push("-clearNumOfLeds");
+                        break;
+                    case this.btn_clear_eeprom:
+                        processArgs.push("-clearEeprom");
+                        break;
+                }
+                
+                Alert.show(
+                    "GO?", 
+                    "Confirm", 
+                    Alert.YES|Alert.NO, 
+                    this, 
+                    function (event:CloseEvent):void { if(event.detail == Alert.YES) {GBManager.getInstance().runProcess(processArgs, __print)}}, 
+                    null, 
+                    Alert.YES, 
+                    null);                
+                
+            }
+            
+            [Bindable]
+            public var simpleDP:Array = ['0x000000', '0xFF0000', '0xFF8800',
+                '0xFFFF00', '0x88FF00', '0x00FF00', '0x00FF88', '0x00FFFF',
+                '0x0088FF', '0x0000FF', '0x8800FF', '0xFF00FF', '0xFF00AA', '0xFFFFFF'];
+           
+            public function __onChangeColor(event:Event):void {
+                
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-led");
+                processArgs.push("color");
+                
+                switch(event.currentTarget){
+                    case this.color_picker1:
+                        processArgs.push("1");
+                        break;
+                    case this.color_picker2:
+                        processArgs.push("2");
+                        break;
+                    case this.color_picker3:
+                        processArgs.push("3");
+                        break;
+                }
+                
+                var gColor:uint = event.currentTarget.selectedColor;
+                var gR:uint = (gColor >> 16) & 0xFF;
+                var gG:uint = (gColor >> 8) & 0xFF;
+                var gB:uint = (gColor) & 0xFF;
+                processArgs.push(gG);  // g
+                processArgs.push(gR);  // r
+                processArgs.push(gB);  // b
+                trace("color : ", gColor, gR, gG, gB);
+                
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
+            protected function __onChangeKeyColor(event:ColorPickerEvent):void
+            {
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-led");
+                processArgs.push("keycolor");
+                
+                switch(event.currentTarget){
+                    case this.color_picker_key1:
+                        processArgs.push("1");
+                        break;
+                }
+                
+                var gColor:uint = event.currentTarget.selectedColor;
+                var gR:uint = (gColor >> 16) & 0xFF;
+                var gG:uint = (gColor >> 8) & 0xFF;
+                var gB:uint = (gColor) & 0xFF;
+                processArgs.push(gG);  // g
+                processArgs.push(gR);  // r
+                processArgs.push(gB);  // b
+                trace("color : ", gColor, gR, gG, gB);                
+                
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
+            public function __onChangeRainbowColor(event:Event):void {
+                
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-led");
+                processArgs.push("rainbow");
+                
+                var gColor:uint;
+                var gR:uint;
+                var gG:uint;
+                var gB:uint;
+                for(var i:int = 0 ; i < 7; ++i){
+                    gColor = this["color_picker_rainbow"+(i+1)].selectedColor;
+                    gR = (gColor >> 16) & 0xFF;
+                    gG = (gColor >> 8) & 0xFF;
+                    gB = (gColor) & 0xFF;
+                    processArgs.push(gG);  // g
+                    processArgs.push(gR);  // r
+                    processArgs.push(gB);  // b
+                    
+                    trace(gG.toString(16) + gR.toString(16) + gB.toString(16));
+                }
+                
+//                trace(processArgs.join(""));
+                
+                
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
+            protected function __onChangeMode(evnet:Event):void{
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-led");
+                processArgs.push("mode");
+                trace(this.name, this.radio_grp_led_mode.selectedIndex);
+                switch(this.radio_grp_led_mode.selection){
+                    case this.rb_mode0:
+                        processArgs.push("0");
+                        break;
+                    case this.rb_mode1:
+                        processArgs.push("1");
+                        break;
+                    case this.rb_mode2:
+                        processArgs.push("2");
+                        break;
+                    case this.rb_mode3:
+                        processArgs.push("3");
+                        break;
+                    case this.rb_mode4:
+                        processArgs.push("4");
+                        break;
+                }
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            protected function __onChangeKeyMode(evnet:Event):void{
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-led");
+                processArgs.push("keymode");
+//                trace(this.name, this.radio_grp_led_keymode.selection.id);
+                switch(this.radio_grp_led_keymode.selection){
+                    case this.rb_keymode0:
+                        processArgs.push("0");
+                        break;
+                    case this.rb_keymode1:
+                        processArgs.push("1");
+                        break;
+                    case this.rb_keymode2:
+                        processArgs.push("2");
+                        break;
+                }
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
+            protected function __onChangeBrightness(event:Event):void
+            {
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-led");
+                processArgs.push("brightness");
+                processArgs.push(this.slider_brightness.value);
+                
+                
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
+            protected function _onClickFirmup(event:MouseEvent):void
+            {
+                var fileToOpen:File = new File();
+                var txtFilter:FileFilter = new FileFilter(".hex", "*.hex");
+                
+                try 
+                {
+                    fileToOpen.browseForOpen("Open", [txtFilter]);
+                    fileToOpen.addEventListener(Event.SELECT, __onFileSelected);
+                }
+                catch (error:Error)
+                {
+                    trace("Failed:", error.message);
+                }
+                
+            }
+            protected function __onFileSelected(event:Event):void 
+            {
+                var gFile:File = event.target as File;
+                //                trace(this.name, gFile.nativePath);
+                // processArgs.push("-bootloader");
+                
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-bootloader");
+                processArgs.push("ignore");
+                
+                var processArgs2:Vector.<String> = new Vector.<String>();
+                processArgs2.push("-r");
+                processArgs2.push(gFile.nativePath);
+                
+                GBManager.getInstance().runRelayProecss(new <Vector.<String>>[processArgs, processArgs2], __print);
+                             
+                showWaiting("Waiting...");
+               
+            }
+            
+            
+            
+            protected function __onChangeRainbowFadeType(event:IndexChangeEvent):void
+            {
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-led");
+                processArgs.push("fade");
+                processArgs.push(this.ddl_rainbow_fade_type.selectedIndex);                
+                
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
+        ]]>
+    </fx:Script>
+    <fx:Declarations>
+        <s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event);"/>
+        <s:RadioButtonGroup id="radio_grp_led_keymode" itemClick="__onChangeKeyMode(event);"/>
+    </fx:Declarations>
+    <s:VGroup height="100%" width="100%">
+        <s:Label text="RGB LED setting" />
+        
+        <s:Spacer height="10" />
+        
+        <s:HGroup width="100%">            
+            <s:Button id="btn_connect" label="connect" click="_onClick(event)" />
+            <s:Button id="btn_disconnect" label="disconnect" click="_onClick(event)" enabled="false" />
+        </s:HGroup>
+        <s:Group id="grp_ui" enabled="false">
+            <s:layout>
+                <s:VerticalLayout />
+            </s:layout>
+            <s:VGroup>
+                <s:Spacer height="10" />
+                
+                <s:HGroup width="100%" verticalAlign="middle">                     
+                    <s:Label text="Num of RGB LEDs" />
+                    <s:ComboBox id="cb_lednum" width="80" openOnInput="false">
+                        <!--<s:dataProvider>
+                            <mx:ArrayList>
+                                <fx:int>2</fx:int>
+                                <fx:int>8</fx:int>
+                                <fx:int>10</fx:int>
+                                <fx:int>12</fx:int>
+                                <fx:int>16</fx:int>
+                                <fx:int>20</fx:int>
+                                <fx:int>24</fx:int>
+                            </mx:ArrayList>
+                        </s:dataProvider> -->
+                    </s:ComboBox>
+                    <s:Button id="btn_save_num" label="change" click="_onClick(event)" />
+                    <s:Spacer width="20" />                
+                </s:HGroup>
+                <s:Spacer height="10" />
+                
+                <s:HGroup width="100%">
+                    <s:VGroup>
+                        <s:Label text="RGB LED mode selection and color setting" />
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_mode0" label="0. off" width="100" groupName="radio_grp_led_mode"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_mode1" label="1. rainbow" width="100" groupName="radio_grp_led_mode"/>           
+                            <mx:ColorPicker id="color_picker_rainbow1" />         
+                            <mx:ColorPicker id="color_picker_rainbow2" />         
+                            <mx:ColorPicker id="color_picker_rainbow3" />         
+                            <mx:ColorPicker id="color_picker_rainbow4" />         
+                            <mx:ColorPicker id="color_picker_rainbow5" />         
+                            <mx:ColorPicker id="color_picker_rainbow6" />         
+                            <mx:ColorPicker id="color_picker_rainbow7" />
+                            <s:Button id="btn_save_rainbow" label="update color" click="__onChangeRainbowColor(event)" />
+                        </s:HGroup>
+                        <s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
+                            <s:Label text="type:" />
+                            <s:DropDownList id="ddl_rainbow_fade_type" change="__onChangeRainbowFadeType(event)" labelField="label">                               
+                            </s:DropDownList>
+                        </s:HGroup>
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_mode2" label="2. color 1" width="100" groupName="radio_grp_led_mode"/>            
+                            <mx:ColorPicker id="color_picker1" width="50"
+                                            change="__onChangeColor(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_mode3" label="3. color 2" width="100" groupName="radio_grp_led_mode"/>              
+                            <mx:ColorPicker id="color_picker2" width="50"
+                                            change="__onChangeColor(event)"/>  
+                        </s:HGroup>
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_mode4" label="4. color 3" width="100" groupName="radio_grp_led_mode"/>           
+                            <mx:ColorPicker id="color_picker3" width="50"
+                                            change="__onChangeColor(event)"/>     
+                        </s:HGroup>
+                        
+                    </s:VGroup>
+                    <s:Spacer width="50" />
+                    <s:VGroup>
+                        <s:Label text="RGB LED key event selection and color setting" />
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_keymode0" label="0. off" width="200" groupName="radio_grp_led_keymode"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_keymode1" label="1. color" width="200" groupName="radio_grp_led_keymode"/>            
+                            <mx:ColorPicker id="color_picker_key1" width="50"
+                                            change="__onChangeKeyColor(event)"/>
+                        </s:HGroup>
+                        <s:HGroup width="100%"> 
+                            <s:RadioButton id="rb_keymode2" label="2. complementary color" width="200" groupName="radio_grp_led_keymode"/>
+                        </s:HGroup>
+                    </s:VGroup>
+                </s:HGroup>
+                <s:Spacer height="10" />
+                <s:HGroup width="100%" verticalAlign="middle">                     
+                    <s:Label text="RGB LED Brightness" />
+                    <s:HSlider id="slider_brightness" minimum="1" maximum="255" value="1" stepSize="10" dataTipPrecision="0"
+                           snapInterval="10" liveDragging="false" change="__onChangeBrightness(event)"/>
+                </s:HGroup>
+            </s:VGroup>
+            
+        </s:Group>
+        <s:Spacer height="100" />
+        <s:Label text="Utils" />
+        <s:Button id="btn_firmup" label="firm up(select .hex file)" click="_onClickFirmup(event)" width="200" height="50"/>
+        <s:Button id="btn_bootloader" label="set bootloader" click="_onClick(event)" />
+        <s:Button id="btn_app" label="set keyboard" click="_onClick(event)" />
+        <s:Spacer height="30" />
+        <s:Label text="bootloader" />
+        <s:Button id="btn_clear_num" label="default num of leds" click="_onClickEeprom(event)" />
+        <s:Button id="btn_clear_eeprom" label="eeprom all clear" click="_onClickEeprom(event)" />
+    </s:VGroup>
+</local:TabUI>
