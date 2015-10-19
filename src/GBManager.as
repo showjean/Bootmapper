@@ -191,7 +191,7 @@ package
             
             nativeProcessStartupInfo.arguments = xVec;
             
-//            trace(this, xVec);
+            trace(this, xVec);
             
             if(!process.running) 
             { 					
