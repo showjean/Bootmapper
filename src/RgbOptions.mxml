@@ -19,6 +19,7 @@
             protected const LED2_INDEX_FULL_LED_BRIGHTNESS:int  = 0x81;
             protected const LED2_INDEX_ESC_TO_TILDE:int         = 0x82;
             protected const LED2_INDEX_FN_LED:int               = 0x83;
+            protected const LED2_INDEX_SKIP_FRAME:int           = 0x84;
             
             protected var rainbowFadeTypeDataProvider:ArrayList;
             private var __optionsData:Object;
@@ -44,7 +45,7 @@
                 trace(xInfoArr);
                 //[10,4,186, 136,255,0, 255,136,0 ,255,255,255, 0,255,0,0,0,255,0,255,170,255,0,0,0,0,0,255,255,255,255,255,0]
                 //num, mode, brightness, colol1,2,3, rainbow, key color1
-                // fade type 1byte, full led mode 1byte, full led brightness 1byte, esc to tilde 1byte, fn led 1byte, interface 1byte, ps2repeat 1byte,
+                // fade type 1byte, full led mode 1byte, full led brightness 1byte, esc to tilde 1byte, fn led 1byte
                 this.cb_lednum.selectedItem = xInfoArr[0];
                 this.radio_grp_led_mode.selectedIndex = xInfoArr[1];
                 this.slider_brightness.value = xInfoArr[2];
@@ -59,16 +60,18 @@
                     this["color_picker_rainbow"+(i+1)].selectedColor = (xInfoArr[12+gOffset]<<8) + (xInfoArr[13+gOffset]<<16) + (xInfoArr[14+gOffset]);
                 }
                 this.radio_grp_led_keymode.selectedIndex = xInfoArr[33];
-                trace(this.name, "this.radio_grp_led_keymode.selectedIndex: ", this.radio_grp_led_keymode.selectedIndex);
                 this.color_picker_key1.selectedColor  = (xInfoArr[34]<<8) + (xInfoArr[35]<<16) + (xInfoArr[36]);
                 this.ddl_rainbow_fade_type.selectedIndex = xInfoArr[37] == 255 ? 0 : xInfoArr[37];
                   
-                // full led mode, brightness;
-                this.ddl_full_led_mode.selectedIndex = xInfoArr[38];                
-                this.slider_full_led_brightness.value = xInfoArr[39];
+                // firmware Ver 1.1
                 
-                this.radio_grp_esc_tilde.selectedIndex = xInfoArr[40];
-                this.ddl_fn_led.selectedIndex = xInfoArr[41];
+                // full led mode, brightness;
+                this.slider_rgb_speed.value = xInfoArr[38];
+                this.ddl_full_led_mode.selectedIndex = xInfoArr[39];                
+                this.slider_full_led_brightness.value = xInfoArr[40];
+                
+                this.radio_grp_esc_tilde.selectedIndex = xInfoArr[41];
+                this.ddl_fn_led.selectedIndex = xInfoArr[42];
             }
             
             protected function showWaiting(xMsg:String, xTitle:String = ""):void{
@@ -425,6 +428,16 @@
                 GBManager.getInstance().runProcess(processArgs, __print);
             }
             
+            protected function __onChangeRgbSpeed(event:Event):void
+            {
+                var processArgs:Vector.<String> = new Vector.<String>();
+                processArgs.push("-option");
+                processArgs.push(LED2_INDEX_SKIP_FRAME);
+                processArgs.push(this.slider_rgb_speed.value);
+                
+                GBManager.getInstance().runProcess(processArgs, __print);
+            }
+            
         ]]>
     </fx:Script>
     <fx:Declarations>
@@ -553,6 +566,13 @@
                         <s:HSlider id="slider_brightness" change="__onChangeBrightness(event)"
                                    dataTipPrecision="0" liveDragging="false" maximum="255"
                                    minimum="1" snapInterval="10" stepSize="10" value="1"/>
+                    </s:HGroup>
+                    <s:Spacer height="10"/>
+                    <s:HGroup width="100%" verticalAlign="middle">                     
+                        <s:Label text="RGB Transition Speed"/>
+                        <s:HSlider id="slider_rgb_speed" change="__onChangeRgbSpeed(event)"
+                                   dataTipPrecision="0" liveDragging="false" maximum="80"
+                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
                     </s:HGroup>
                 </s:VGroup>
             
