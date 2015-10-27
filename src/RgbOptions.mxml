@@ -19,7 +19,7 @@
             protected const LED2_INDEX_FULL_LED_BRIGHTNESS:int  = 0x81;
             protected const LED2_INDEX_ESC_TO_TILDE:int         = 0x82;
             protected const LED2_INDEX_FN_LED:int               = 0x83;
-            protected const LED2_INDEX_SKIP_FRAME:int           = 0x84;
+            protected const LED2_INDEX_TRANSITION_DELAY:int     = 0x84;
             
             protected var rainbowFadeTypeDataProvider:ArrayList;
             private var __optionsData:Object;
@@ -352,6 +352,16 @@
             protected function __onFileSelected(event:Event):void 
             {
                 var gFile:File = event.target as File;
+                
+                var stream:FileStream = new FileStream();
+                stream.open(gFile, FileMode.READ);
+                var gFileData:String = stream.readUTFBytes(stream.bytesAvailable);             
+                
+                var gStartAddress:int = parseInt(HexParser.getStartAddress(gFileData), 16);
+                if(gStartAddress >= 0x7000){
+                    Alert.show("Don't upload \"bootloader.hex!!\"", "error");
+                    return;
+                }
                 //                trace(this.name, gFile.nativePath);
                 // processArgs.push("-bootloader");
                 
@@ -432,7 +442,7 @@
             {
                 var processArgs:Vector.<String> = new Vector.<String>();
                 processArgs.push("-option");
-                processArgs.push(LED2_INDEX_SKIP_FRAME);
+                processArgs.push(LED2_INDEX_TRANSITION_DELAY);
                 processArgs.push(this.slider_rgb_speed.value);
                 
                 GBManager.getInstance().runProcess(processArgs, __print);
@@ -571,7 +581,7 @@
                     <s:HGroup width="100%" verticalAlign="middle">                     
                         <s:Label text="RGB Transition Speed"/>
                         <s:HSlider id="slider_rgb_speed" change="__onChangeRgbSpeed(event)"
-                                   dataTipPrecision="0" liveDragging="false" maximum="80"
+                                   dataTipPrecision="0" liveDragging="false" maximum="250"
                                    minimum="1" snapInterval="1" stepSize="1" value="1"/>
                     </s:HGroup>
                 </s:VGroup>
