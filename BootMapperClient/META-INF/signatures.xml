@@ -8,12 +8,12 @@
           <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
         </Transforms>
         <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <DigestValue>DJmp6ItrdOmAwgeiCJtTQpNE20/fbbl3EXoIudNtB/8=</DigestValue>
+        <DigestValue>jNpVsWpfPkhLnYQpSo4u64wgHKLwcbEbVl9M8RYF44o=</DigestValue>
       </Reference>
     </SignedInfo>
-    <SignatureValue Id="PackageSignatureValue">CL6viPZI0cHfblLE7r2B1/ZCX6IB/8oTY1oBeYkJoIVuaNB8B0dKF1bFWkMPvqwrs0hjmzD73Q/C
-RolYDtoDXXFA60o+QmV2f+0uFu/LhRwY6LU3x/KNUrR7b8dtXAoFlr7+ApYFUD9bZ0s76CbDZvoM
-vb5H01K5DGeQAsAsn7k=</SignatureValue>
+    <SignatureValue Id="PackageSignatureValue">FjKBPeTawQ1n3uICbHmkCw3g5imvCaPdsbvkathqzfdCvL68ccAP388ANNAgr+HgLv1a9TzR7Jv+
+DRA4to9NbhBR0vJ36kLdyIPpp1L8vuKY3aaCO9gpJXJg81Nt6lqsR00dj1hOPmSEsMQl1c8x93/o
+XaepMXzLuxcrilO+OoA=</SignatureValue>
     <KeyInfo>
       <X509Data>
         <X509Certificate>MIICLTCCAZWgAwIBAgIaMzM5OTc2N2E6MTQ0NDQzYjc0MGU6LTgwMDAwDQYJKoZIhvcNAQEFBQAw
@@ -30,7 +30,7 @@ SdbkAc/Hpg25oDCytoSEsON3FATLU6ZSLH60adan0XqjN4HJJcba0JXKN+qZxNHx</X509Certificat
     </KeyInfo>
     <Object>
       <Manifest Id="PackageContents">
-        <Reference URI="mimetype"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>0/oCb84THKMagtI0Dy0KogEu92TegdesqRr/clXct1c=</DigestValue></Reference><Reference URI="META-INF/AIR/application.xml"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>XdgN0j4JB/lqWBvXymi1GDMUzj008n7vSw2WPhNPFn0=</DigestValue></Reference><Reference URI="bin/gbmgr.exe"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>e75mJ572uolISx9oVW/2rIhFA9ImkBAv5TfHE0BvXUM=</DigestValue></Reference><Reference URI="BootMapperClient.swf"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>4n0N8iLZXjsupZaGy1hswraikHvQzhZKFDAHsHmPiRo=</DigestValue></Reference><Reference URI="icons/a87familysymbol_128x128.png"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>XwMRQjDaXOBhy4BoPLfDGEzx5Dr+EE+Vk8wn+20QX3g=</DigestValue></Reference><Reference URI="icons/a87familysymbol_16x16.png"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>D5dyeQy/XktmQAhjRZY7WK2R3foovxwh8ycZTIpXJNU=</DigestValue></Reference><Reference URI="icons/a87familysymbol_48x48.png"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>S51qVPfsrwHI1OaSxVtjkX2u+DFoO7OE/A9fBFSfDfA=</DigestValue></Reference><Reference URI="json/bootMapper.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>YKrfGicvcajEZGAap7AJKODyBlPRE6QF2CRxVTtpMF8=</DigestValue></Reference><Reference URI="json/keyindex.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>iYW23cvkEfHddrDm8gVPgjH0zw76kGqRnsfsjyHAhXA=</DigestValue></Reference><Reference URI="json/keyindexmacro.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>elAMXoU5e3hBj/sOjm/gwT8e9377SUrTxwcUVJP4QSo=</DigestValue></Reference><Reference URI="json/options.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>ONd4gRJQ9TbkaDtLmtiG4aDs4WjcQW/9lalOFFRX9os=</DigestValue></Reference>
+        <Reference URI="mimetype"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>0/oCb84THKMagtI0Dy0KogEu92TegdesqRr/clXct1c=</DigestValue></Reference><Reference URI="META-INF/AIR/application.xml"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>XdgN0j4JB/lqWBvXymi1GDMUzj008n7vSw2WPhNPFn0=</DigestValue></Reference><Reference URI="bin/gbmgr.exe"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>e75mJ572uolISx9oVW/2rIhFA9ImkBAv5TfHE0BvXUM=</DigestValue></Reference><Reference URI="BootMapperClient.swf"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>VZS01pTSwqaMYvZ59v/JqBpSaHl0K6VDGDkc35f5tnI=</DigestValue></Reference><Reference URI="icons/a87familysymbol_128x128.png"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>XwMRQjDaXOBhy4BoPLfDGEzx5Dr+EE+Vk8wn+20QX3g=</DigestValue></Reference><Reference URI="icons/a87familysymbol_16x16.png"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>D5dyeQy/XktmQAhjRZY7WK2R3foovxwh8ycZTIpXJNU=</DigestValue></Reference><Reference URI="icons/a87familysymbol_48x48.png"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>S51qVPfsrwHI1OaSxVtjkX2u+DFoO7OE/A9fBFSfDfA=</DigestValue></Reference><Reference URI="json/bootMapper.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>YKrfGicvcajEZGAap7AJKODyBlPRE6QF2CRxVTtpMF8=</DigestValue></Reference><Reference URI="json/keyindex.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>iYW23cvkEfHddrDm8gVPgjH0zw76kGqRnsfsjyHAhXA=</DigestValue></Reference><Reference URI="json/keyindexmacro.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>elAMXoU5e3hBj/sOjm/gwT8e9377SUrTxwcUVJP4QSo=</DigestValue></Reference><Reference URI="json/options.json"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>ONd4gRJQ9TbkaDtLmtiG4aDs4WjcQW/9lalOFFRX9os=</DigestValue></Reference>
       </Manifest>
     </Object>
     <Object xmlns:xades="http://uri.etsi.org/01903/v1.1.1#" > 
@@ -44,8 +44,8 @@ SdbkAc/Hpg25oDCytoSEsON3FATLU6ZSLH60adan0XqjN4HJJcba0JXKN+qZxNHx</X509Certificat
             </Transforms>
             <xades:EncapsulatedTimeStamp>
               MIIOFgYJKoZIhvcNAQcCoIIOBzCCDgMCAQMxCzAJBgUrDgMCGgUAMIG4BgsqhkiG9w0BCRABBKCB
-qASBpTCBogIBAQYCKQIwITAJBgUrDgMCGgUABBR3NSirFF7YDySUb+aNv9gU37cdUwIEFWwBNRgP
-MjAxNTEwMjExODI0NDRaMAMCATygWqRYMFYxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxHZW9UcnVz
+qASBpTCBogIBAQYCKQIwITAJBgUrDgMCGgUABBR/dqeqxc2ztxymuYTnNCc0ifixeAIEFXwLwxgP
+MjAxNTEwMjkxNTU0MDZaMAMCATygWqRYMFYxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxHZW9UcnVz
 dCBJbmMxMDAuBgNVBAMTJ0dlb1RydXN0IDIwNDgtYml0IFRpbWVzdGFtcGluZyBTaWduZXIgMaCC
 CwgwggRtMIIDVaADAgECAhBf1pP6sJjj9Gd7uMtnLCKeMA0GCSqGSIb3DQEBBQUAMF4xCzAJBgNV
 BAYTAlVTMR0wGwYDVQQKExRTeW1hbnRlYyBDb3Jwb3JhdGlvbjEwMC4GA1UEAxMnU3ltYW50ZWMg
@@ -99,14 +99,14 @@ WHww6PlpjSNzCxJvR6muORH4KrGbsBrDjutZlgCtzgxNstAxpghcKnr84nodV0yoZRjpeUBiJZZu
 x8c3aoMhCI5B6t3ZVz8dd0mHKhYGXqY4aiISo1EZg362MYICKDCCAiQCAQEwcjBeMQswCQYDVQQG
 EwJVUzEdMBsGA1UEChMUU3ltYW50ZWMgQ29ycG9yYXRpb24xMDAuBgNVBAMTJ1N5bWFudGVjIFRp
 bWUgU3RhbXBpbmcgU2VydmljZXMgQ0EgLSBHMgIQX9aT+rCY4/Rne7jLZywinjAJBgUrDgMCGgUA
-oIGMMBoGCSqGSIb3DQEJAzENBgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMTUxMDIxMTgy
-NDQ0WjAjBgkqhkiG9w0BCQQxFgQUNXXeb3K7w4m8YJ3qsqe1DVpo1M8wKwYLKoZIhvcNAQkQAgwx
-HDAaMBgwFgQU1x1FYsYzNnw042bPt2+5ewWvNLQwDQYJKoZIhvcNAQEBBQAEggEAhtayJKWXh59H
-JKHSuE1WqPTJswUDve1rmjQ6YRdewV7NXTI3z4iaPtIWoFyWfF6Q3YmSf6aRGbOLPYR0sL1o8DNe
-Dogiu+kwmxqkBIqWygfhShwzmnpCkSmOn0FA845UJYGL4WAok2s58ukViQkadyYZzCs4V/BZPdzs
-ZeksJTqlWpD14s+Vxbqact9CiJIStFeAO3xnf+9CCzbEcjY+JsdRylYQbZa/qsCmmiXzt9kZ13Q8
-amL7jga7mXZYOIaAf1ufHEI/SHxS3T8kV17rQngRd7SV12f5mOkqsJSfBXqFXDwIMfaMjNijCOg4
-xhsGgTd4Jr8dn2N99A1CP6RE/g==
+oIGMMBoGCSqGSIb3DQEJAzENBgsqhkiG9w0BCRABBDAcBgkqhkiG9w0BCQUxDxcNMTUxMDI5MTU1
+NDA2WjAjBgkqhkiG9w0BCQQxFgQUg3q7ObjoAiXsF+E65O7p3M2Sh9MwKwYLKoZIhvcNAQkQAgwx
+HDAaMBgwFgQU1x1FYsYzNnw042bPt2+5ewWvNLQwDQYJKoZIhvcNAQEBBQAEggEAmIMz0+cSrB3B
+w1rwZcRrIDodEurLCIDdWozr5b1NydXYb3hkRhfJo+CTR+cC2tD0Qh//d2HcrrNvdvcxpJInuesd
+JAnrFbdLCMda2v36x0cbK9ZNtgxHCAZpucYPbYkx8q52eeLlK4SID/t/jrgZuGJanv0fOBB4uPp4
+fa7tSttxJXfIJ0WsTO2kq1VBuf/5ph6dZIlHUmbF3W2MwORjCd5uSGEYpVFLys6f2fkcrGHHoZx1
+NP7b71ZMFYmQNqrLchCUo2nalz261VN5bIGrYLNVfCu1CahOlOlKN6AErd88Tw2YRdZnvOyytDsz
+ITdw39ews2i9olHFKa8TXKi5Yg==
             </xades:EncapsulatedTimeStamp>     	
      	  </xades:HashDataInfo>     	
         </xades:SignatureTimeStamp>
