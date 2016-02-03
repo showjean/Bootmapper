@@ -102,6 +102,12 @@
                             return;
                         }*/
                         break;
+					
+					case this.btn_upload_dualaction:
+						gStr = this.dualaction.getHexData();
+						gBool = this.cb_reboot_dualaction.selected
+						
+						break;
                 }
                
             
@@ -193,6 +199,13 @@
                     
                     this.macro.applySerializeData(gObj.result);
                 }
+				else if(xSuc == 10){    // macro download
+					removeWaiting();
+					//                    trace(String(gObj.result).toUpperCase());
+					//                    trace(String(gObj.result).length/2); 
+					
+					this.dualaction.applySerializeData(gObj.result);
+				}
             }
             
             
@@ -204,6 +217,9 @@
                         break;
                     case this.btn_download_macro:
                         GBManager.getInstance().downloadMacro(this.macro.currentMacroInfo, __print);
+                        break;
+                    case this.btn_download_dualaction:
+                        GBManager.getInstance().downloadDualaction(this.dualaction.currentDualactionInfo, __print);
                         break;
                 }
                 showWaiting("downloading...");
@@ -220,12 +236,18 @@
                         this.grp_gb_keymap_control.enabled = false;                    
                     }
                 }else if(event.currentTarget == this.macro){
-                    if(this.keymap.currentHexFileInfo.targetName.indexOf("ps2avrGB") > -1){
+                    if(this.macro.currentMacroInfo.targetName.indexOf("ps2avrGB") > -1){
                         this.grp_gb_macro_control.enabled = true;
                     }else{
                         this.grp_gb_macro_control.enabled = false;                    
                     }
-                }
+                }else if(event.currentTarget == this.dualaction){
+					if(this.dualaction.currentDualactionInfo.targetName.indexOf("ps2avrGB") > -1){
+						this.grp_gb_dualaction_control.enabled = true;
+					}else{
+						this.grp_gb_dualaction_control.enabled = false;                    
+					}
+				}
             }
             
             private function __onLoadOptions(event:Event):void
@@ -267,6 +289,10 @@
                         this.macro.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
                         this.macro.setData(bootMapperData);
                         this.macro.init();
+					}else if(this.dualaction && this.viewStack.selectedChild == this.nc_dualaction && !this.dualaction.isReady()){
+						this.dualaction.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
+						this.dualaction.setData(bootMapperData);
+						this.dualaction.init();
                     }else if(this.options && this.viewStack.selectedChild == this.nc_options && !this.options.isReady()){
                         this.options.setData(optionsData);
                         this.options.init();
@@ -288,10 +314,10 @@
         </s:layout>
         <s:Spacer height="5"/>
         <s:HGroup width="100%" verticalAlign="bottom">    
-            <s:Spacer width="100%"/>        
+            <s:Spacer width="40%"/>        
             <s:Label id="lb_mapper_version" text="{VERSION_CLIENT}"/>
             <s:Spacer width="10"/>
-            <s:TabBar id="tabbar" width="400" dataProvider="{viewStack}"
+            <s:TabBar id="tabbar" width="60%" dataProvider="{viewStack}"
                       valueCommit="__onValueCommit(event)"/>			
         </s:HGroup>
         <mx:ViewStack id="viewStack" width="100%" height="100%" borderStyle="solid" paddingBottom="4"
@@ -299,11 +325,11 @@
             <s:NavigatorContent id="nc_keymap" label="Key Mapper">
                 <s:VGroup  width="100%" height="100%">
                     <s:HGroup width="100%" id="grp_gb_keymap_control">                        
-                        <s:Button id="btn_download" label="download" click="_onClickDownload(event)" />
+                        <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" />
                         <s:Spacer width="200" />
-                        <s:Button id="btn_upload" label="upload" click="_onClick(event)" />
-                        <s:CheckBox id="cb_reboot" label="reboot after uploading" />
-                        <s:Button id="btn_bootmapper" label="toggle bootmapper" click="_onClickBootmapper(event)" />
+                        <s:Button id="btn_upload" label="Upload" click="_onClick(event)" />
+                        <s:CheckBox id="cb_reboot" label="Reboot after uploading" />
+                        <s:Button id="btn_bootmapper" label="Toggle bootmapper" click="_onClickBootmapper(event)" />
                         <s:CheckBox id="cb_bootmapper_state" enabled="false" />
                     </s:HGroup>
                     <s:Spacer height="5" />
@@ -318,20 +344,34 @@
                     <local:KeyLayout id="keylayout" width="100%" height="100%" initialize="__onInitTabUI(event)" />
                     <s:Spacer height="15" />
                 </s:VGroup>
-            </s:NavigatorContent> -->
+            </s:NavigatorContent> -->			
             
             <s:NavigatorContent id="nc_macro" label="Custom Macro">
                 <s:VGroup  width="100%" height="100%">
                     <s:HGroup width="100%" id="grp_gb_macro_control">                        
-                        <s:Button id="btn_download_macro" label="download" click="_onClickDownload(event)" />
+                        <s:Button id="btn_download_macro" label="Download" click="_onClickDownload(event)" />
                         <s:Spacer width="200" />                        
-                        <s:Button id="btn_upload_macro" label="upload" click="_onClick(event)" />
-                        <s:CheckBox id="cb_reboot_macro" label="reboot after uploading" />
+                        <s:Button id="btn_upload_macro" label="Upload" click="_onClick(event)" />
+                        <s:CheckBox id="cb_reboot_macro" label="Reboot after uploading" />
                     </s:HGroup>
                     <s:Spacer height="5" />
                     <local:Macro id="macro" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
                 </s:VGroup>
             </s:NavigatorContent>
+			
+			<s:NavigatorContent id="nc_dualaction" label="Dual Action">
+				<s:VGroup  width="100%" height="100%">                   
+					<s:Spacer height="5" />
+						<s:HGroup width="100%" id="grp_gb_dualaction_control">
+							<s:Button id="btn_download_dualaction" label="Download" click="_onClickDownload(event)" />
+							<s:Spacer width="200" />                        
+							<s:Button id="btn_upload_dualaction" label="Upload" click="_onClick(event)" />
+							<s:CheckBox id="cb_reboot_dualaction" label="Reboot after uploading" />
+						</s:HGroup>
+					<s:Spacer height="15" />
+					<local:DualAction id="dualaction" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
+				</s:VGroup>
+			</s:NavigatorContent>
             
             <s:NavigatorContent id="nc_options" label="Options">
                 <s:VGroup  width="100%" height="100%">

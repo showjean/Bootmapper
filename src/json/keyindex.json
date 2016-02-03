@@ -808,7 +808,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "han/eng"
+      "label": "Han/Eng"
     },
     {
       "keyIndex": 109,
@@ -1409,7 +1409,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "FN hangle"
+      "label": "Dual Act1"
     },
     {
       "keyIndex": 215,
@@ -1417,15 +1417,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "FN hanja"
-    },
-    {
-      "keyIndex": 230,
-      "marginBottom": 0,
-      "width": 1,
-      "height": 1,
-      "marginRight": 0,
-      "label": "FN CapsLock"
+      "label": "Dual Act2"
     },
     {
       "keyIndex": 216,
@@ -1433,7 +1425,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "FN2 hangle"
+      "label": "Dual Act3"
     },
     {
       "keyIndex": 217,
@@ -1441,39 +1433,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "FN2 hanja"
-    },
-    {
-      "keyIndex": 231,
-      "marginBottom": 0,
-      "width": 1,
-      "height": 1,
-      "marginRight": 0,
-      "label": "FN2 CapsLock"
-    },
-    {
-      "keyIndex": 232,
-      "marginBottom": 0,
-      "width": 1,
-      "height": 1,
-      "marginRight": 0,
-      "label": "FN3 hangle"
-    },
-    {
-      "keyIndex": 233,
-      "marginBottom": 0,
-      "width": 1,
-      "height": 1,
-      "marginRight": 0,
-      "label": "FN3 hanja"
-    },
-    {
-      "keyIndex": 234,
-      "marginBottom": 0,
-      "width": 1,
-      "height": 1,
-      "marginRight": 0,
-      "label": "FN3 CapsLock"
+      "label": "Dual Act4"
     },
     {
       "keyIndex": 218,
@@ -1481,7 +1441,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "RShift hangle"
+      "label": "Dual Act5"
     },
     {
       "keyIndex": 219,
@@ -1489,7 +1449,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "RShift hanja"
+      "label": "Dual Act6"
     },
     {
       "keyIndex": 220,
@@ -1497,7 +1457,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "LShift hangle"
+      "label": "Dual Act7"
     },
     {
       "keyIndex": 221,
@@ -1505,7 +1465,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "LShift hanja"
+      "label": "Dual Act8"
     },
     {
       "keyIndex": 222,
@@ -1513,7 +1473,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "RAlt hangle"
+      "label": "Dual Act9"
     },
     {
       "keyIndex": 223,
@@ -1521,7 +1481,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "RAlt hanja"
+      "label": "Dual Act10"
     },
     {
       "keyIndex": 224,
@@ -1529,7 +1489,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "LAlt hangle"
+      "label": "Dual Act11"
     },
     {
       "keyIndex": 225,
@@ -1537,7 +1497,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "LAlt hanja"
+      "label": "Dual Act12"
     },
     {
       "keyIndex": 226,
@@ -1545,7 +1505,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "RCtrl hangle"
+      "label": "Dual Act13"
     },
     {
       "keyIndex": 227,
@@ -1553,7 +1513,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "RCtrl hanja"
+      "label": "Dual Act14"
     },
     {
       "keyIndex": 228,
@@ -1561,7 +1521,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "LCtrl hangle"
+      "label": "Dual Act15"
     },
     {
       "keyIndex": 229,
@@ -1569,7 +1529,47 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "LCtrl hanja"
+      "label": "Dual Act16"
+    },
+    {
+      "keyIndex": 230,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Dual Act17"
+    },
+    {
+      "keyIndex": 231,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Dual Act18"
+    },
+    {
+      "keyIndex": 232,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Dual Act19"
+    },
+    {
+      "keyIndex": 233,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Dual Act20"
+    },
+    {
+      "keyIndex": 234,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Dual Act21"
     },
     {
       "keyIndex": 235,
@@ -1577,7 +1577,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "FN Apps"
+      "label": "Dual Act22"
     },
     {
       "keyIndex": 236,
@@ -1585,7 +1585,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "FN2 Apps"
+      "label": "Dual Act23"
     },
     {
       "keyIndex": 237,
@@ -1593,7 +1593,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "FN3 Apps"
+      "label": "Dual Act24"
     }
   ]
 ]

@@ -54,5 +54,21 @@
             "macroNum" : 12,
             "macroLength" : 168
         }
+    ],
+    "dualactionConfigArr": [
+        {
+            "targetName" : "ps2avrGB",
+            "fileName" : "dualaction_gb_",
+            "fileExt" : ".hex",
+            "startAddress": "6580",
+            "dualactionNum" : 24
+        }, 
+        {
+            "targetName" : "ps2avrU",
+            "fileName" : "dualaction_",
+            "fileExt" : ".hex",
+            "startAddress": "6580",
+            "dualactionNum" : 24
+        }
     ]
 }

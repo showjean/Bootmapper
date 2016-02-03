@@ -163,6 +163,26 @@ package
             runRelayProecss(new <Vector.<String>>[processArgs, processArgs2, processArgs3], xListener);
             
         }
+		
+		public function downloadDualaction(xInfo:HexInfoDualAction, xListener:Function = null):void 
+		{
+			
+			var processArgs:Vector.<String> = new Vector.<String>();
+			processArgs.push("-ready");
+			
+			var processArgs2:Vector.<String> = new Vector.<String>();
+			processArgs2.push("-dualaction");
+			//            processArgs2.push(String(xInfo.macroNum));
+			//            processArgs2.push(String(xInfo.macroLength));
+			
+			var processArgs3:Vector.<String> = new Vector.<String>();
+			processArgs3.push("-action");            
+			
+			
+			runRelayProecss(new <Vector.<String>>[processArgs, processArgs2, processArgs3], xListener);
+			
+		}
+		
         protected var runVec:Vector.<Vector.<String>>;
         public function runRelayProecss(xVec:Vector.<Vector.<String>>, xListener:Function = null):void{
             runVec = xVec;
