@@ -67,7 +67,7 @@
             "targetName" : "ps2avrU",
             "fileName" : "dualaction_",
             "fileExt" : ".hex",
-            "startAddress": "6580",
+            "startAddress": "6480",
             "dualactionNum" : 24
         }
     ]

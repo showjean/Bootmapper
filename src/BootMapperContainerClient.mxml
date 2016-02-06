@@ -14,7 +14,7 @@
             import spark.components.Alert;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.6.0"
+            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.7.0"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
@@ -360,8 +360,7 @@
             </s:NavigatorContent>
 			
 			<s:NavigatorContent id="nc_dualaction" label="Dual Action">
-				<s:VGroup  width="100%" height="100%">                   
-					<s:Spacer height="5" />
+				<s:VGroup  width="100%" height="100%"> 
 						<s:HGroup width="100%" id="grp_gb_dualaction_control">
 							<s:Button id="btn_download_dualaction" label="Download" click="_onClickDownload(event)" />
 							<s:Spacer width="200" />                        
