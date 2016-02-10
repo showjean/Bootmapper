@@ -468,8 +468,8 @@
         <s:Spacer height="10"/>
         
         <s:HGroup width="100%">            
-            <s:Button id="btn_connect" label="connect" click="_onClick(event)"/>
-            <s:Button id="btn_disconnect" label="disconnect" click="_onClick(event)" enabled="false"/>
+            <s:Button id="btn_connect" label="Connect" click="_onClick(event)"/>
+            <s:Button id="btn_disconnect" label="Disconnect" click="_onClick(event)" enabled="false"/>
         </s:HGroup>
         
         
@@ -481,22 +481,18 @@
             <s:Spacer height="10"/>
             <s:Label text="RGB LED Settings"/>
             <s:Spacer height="0"/>
-            <s:BorderContainer width="100%" cornerRadius="7">
+            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
                 <s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
                     <s:HGroup width="100%" verticalAlign="middle">                     
                         <s:Label text="Num of RGB LEDs"/>
                         <s:ComboBox id="cb_lednum" width="80" openOnInput="false">
-                            <!--<s:dataProvider>
-                                <mx:ArrayList>
-                                    <fx:int>2</fx:int>
-                                    <fx:int>8</fx:int>
-                                    <fx:int>10</fx:int>
-                                    <fx:int>12</fx:int>
-                                    <fx:int>16</fx:int>
-                                    <fx:int>20</fx:int>
-                                    <fx:int>24</fx:int>
-                                </mx:ArrayList>
-                            </s:dataProvider> -->
+	
+							<s:layout>
+								<s:VerticalLayout gap="0"
+												  horizontalAlign="contentJustify"
+												  requestedRowCount="10" />
+							</s:layout>
+	
                         </s:ComboBox>
                         <s:Button id="btn_save_num" label="change" click="_onClick(event)"/>
                         <s:Spacer width="20"/>                
@@ -507,11 +503,11 @@
                         <s:VGroup>
                             <s:Label text="RGB LED mode selection and color setting"/>
                             <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode0" width="100" label="0. off"
+                                <s:RadioButton id="rb_mode0" width="100" label="0. Off"
                                                groupName="radio_grp_led_mode"/>
                             </s:HGroup>
                             <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode1" width="100" label="1. rainbow"
+                                <s:RadioButton id="rb_mode1" width="100" label="1. Rainbow"
                                                groupName="radio_grp_led_mode"/>           
                                 <mx:ColorPicker id="color_picker_rainbow1"/>         
                                 <mx:ColorPicker id="color_picker_rainbow2"/>         
@@ -531,19 +527,19 @@
                                 </s:DropDownList>
                             </s:HGroup>
                             <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode2" width="100" label="2. color 1"
+                                <s:RadioButton id="rb_mode2" width="100" label="2. Color 1"
                                                groupName="radio_grp_led_mode"/>            
                                 <mx:ColorPicker id="color_picker1" width="50"
                                                 change="__onChangeColor(event)"/>
                             </s:HGroup>
                             <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode3" width="100" label="3. color 2"
+                                <s:RadioButton id="rb_mode3" width="100" label="3. Color 2"
                                                groupName="radio_grp_led_mode"/>              
                                 <mx:ColorPicker id="color_picker2" width="50"
                                                 change="__onChangeColor(event)"/>  
                             </s:HGroup>
                             <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode4" width="100" label="4. color 3"
+                                <s:RadioButton id="rb_mode4" width="100" label="4. Color 3"
                                                groupName="radio_grp_led_mode"/>           
                                 <mx:ColorPicker id="color_picker3" width="50"
                                                 change="__onChangeColor(event)"/>     
@@ -554,18 +550,18 @@
                         <s:VGroup>
                             <s:Label text="RGB LED key event selection and color setting"/>
                             <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_keymode0" width="200" label="0. off"
+                                <s:RadioButton id="rb_keymode0" width="200" label="0. Off"
                                                groupName="radio_grp_led_keymode"/>
                             </s:HGroup>
                             <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_keymode1" width="200" label="1. color"
+                                <s:RadioButton id="rb_keymode1" width="200" label="1. Color"
                                                groupName="radio_grp_led_keymode"/>            
                                 <mx:ColorPicker id="color_picker_key1" width="50"
                                                 change="__onChangeKeyColor(event)"/>
                             </s:HGroup>
                             <s:HGroup width="100%"> 
                                 <s:RadioButton id="rb_keymode2" width="200"
-                                               label="2. complementary color"
+                                               label="2. Complementary color"
                                                groupName="radio_grp_led_keymode"/>
                             </s:HGroup>
                         </s:VGroup>
@@ -591,7 +587,7 @@
             <s:Spacer height="10"/>
             <s:Label text="Full LED Settings"/>
             <s:Spacer height="0"/>
-            <s:BorderContainer width="100%" cornerRadius="7">
+            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
                 <s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
                     
                     <s:VGroup>
@@ -624,17 +620,17 @@
             <s:Spacer height="10"/>
             <s:Label text="Options"/>
             <s:Spacer height="0"/>
-            <s:BorderContainer width="100%" cornerRadius="7">
+            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
                 <s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
                     
                         <s:VGroup>
                             <s:Label text="Esc to ~"/>
                             <s:HGroup width="30"> 
-                                <s:RadioButton id="rb_esc_tilde0" width="200" label="off"
+                                <s:RadioButton id="rb_esc_tilde0" width="200" label="Off"
                                                groupName="radio_grp_esc_tilde"/>
                             </s:HGroup>
                             <s:HGroup width="30"> 
-                                <s:RadioButton id="rb_esc_tilde1" width="200" label="on"
+                                <s:RadioButton id="rb_esc_tilde1" width="200" label="On"
                                                groupName="radio_grp_esc_tilde"/>
                             </s:HGroup>
                         </s:VGroup>
@@ -660,14 +656,14 @@
         
         <s:Spacer height="50"/>
         <s:Label text="Utils"/>
-        <s:Button id="btn_firmup" width="200" height="50" label="firm up(select .hex file)"
+        <s:Button id="btn_firmup" width="200" height="50" label="Firm up(select .hex file)"
                   click="_onClickFirmup(event)"/>
-        <s:Button id="btn_bootloader" label="set bootloader" click="_onClick(event)"/>
-        <s:Button id="btn_app" label="set keyboard" click="_onClick(event)"/>
+        <s:Button id="btn_bootloader" label="Set bootloader" click="_onClick(event)"/>
+        <s:Button id="btn_app" label="Set keyboard" click="_onClick(event)"/>
         <s:Spacer height="30"/>
-        <s:Label text="bootloader"/>
-        <s:Button id="btn_clear_num" label="default num of leds" click="_onClickEeprom(event)"/>
-        <s:Button id="btn_clear_eeprom" label="eeprom all clear" click="_onClickEeprom(event)"/>
+        <s:Label text="Bootloader"/>
+        <s:Button id="btn_clear_num" label="Default num of leds" click="_onClickEeprom(event)"/>
+        <s:Button id="btn_clear_eeprom" label="EEPROM all clear" click="_onClickEeprom(event)"/>
     
     </s:Group>
     </s:Scroller>

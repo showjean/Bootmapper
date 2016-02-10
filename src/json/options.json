@@ -4,23 +4,23 @@
     ],
     "rainbowModes":[
         {
-            "label":"fading", 
+            "label":"Fading", 
             "data":0
         }, 
         {
-            "label":"immediately", 
+            "label":"Immediately", 
             "data":1
         }, 
         {
-            "label":"sequential", 
+            "label":"Sequential", 
             "data":2
         }, 
         {
-            "label":"static", 
+            "label":"Static", 
             "data":3
         }, 
         {
-            "label":"flow", 
+            "label":"Flow", 
             "data":4
         }
     ]

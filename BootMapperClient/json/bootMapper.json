@@ -7,7 +7,7 @@
             "fileExt" : ".hex",
             "startAddress": "6600",
             "startOffset": 0,
-            "layerNames" : ["normal","fn","fn2","fn3"],
+            "layerNames" : ["Normal","FN","FN2","FN3"],
             "layers": 4,
             "columns": 8,
             "rows": 15
@@ -19,7 +19,7 @@
             "fileExt" : ".hex",
             "startAddress": "6500",
             "startOffset": 0,
-            "layerNames" : ["normal","fn","fn2","fn3"],
+            "layerNames" : ["Normal","FN","FN2","FN3"],
             "layers": 4,
             "columns": 8,
             "rows": 17
@@ -31,7 +31,7 @@
             "fileExt" : ".hex",
             "startAddress": "6500",
             "startOffset": 0,
-            "layerNames" : ["normal","fn","fn2","fn3"],
+            "layerNames" : ["Normal","FN","FN2","FN3"],
             "layers": 4,
             "columns": 8,
             "rows": 18
@@ -53,6 +53,22 @@
             "startAddress": "6800",
             "macroNum" : 12,
             "macroLength" : 168
+        }
+    ],
+    "dualactionConfigArr": [
+        {
+            "targetName" : "ps2avrGB",
+            "fileName" : "dualaction_gb_",
+            "fileExt" : ".hex",
+            "startAddress": "6580",
+            "dualactionNum" : 24
+        }, 
+        {
+            "targetName" : "ps2avrU",
+            "fileName" : "dualaction_",
+            "fileExt" : ".hex",
+            "startAddress": "6480",
+            "dualactionNum" : 24
         }
     ]
 }
