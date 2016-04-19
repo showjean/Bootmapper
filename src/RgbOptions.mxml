@@ -8,38 +8,46 @@
     
     <fx:Script>
         <![CDATA[
-            import mx.collections.ArrayList;
-            import mx.events.CloseEvent;
-            import mx.events.ColorPickerEvent;
-            
-            import spark.components.Alert;
-            import spark.events.IndexChangeEvent;
+			import mx.collections.ArrayList;
+			import mx.events.CloseEvent;
+			import mx.events.ColorPickerEvent;
+			
+			import spark.components.Alert;
+			import spark.events.IndexChangeEvent;
+
+
             
             protected const LED2_INDEX_FULL_LED_MODE:int        = 0x80;
             protected const LED2_INDEX_FULL_LED_BRIGHTNESS:int  = 0x81;
             protected const LED2_INDEX_ESC_TO_TILDE:int         = 0x82;
             protected const LED2_INDEX_FN_LED:int               = 0x83;
-            protected const LED2_INDEX_TRANSITION_DELAY:int     = 0x84;
+			protected const LED2_INDEX_TRANSITION_DELAY:int     = 0x84;
+			protected const OPTION_INDEX_LOCK_LED_NL:int     = 0x85;
+			protected const OPTION_INDEX_LOCK_LED_CL:int     = 0x86;
+			protected const OPTION_INDEX_LOCK_LED_SL:int     = 0x87;
             
             protected var rainbowFadeTypeDataProvider:ArrayList;
             private var __optionsData:Object;
-            
-            override public function setData(xObj:Object):void{
-                
-                __optionsData = xObj;
-                
-            }
-            
-            override public function init():void
-            {			
-                _isReady = true;
-                                
-//                rainbowFadeTypeDataProvider = new ArrayList([{label:"fading", data:0}, {label:"immediately", data:1}, {label:"sequential", data:2}]);
-                rainbowFadeTypeDataProvider = new ArrayList(__optionsData.rainbowModes);
-                this.ddl_rainbow_fade_type.dataProvider = rainbowFadeTypeDataProvider;
-                
-                this.cb_lednum.dataProvider = new ArrayList(__optionsData.numOfRgbLeds);
-            }
+			
+			override public function setData(xObj:Object):void{
+				
+				__optionsData = xObj;
+				
+			}
+			
+			override public function init():void
+			{			
+				_isReady = true;
+				
+				rainbowFadeTypeDataProvider = new ArrayList(__optionsData.rainbowModes);
+				this.ddl_rainbow_fade_type.dataProvider = rainbowFadeTypeDataProvider;
+				
+				this.cb_lednum.dataProvider = new ArrayList(__optionsData.numOfRgbLeds);
+				
+				this.ddl_lock_led_nl.dataProvider = lock_led_options;
+				this.ddl_lock_led_cl.dataProvider = lock_led_options;
+				this.ddl_lock_led_sl.dataProvider = lock_led_options;
+			}
             
             protected function parseInfo(xInfoArr:Array):void{
                 trace(xInfoArr);
@@ -72,6 +80,15 @@
                 
                 this.radio_grp_esc_tilde.selectedIndex = xInfoArr[41];
                 this.ddl_fn_led.selectedIndex = xInfoArr[42];
+				
+				// firmware ver 1.2
+				this.lb_version.text = "Ver "+ xInfoArr[43] + "." + xInfoArr[44] + "." + xInfoArr[45];
+				trace("version : ", xInfoArr[43] + "." + xInfoArr[44] + "." + xInfoArr[45]);
+				this.lb_firmware.text = getFirmwareName(xInfoArr[46]);
+				trace("firmware : ", xInfoArr[46]);
+				this.ddl_lock_led_nl.selectedIndex = xInfoArr[47];
+				this.ddl_lock_led_cl.selectedIndex = xInfoArr[48];
+				this.ddl_lock_led_sl.selectedIndex = xInfoArr[49];
             }
             
             protected function showWaiting(xMsg:String, xTitle:String = ""):void{
@@ -448,223 +465,307 @@
                 GBManager.getInstance().runProcess(processArgs, __print);
             }
             
-        ]]>
+			protected function __onChangeLockLed(event:Event):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				
+				switch(event.currentTarget){
+					case this.ddl_lock_led_nl:
+						processArgs.push(OPTION_INDEX_LOCK_LED_NL);
+						break;
+					case this.ddl_lock_led_cl:
+						processArgs.push(OPTION_INDEX_LOCK_LED_CL);
+						break;
+					case this.ddl_lock_led_sl:
+						processArgs.push(OPTION_INDEX_LOCK_LED_SL);
+						break;
+				}
+				processArgs.push(DropDownList(event.currentTarget).selectedIndex);
+				
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			private function getFirmwareName(xId:String):String
+			{
+				switch(xId)
+				{
+					case "0":
+						return "ps2avrGB";
+					case "1":
+						return "ps2avrGB4U";
+				}
+				
+				return "Frimware";
+			}
+			
+		]]>
     </fx:Script>
-    <fx:Declarations>
+	
+    <fx:Declarations>		
+		<mx:ArrayList id="lock_led_options">
+			<fx:String>0: Lock Indicator</fx:String>
+			<fx:String>1: Always On</fx:String>
+			<fx:String>2: Always Off</fx:String>
+		</mx:ArrayList>
+		
         <s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event);"/>
         <s:RadioButtonGroup id="radio_grp_led_keymode" itemClick="__onChangeKeyMode(event);"/>
         <s:RadioButtonGroup id="radio_grp_esc_tilde" itemClick="__onChangeEscTilde(event);"/>
     </fx:Declarations>
     
     <s:Scroller width="100%" height="100%">
-    <s:Group id="grp_ui" width="100%" height="100%">
-        <s:layout>
-            <s:VerticalLayout gap="5">
-                
-            </s:VerticalLayout>
-        </s:layout>
-        <s:Label text="Settings"/>
-        
-        <s:Spacer height="10"/>
-        
-        <s:HGroup width="100%">            
-            <s:Button id="btn_connect" label="Connect" click="_onClick(event)"/>
-            <s:Button id="btn_disconnect" label="Disconnect" click="_onClick(event)" enabled="false"/>
-        </s:HGroup>
-        
-        
-        <s:Group id="grp_option_ui" width="100%" enabled="false">
-            <s:layout>
-                <s:VerticalLayout/>
-            </s:layout>
-        
-            <s:Spacer height="10"/>
-            <s:Label text="RGB LED Settings"/>
-            <s:Spacer height="0"/>
-            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
-                <s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
-                    <s:HGroup width="100%" verticalAlign="middle">                     
-                        <s:Label text="Num of RGB LEDs"/>
-                        <s:ComboBox id="cb_lednum" width="80" openOnInput="false">
-	
-							<s:layout>
-								<s:VerticalLayout gap="0"
-												  horizontalAlign="contentJustify"
-												  requestedRowCount="10" />
-							</s:layout>
-	
-                        </s:ComboBox>
-                        <s:Button id="btn_save_num" label="change" click="_onClick(event)"/>
-                        <s:Spacer width="20"/>                
-                    </s:HGroup>
-                    <s:Spacer height="10"/>
-                    
-                    <s:HGroup width="100%">
-                        <s:VGroup>
-                            <s:Label text="RGB LED mode selection and color setting"/>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode0" width="100" label="0. Off"
-                                               groupName="radio_grp_led_mode"/>
-                            </s:HGroup>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode1" width="100" label="1. Rainbow"
-                                               groupName="radio_grp_led_mode"/>           
-                                <mx:ColorPicker id="color_picker_rainbow1"/>         
-                                <mx:ColorPicker id="color_picker_rainbow2"/>         
-                                <mx:ColorPicker id="color_picker_rainbow3"/>         
-                                <mx:ColorPicker id="color_picker_rainbow4"/>         
-                                <mx:ColorPicker id="color_picker_rainbow5"/>         
-                                <mx:ColorPicker id="color_picker_rainbow6"/>         
-                                <mx:ColorPicker id="color_picker_rainbow7"/>
-                                <s:Button id="btn_save_rainbow" label="update color"
-                                          click="__onChangeRainbowColor(event)"/>
-                            </s:HGroup>
-                            <s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
-                                <s:Label text="type:"/>
-                                <s:DropDownList id="ddl_rainbow_fade_type"
-                                                change="__onChangeRainbowFadeType(event)"
-                                                labelField="label">                               
-                                </s:DropDownList>
-                            </s:HGroup>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode2" width="100" label="2. Color 1"
-                                               groupName="radio_grp_led_mode"/>            
-                                <mx:ColorPicker id="color_picker1" width="50"
-                                                change="__onChangeColor(event)"/>
-                            </s:HGroup>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode3" width="100" label="3. Color 2"
-                                               groupName="radio_grp_led_mode"/>              
-                                <mx:ColorPicker id="color_picker2" width="50"
-                                                change="__onChangeColor(event)"/>  
-                            </s:HGroup>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_mode4" width="100" label="4. Color 3"
-                                               groupName="radio_grp_led_mode"/>           
-                                <mx:ColorPicker id="color_picker3" width="50"
-                                                change="__onChangeColor(event)"/>     
-                            </s:HGroup>
-                            
-                        </s:VGroup>
-                        <s:Spacer width="50"/>
-                        <s:VGroup>
-                            <s:Label text="RGB LED key event selection and color setting"/>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_keymode0" width="200" label="0. Off"
-                                               groupName="radio_grp_led_keymode"/>
-                            </s:HGroup>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_keymode1" width="200" label="1. Color"
-                                               groupName="radio_grp_led_keymode"/>            
-                                <mx:ColorPicker id="color_picker_key1" width="50"
-                                                change="__onChangeKeyColor(event)"/>
-                            </s:HGroup>
-                            <s:HGroup width="100%"> 
-                                <s:RadioButton id="rb_keymode2" width="200"
-                                               label="2. Complementary color"
-                                               groupName="radio_grp_led_keymode"/>
-                            </s:HGroup>
-                        </s:VGroup>
-                    </s:HGroup>
-                    <s:Spacer height="10"/>
-                    <s:HGroup width="100%" verticalAlign="middle">                     
-                        <s:Label text="RGB LED Brightness"/>
-                        <s:HSlider id="slider_brightness" change="__onChangeBrightness(event)"
-                                   dataTipPrecision="0" liveDragging="false" maximum="255"
-                                   minimum="1" snapInterval="10" stepSize="10" value="1"/>
-                    </s:HGroup>
-                    <s:Spacer height="10"/>
-                    <s:HGroup width="100%" verticalAlign="middle">                     
-                        <s:Label text="RGB Transition Speed"/>
-                        <s:HSlider id="slider_rgb_speed" change="__onChangeRgbSpeed(event)"
-                                   dataTipPrecision="0" liveDragging="false" maximum="250"
-                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
-                    </s:HGroup>
-                </s:VGroup>
-            
-            </s:BorderContainer>
-            
-            <s:Spacer height="10"/>
-            <s:Label text="Full LED Settings"/>
-            <s:Spacer height="0"/>
-            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
-                <s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
-                    
-                    <s:VGroup>
-                        <s:Label text="Full LED Mode"/>
-                        <s:DropDownList id="ddl_full_led_mode"
-                                        change="__onChangeFullLedMode(event)"
-                                        width="200">    
-                            <s:dataProvider>
-                                <mx:ArrayList>
-                                    <fx:String>0: Off</fx:String>
-                                    <fx:String>1: Fading</fx:String>
-                                    <fx:String>2: On</fx:String>
-                                    <fx:String>3: Press Level Up</fx:String>
-                                    <fx:String>4: Press Level Down</fx:String>
-                                </mx:ArrayList>
-                            </s:dataProvider>
-                        </s:DropDownList>
-                    </s:VGroup>
-                    <s:VGroup>
-                        <s:Label text="Full LED Brightness"/>
-                        <s:HSlider id="slider_full_led_brightness" change="__onChangeFullLedBrightness(event)"
-                                   dataTipPrecision="0" liveDragging="false" maximum="255"
-                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
-                    </s:VGroup>
-                    
-                </s:HGroup>
-                
-            </s:BorderContainer>
-            
-            <s:Spacer height="10"/>
-            <s:Label text="Options"/>
-            <s:Spacer height="0"/>
-            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
-                <s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
-                    
-                        <s:VGroup>
-                            <s:Label text="Esc to ~"/>
-                            <s:HGroup width="30"> 
-                                <s:RadioButton id="rb_esc_tilde0" width="200" label="Off"
-                                               groupName="radio_grp_esc_tilde"/>
-                            </s:HGroup>
-                            <s:HGroup width="30"> 
-                                <s:RadioButton id="rb_esc_tilde1" width="200" label="On"
-                                               groupName="radio_grp_esc_tilde"/>
-                            </s:HGroup>
-                        </s:VGroup>
-                        <s:VGroup>
-                            <s:Label text="FN Layer Lock LED"/>
-                            <s:DropDownList id="ddl_fn_led"
-                                            change="__onChangeFnLed(event)"
-                                            width="200">    
-                                <s:dataProvider>
-                                    <mx:ArrayList>
-                                        <fx:String>Disabled</fx:String>
-                                        <fx:String>Using Num lock LED</fx:String>
-                                        <fx:String>Using Scroll lock LED</fx:String>
-                                    </mx:ArrayList>
-                                </s:dataProvider>
-                            </s:DropDownList>
-                        </s:VGroup>
-                    
-                </s:HGroup>
-                
-            </s:BorderContainer>
-        </s:Group>
-        
-        <s:Spacer height="50"/>
-        <s:Label text="Utils"/>
-        <s:Button id="btn_firmup" width="200" height="50" label="Firm up(select .hex file)"
-                  click="_onClickFirmup(event)"/>
-        <s:Button id="btn_bootloader" label="Set bootloader" click="_onClick(event)"/>
-        <s:Button id="btn_app" label="Set keyboard" click="_onClick(event)"/>
-        <s:Spacer height="30"/>
-        <s:Label text="Bootloader"/>
-        <s:Button id="btn_clear_num" label="Default num of leds" click="_onClickEeprom(event)"/>
-        <s:Button id="btn_clear_eeprom" label="EEPROM all clear" click="_onClickEeprom(event)"/>
-    
-    </s:Group>
+	    <s:Group id="grp_ui" width="100%" height="100%">
+	        <s:layout>
+	            <s:VerticalLayout gap="5">
+	                
+	            </s:VerticalLayout>
+	        </s:layout>
+	        <s:Label text="Settings"/>
+	        
+	        <s:Spacer height="10"/>
+	        
+	        <s:HGroup width="100%">            
+	            <s:Button id="btn_connect" label="Connect" click="_onClick(event)"/>
+	            <s:Button id="btn_disconnect" label="Disconnect" click="_onClick(event)" enabled="false"/>
+				<s:Spacer width="100%"/>
+				<s:Label id="lb_firmware" text="Firmware"/>
+				<s:Label id="lb_version" text="Version"/>
+	        </s:HGroup>
+	        
+			
+			<s:Spacer height="10"/>
+	        <s:Group id="grp_option_ui" width="100%" enabled="false">
+	            <s:layout>
+	                <s:HorizontalLayout/>
+	            </s:layout>
+				
+				<s:VGroup width="50%">
+	            <s:Label text="RGB LED Settings"/>
+	            <s:Spacer height="0"/>
+	            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
+	                <s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+	                    <s:HGroup width="100%" verticalAlign="middle">                     
+	                        <s:Label text="Num of RGB LEDs"/>
+	                        <s:ComboBox id="cb_lednum" width="80" openOnInput="false">
+		
+								<s:layout>
+									<s:VerticalLayout gap="0"
+													  horizontalAlign="contentJustify"
+													  requestedRowCount="10" />
+								</s:layout>
+		
+	                        </s:ComboBox>
+	                        <s:Button id="btn_save_num" label="change" click="_onClick(event)"/>
+	                        <s:Spacer width="20"/>                
+	                    </s:HGroup>
+	                    <s:Spacer height="10"/>
+	                    
+	                    <s:VGroup width="100%">
+	                        <s:VGroup>
+	                            <s:Label text="RGB LED mode selection and color setting"/>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode0" width="100" label="0. Off"
+	                                               groupName="radio_grp_led_mode"/>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode1" width="100" label="1. Rainbow"
+	                                               groupName="radio_grp_led_mode"/>           
+	                                <mx:ColorPicker id="color_picker_rainbow1"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow2"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow3"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow4"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow5"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow6"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow7"/>
+	                                <s:Button id="btn_save_rainbow" label="update color"
+	                                          click="__onChangeRainbowColor(event)"/>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
+	                                <s:Label text="type:"/>
+	                                <s:DropDownList id="ddl_rainbow_fade_type"
+	                                                change="__onChangeRainbowFadeType(event)"
+	                                                labelField="label">                               
+	                                </s:DropDownList>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode2" width="100" label="2. Color 1"
+	                                               groupName="radio_grp_led_mode"/>            
+	                                <mx:ColorPicker id="color_picker1" width="50"
+	                                                change="__onChangeColor(event)"/>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode3" width="100" label="3. Color 2"
+	                                               groupName="radio_grp_led_mode"/>              
+	                                <mx:ColorPicker id="color_picker2" width="50"
+	                                                change="__onChangeColor(event)"/>  
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode4" width="100" label="4. Color 3"
+	                                               groupName="radio_grp_led_mode"/>           
+	                                <mx:ColorPicker id="color_picker3" width="50"
+	                                                change="__onChangeColor(event)"/>     
+	                            </s:HGroup>
+	                            
+	                        </s:VGroup>
+	                    </s:VGroup>
+	                    <s:Spacer height="10"/>
+	                    <s:HGroup width="100%" verticalAlign="middle">                     
+	                        <s:Label text="RGB LED Brightness"/>
+	                        <s:HSlider id="slider_brightness" change="__onChangeBrightness(event)"
+	                                   dataTipPrecision="0" liveDragging="false" maximum="255"
+	                                   minimum="1" snapInterval="10" stepSize="10" value="1"/>
+	                    </s:HGroup>
+	                    <s:Spacer height="10"/>
+	                    <s:HGroup width="100%" verticalAlign="middle">                     
+	                        <s:Label text="RGB Transition Speed"/>
+	                        <s:HSlider id="slider_rgb_speed" change="__onChangeRgbSpeed(event)"
+	                                   dataTipPrecision="0" liveDragging="false" maximum="250"
+	                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+	                    </s:HGroup>
+						<s:Spacer height="20"/>
+						<s:VGroup>
+							<s:Label text="RGB LED key event selection and color setting"/>
+							<s:HGroup width="100%"> 
+								<s:RadioButton id="rb_keymode0" width="200" label="0. Off"
+											   groupName="radio_grp_led_keymode"/>
+							</s:HGroup>
+							<s:HGroup width="100%"> 
+								<s:RadioButton id="rb_keymode1" width="200" label="1. Color"
+											   groupName="radio_grp_led_keymode"/>            
+								<mx:ColorPicker id="color_picker_key1" width="50"
+												change="__onChangeKeyColor(event)"/>
+							</s:HGroup>
+							<s:HGroup width="100%"> 
+								<s:RadioButton id="rb_keymode2" width="200"
+											   label="2. Complementary color"
+											   groupName="radio_grp_led_keymode"/>
+							</s:HGroup>
+						</s:VGroup>
+	                </s:VGroup>
+	            
+	            </s:BorderContainer>
+				</s:VGroup>
+				
+				<s:Spacer width="5"/>
+				
+				<s:VGroup width="50%">
+					<s:Label text="Full LED Settings"/>
+					<s:Spacer height="0"/>
+					<s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
+						<s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
+							
+							<s:VGroup>
+								<s:Label text="Full LED Mode"/>
+								<s:DropDownList id="ddl_full_led_mode"
+												change="__onChangeFullLedMode(event)"
+												width="200">    
+									<s:dataProvider>
+										<mx:ArrayList>
+											<fx:String>0: Off</fx:String>
+											<fx:String>1: Fading</fx:String>
+											<fx:String>2: On</fx:String>
+											<fx:String>3: Press Level Up</fx:String>
+											<fx:String>4: Press Level Down</fx:String>
+										</mx:ArrayList>
+									</s:dataProvider>
+								</s:DropDownList>
+							</s:VGroup>
+							<s:VGroup>
+								<s:Label text="Full LED Brightness"/>
+								<s:HSlider id="slider_full_led_brightness" change="__onChangeFullLedBrightness(event)"
+										   dataTipPrecision="0" liveDragging="false" maximum="255"
+										   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+							</s:VGroup>
+							
+						</s:HGroup>
+						
+					</s:BorderContainer>
+					
+					<s:Spacer height="10"/>
+					<s:Label text="3 Lock LED Settings"/>
+					<s:Spacer height="0"/>
+					<s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
+						<s:HGroup width="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="20">
+							
+							<s:VGroup width="100%">
+								<s:Label text="Num lock"/>
+								<s:DropDownList id="ddl_lock_led_nl"
+												change="__onChangeLockLed(event)"
+												width="100%">
+								</s:DropDownList>
+							</s:VGroup>
+							
+							<s:VGroup width="100%">
+								<s:Label text="Caps lock"/>
+								<s:DropDownList id="ddl_lock_led_cl"
+												change="__onChangeLockLed(event)"
+												width="100%">  
+								</s:DropDownList>
+							</s:VGroup>
+							
+							<s:VGroup width="100%">
+								<s:Label text="Scroll lock"/>
+								<s:DropDownList id="ddl_lock_led_sl"
+												change="__onChangeLockLed(event)"
+												width="100%">    
+								</s:DropDownList>
+							</s:VGroup>
+							
+						</s:HGroup>
+						
+					</s:BorderContainer>
+					
+					<s:Spacer height="10"/>
+					<s:Label text="Options"/>
+					<s:Spacer height="0"/>
+					<s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
+						<s:HGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
+							
+							<s:VGroup>
+								<s:Label text="Esc to ~"/>
+								<s:HGroup width="30"> 
+									<s:RadioButton id="rb_esc_tilde0" width="200" label="Off"
+												   groupName="radio_grp_esc_tilde"/>
+								</s:HGroup>
+								<s:HGroup width="30"> 
+									<s:RadioButton id="rb_esc_tilde1" width="200" label="On"
+												   groupName="radio_grp_esc_tilde"/>
+								</s:HGroup>
+							</s:VGroup>
+							<s:VGroup>
+								<s:Label text="FN Layer Lock LED"/>
+								<s:DropDownList id="ddl_fn_led"
+												change="__onChangeFnLed(event)"
+												width="200">    
+									<s:dataProvider>
+										<mx:ArrayList>
+											<fx:String>Disabled</fx:String>
+											<fx:String>Using Num lock LED</fx:String>
+											<fx:String>Using Scroll lock LED</fx:String>
+										</mx:ArrayList>
+									</s:dataProvider>
+								</s:DropDownList>
+							</s:VGroup>
+							
+						</s:HGroup>
+						
+					</s:BorderContainer>
+				</s:VGroup>
+	        </s:Group>
+	        
+	        <s:Spacer height="50"/>
+	        <s:Label text="Utils"/>
+	        <s:Button id="btn_firmup" width="200" height="50" label="Firm up(select .hex file)"
+	                  click="_onClickFirmup(event)"/>
+	        <s:Button id="btn_bootloader" label="Set bootloader" click="_onClick(event)"/>
+	        <s:Button id="btn_app" label="Set keyboard" click="_onClick(event)"/>
+	        <s:Spacer height="30"/>
+	        <s:Label text="Bootloader"/>
+	        <s:Button id="btn_clear_num" label="Default num of leds" click="_onClickEeprom(event)"/>
+	        <s:Button id="btn_clear_eeprom" label="EEPROM all clear" click="_onClickEeprom(event)"/>
+	    
+	    </s:Group>
     </s:Scroller>
 </local:TabUI>

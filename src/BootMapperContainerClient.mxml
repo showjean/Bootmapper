@@ -14,7 +14,7 @@
             import spark.components.Alert;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.7.0"
+            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.0"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
