@@ -534,6 +534,8 @@
 			<fx:String>1: Always On</fx:String>
 			<fx:String>2: Always Off</fx:String>
 			<fx:String>3: Lock Reverse</fx:String>
+			<!--<fx:String>4: FN2 Lock</fx:String>
+			<fx:String>5: FN3 Lock</fx:String> -->
 		</mx:ArrayList>
 		
         <s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event);"/>
