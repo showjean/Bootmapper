@@ -12,18 +12,6 @@
             "columns": 8,
             "rows": 15
         },
-        {
-            "ver": 160418,
-            "targetName" : "ps2avrGB4U & ps2avrGB4U_split",
-            "fileName" : "keymap_gb4u_",
-            "fileExt" : ".hex",
-            "startAddress": "6500",
-            "startOffset": 0,
-            "layerNames" : ["Normal","FN","FN2","FN3"],
-            "layers": 4,
-            "columns": 8,
-            "rows": 17
-        },
          {
             "ver": 131202,
             "targetName" : "ps2avrU & ps2avrU_split",
