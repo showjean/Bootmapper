@@ -21,6 +21,7 @@
             
             private function loadOptionsData():void
             {
+				
                 var gRequest:URLRequest = new URLRequest();	
                 gRequest.url = "json/options.json"
                 var gJsonLoader:JSONLoader = new JSONLoader();
