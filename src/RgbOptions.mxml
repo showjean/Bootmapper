@@ -56,36 +56,44 @@
 				
 				var gSize:uint = xInfoArr[0];
 				var gIsVersionLate12:Boolean = false;
+				var gHasRgb:Boolean = true;
 				
 				if(gSize > 50)
 				{
 					// ver 1.2
 					xInfoArr.shift();
 					gIsVersionLate12 = true;
+					
+					if(xInfoArr[46] > 0)
+					{
+						gHasRgb = false;
+					}
 				}
 				else
 				{
 					// ver 1.1
 				}
-					
 				
-                this.cb_lednum.selectedItem = xInfoArr[0];
-                this.radio_grp_led_mode.selectedIndex = xInfoArr[1];
-                this.slider_brightness.value = xInfoArr[2];
-                
-                this.color_picker1.selectedColor  = (xInfoArr[3]<<8) + (xInfoArr[4]<<16) + (xInfoArr[5]);
-                this.color_picker2.selectedColor  = (xInfoArr[6]<<8) + (xInfoArr[7]<<16) + (xInfoArr[8]);
-                this.color_picker3.selectedColor  = (xInfoArr[9]<<8) + (xInfoArr[10]<<16) + (xInfoArr[11]);
-                
-                var gOffset:int = 0;
-                for(var i:int = 0 ; i < 7; ++i){
-                    gOffset = i * 3;
-                    this["color_picker_rainbow"+(i+1)].selectedColor = (xInfoArr[12+gOffset]<<8) + (xInfoArr[13+gOffset]<<16) + (xInfoArr[14+gOffset]);
-                }
-                this.radio_grp_led_keymode.selectedIndex = xInfoArr[33];
-                this.color_picker_key1.selectedColor  = (xInfoArr[34]<<8) + (xInfoArr[35]<<16) + (xInfoArr[36]);
-                this.ddl_rainbow_fade_type.selectedIndex = xInfoArr[37] == 255 ? 0 : xInfoArr[37];
-                  
+					
+				if(gHasRgb)
+				{
+	                this.cb_lednum.selectedItem = xInfoArr[0];
+	                this.radio_grp_led_mode.selectedIndex = xInfoArr[1];
+	                this.slider_brightness.value = xInfoArr[2];
+	                
+	                this.color_picker1.selectedColor  = (xInfoArr[3]<<8) + (xInfoArr[4]<<16) + (xInfoArr[5]);
+	                this.color_picker2.selectedColor  = (xInfoArr[6]<<8) + (xInfoArr[7]<<16) + (xInfoArr[8]);
+	                this.color_picker3.selectedColor  = (xInfoArr[9]<<8) + (xInfoArr[10]<<16) + (xInfoArr[11]);
+	                
+	                var gOffset:int = 0;
+	                for(var i:int = 0 ; i < 7; ++i){
+	                    gOffset = i * 3;
+	                    this["color_picker_rainbow"+(i+1)].selectedColor = (xInfoArr[12+gOffset]<<8) + (xInfoArr[13+gOffset]<<16) + (xInfoArr[14+gOffset]);
+	                }
+	                this.radio_grp_led_keymode.selectedIndex = xInfoArr[33];
+	                this.color_picker_key1.selectedColor  = (xInfoArr[34]<<8) + (xInfoArr[35]<<16) + (xInfoArr[36]);
+	                this.ddl_rainbow_fade_type.selectedIndex = xInfoArr[37] == 255 ? 0 : xInfoArr[37];
+				}
                 // firmware Ver 1.1
                 
                 // full led mode, brightness;
@@ -94,7 +102,7 @@
                 this.slider_full_led_brightness.value = xInfoArr[40];
                 
                 this.radio_grp_esc_tilde.selectedIndex = xInfoArr[41];
-                this.ddl_fn_led.selectedIndex = xInfoArr[42];
+//                this.ddl_fn_led.selectedIndex = xInfoArr[42];
 				
 				// firmware ver 1.2
 				if(gIsVersionLate12)
@@ -107,12 +115,18 @@
 					this.ddl_lock_led_nl.selectedIndex = xInfoArr[47];
 					this.ddl_lock_led_cl.selectedIndex = xInfoArr[48];
 					this.ddl_lock_led_sl.selectedIndex = xInfoArr[49];
+					
+					if(gHasRgb == false)
+					{
+						this.grp_rgb.enabled = false;
+					}
 				}
 				else
 				{
 					this.gp_3_lock.enabled = false;
 					this.lb_version.text = "Version";
 					this.lb_firmware.text = "Firmware";
+					this.grp_rgb.enabled = true;
 				}
             }
             
@@ -450,15 +464,15 @@
                 GBManager.getInstance().runProcess(processArgs, __print);
             }
             
-            protected function __onChangeFnLed(event:IndexChangeEvent):void
-            {
-                var processArgs:Vector.<String> = new Vector.<String>();
-                processArgs.push("-option");
-                processArgs.push(LED2_INDEX_FN_LED);
-                processArgs.push(this.ddl_fn_led.selectedIndex);                
-                
-                GBManager.getInstance().runProcess(processArgs, __print);
-            }
+//            protected function __onChangeFnLed(event:IndexChangeEvent):void
+//            {
+//                var processArgs:Vector.<String> = new Vector.<String>();
+//                processArgs.push("-option");
+//                processArgs.push(LED2_INDEX_FN_LED);
+//                processArgs.push(this.ddl_fn_led.selectedIndex);                
+//                
+//                GBManager.getInstance().runProcess(processArgs, __print);
+//            }
             
             protected function __onChangeFullLedBrightness(event:Event):void
             {
@@ -534,8 +548,8 @@
 			<fx:String>1: Always On</fx:String>
 			<fx:String>2: Always Off</fx:String>
 			<fx:String>3: Lock Reverse</fx:String>
-			<!--<fx:String>4: FN2 Lock</fx:String>
-			<fx:String>5: FN3 Lock</fx:String> -->
+			<fx:String>4: FN Lock Indicator</fx:String>
+			<!--<fx:String>5: FN3 Lock</fx:String> -->
 		</mx:ArrayList>
 		
         <s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event);"/>
@@ -572,7 +586,7 @@
 				<s:VGroup width="50%">
 	            <s:Label text="RGB LED Settings"/>
 	            <s:Spacer height="0"/>
-	            <s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">
+	            <s:BorderContainer id="grp_rgb" width="100%" cornerRadius="7" borderWeight="2">
 	                <s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 	                    <s:HGroup width="100%" verticalAlign="middle">                     
 	                        <s:Label text="Num of RGB LEDs"/>
@@ -762,7 +776,7 @@
 												   groupName="radio_grp_esc_tilde"/>
 								</s:HGroup>
 							</s:VGroup>
-							<s:VGroup>
+							<!--<s:VGroup>
 								<s:Label text="FN Layer Lock LED"/>
 								<s:DropDownList id="ddl_fn_led"
 												change="__onChangeFnLed(event)"
@@ -775,7 +789,7 @@
 										</mx:ArrayList>
 									</s:dataProvider>
 								</s:DropDownList>
-							</s:VGroup>
+							</s:VGroup>-->
 							
 						</s:HGroup>
 						

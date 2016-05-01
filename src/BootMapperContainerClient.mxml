@@ -14,7 +14,7 @@
             import spark.components.Alert;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.0"
+            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.1"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
@@ -231,19 +231,19 @@
                 if(event == null) return;
                 
                 if(event.currentTarget == this.keymap){
-                    if(this.keymap.currentHexFileInfo.targetName.indexOf("ps2avrGB") > -1){
+                    if(this.keymap.currentHexFileInfo.fileName.indexOf("_gb_") > -1){
                         this.grp_gb_keymap_control.enabled = true;
                     }else{
                         this.grp_gb_keymap_control.enabled = false;                    
                     }
                 }else if(event.currentTarget == this.macro){
-                    if(this.macro.currentMacroInfo.targetName.indexOf("ps2avrGB") > -1){
+                    if(this.macro.currentMacroInfo.fileName.indexOf("_gb_") > -1){
                         this.grp_gb_macro_control.enabled = true;
                     }else{
                         this.grp_gb_macro_control.enabled = false;                    
                     }
                 }else if(event.currentTarget == this.dualaction){
-					if(this.dualaction.currentDualactionInfo.targetName.indexOf("ps2avrGB") > -1){
+					if(this.dualaction.currentDualactionInfo.fileName.indexOf("_gb_") > -1){
 						this.grp_gb_dualaction_control.enabled = true;
 					}else{
 						this.grp_gb_dualaction_control.enabled = false;                    
