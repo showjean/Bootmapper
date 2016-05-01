@@ -115,11 +115,8 @@
 					this.ddl_lock_led_nl.selectedIndex = xInfoArr[47];
 					this.ddl_lock_led_cl.selectedIndex = xInfoArr[48];
 					this.ddl_lock_led_sl.selectedIndex = xInfoArr[49];
-					
-					if(gHasRgb == false)
-					{
-						this.grp_rgb.enabled = false;
-					}
+										
+					this.grp_rgb.enabled = gHasRgb;
 				}
 				else
 				{
