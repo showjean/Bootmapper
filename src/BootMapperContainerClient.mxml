@@ -14,7 +14,7 @@
             import spark.components.Alert;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.1"
+            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.2"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
@@ -147,17 +147,18 @@
             {
                 var processArgs:Vector.<String> = new Vector.<String>();
                 processArgs.push("-bootmapper");
-                if(isBootmapper){
+                /* if(isBootmapper){
                     processArgs.push("stop");
                 }else{
                     processArgs.push("start");                    
                 }
-                isBootmapper = !isBootmapper;
+                isBootmapper = !isBootmapper; */
                 
                 GBManager.getInstance().runProcess(processArgs, __print);
             }
             
             protected function __print (xSuc:int, xStr:String):void {
+//				trace("__print   :   ", xStr);
 //                trace(this.name, xStr);
                 /*
                 #define SUCCESS_INDEX_LED2_INFO 3
@@ -166,6 +167,8 @@
                 #define SUCCESS_INDEX_BOOTMAPPER_START 6
                 #define SUCCESS_INDEX_BOOTMAPPER_STOP 7
                 SUCCESS_INDEX_KEYMAP_DOWNLOAD 8
+				#define SUCCESS_INDEX_DUALACTION_DOWNLOAD 10
+				#define SUCCESS_INDEX_TOGGLE_BOOTMAPPER 11
                 */
                 var gObj:Object = JSON.parse(xStr);
                 if(xSuc == 1){  // complete
@@ -200,7 +203,7 @@
                     
                     this.macro.applySerializeData(gObj.result);
                 }
-				else if(xSuc == 10){    // macro download
+				else if(xSuc == 10){    // SUCCESS_INDEX_DUALACTION_DOWNLOAD
 					removeWaiting();
 					//                    trace(String(gObj.result).toUpperCase());
 					//                    trace(String(gObj.result).length/2); 

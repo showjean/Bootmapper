@@ -72,7 +72,7 @@ package
         public function onOutputData(event:ProgressEvent):void
         {
             try{
-                var gStr:String = process.standardOutput.readUTFBytes(process.standardOutput.bytesAvailable);
+                var gStr:String = process.standardOutput.readUTFBytes(process.standardOutput.bytesAvailable);				
                 __print(gStr);
             }catch(e:Error){
                 Alert.show("onOutputData : " + e.message);					
