@@ -14,7 +14,7 @@
             import spark.components.Alert;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.2"
+            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.3"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
@@ -235,9 +235,18 @@
                 
                 if(event.currentTarget == this.keymap){
                     if(this.keymap.currentHexFileInfo.fileName.indexOf("_gb_") > -1){
+						this.grp_gb_keymap_control_gb_only.enabled = true;
                         this.grp_gb_keymap_control.enabled = true;
                     }else{
-                        this.grp_gb_keymap_control.enabled = false;                    
+						if(this.keymap.currentHexFileInfo.targetName.indexOf("GB4U") > -1)
+						{
+							this.grp_gb_keymap_control_gb_only.enabled = false;
+//							this.grp_gb_keymap_control_for_sharing.enabled = true;
+						}
+						else
+						{							
+							this.grp_gb_keymap_control.enabled = false;                    
+						}
                     }
                 }else if(event.currentTarget == this.macro){
                     if(this.macro.currentMacroInfo.fileName.indexOf("_gb_") > -1){
@@ -328,13 +337,17 @@
                       paddingLeft="4" paddingRight="4" paddingTop="4">	
             <s:NavigatorContent id="nc_keymap" label="Key Mapper">
                 <s:VGroup  width="100%" height="100%">
-                    <s:HGroup width="100%" id="grp_gb_keymap_control">                        
+                    <s:HGroup width="100%" id="grp_gb_keymap_control">
+						<s:HGroup width="100%" id="grp_gb_keymap_control_gb_only">
                         <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" />
                         <s:Spacer width="30%" minWidth="30" />
                         <s:Button id="btn_upload" label="Upload" click="_onClick(event)" />
                         <s:CheckBox id="cb_reboot" label="Reboot after uploading" />
+						</s:HGroup>
+						<s:HGroup width="100%" id="grp_gb_keymap_control_for_sharing">
                         <s:Button id="btn_bootmapper" label="Toggle bootmapper" click="_onClickBootmapper(event)" />
                         <s:CheckBox id="cb_bootmapper_state" enabled="false" />
+						</s:HGroup>
                     </s:HGroup>
                     <s:Spacer height="5" />
                     <local:Keymap id="keymap" width="100%" height="100%" initialize="__onInitTabUI(event)" />
