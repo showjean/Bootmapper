@@ -531,9 +531,13 @@
 						return "ps2avrGB";
 					case "1":
 						return "ps2avrGB4U";
+					case "2":
+						return "ps2avrGB Split";
+					case "3":
+						return "ps2avrGB4U Split";
 				}
 				
-				return "Frimware";
+				return "Frimware " + xId;
 			}
 			
 		]]>

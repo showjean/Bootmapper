@@ -342,7 +342,7 @@
                         <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" />
                         <s:Spacer width="30%" minWidth="30" />
                         <s:Button id="btn_upload" label="Upload" click="_onClick(event)" />
-                        <s:CheckBox id="cb_reboot" label="Reboot after uploading" />
+                        <s:CheckBox id="cb_reboot" label="Reboot after uploading" selected="true"/>
 						</s:HGroup>
 						<s:HGroup width="100%" id="grp_gb_keymap_control_for_sharing">
                         <s:Button id="btn_bootmapper" label="Toggle bootmapper" click="_onClickBootmapper(event)" />
@@ -369,7 +369,7 @@
                         <s:Button id="btn_download_macro" label="Download" click="_onClickDownload(event)" />
 						<s:Spacer width="30%" minWidth="30" />                     
                         <s:Button id="btn_upload_macro" label="Upload" click="_onClick(event)" />
-                        <s:CheckBox id="cb_reboot_macro" label="Reboot after uploading" />
+                        <s:CheckBox id="cb_reboot_macro" label="Reboot after uploading" selected="true" />
                     </s:HGroup>
                     <s:Spacer height="5" />
                     <local:Macro id="macro" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
@@ -382,7 +382,7 @@
 							<s:Button id="btn_download_dualaction" label="Download" click="_onClickDownload(event)" />
 							<s:Spacer width="30%" minWidth="30" />                     
 							<s:Button id="btn_upload_dualaction" label="Upload" click="_onClick(event)" />
-							<s:CheckBox id="cb_reboot_dualaction" label="Reboot after uploading" />
+							<s:CheckBox id="cb_reboot_dualaction" label="Reboot after uploading" selected="true" />
 						</s:HGroup>
 					<s:Spacer height="5" />
 					<local:DualAction id="dualaction" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
