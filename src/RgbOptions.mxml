@@ -23,6 +23,7 @@
 			protected const OPTION_INDEX_LOCK_LED_NL:int     = 0x85;
 			protected const OPTION_INDEX_LOCK_LED_CL:int     = 0x86;
 			protected const OPTION_INDEX_LOCK_LED_SL:int     = 0x87;
+			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 0x88;
             
             protected var rainbowFadeTypeDataProvider:ArrayList;
             private var __optionsData:Object;
@@ -108,13 +109,27 @@
 				if(gIsVersionLate12)
 				{
 					this.gp_3_lock.enabled = true;
-					this.lb_version.text = "Ver "+ xInfoArr[43] + "." + xInfoArr[44] + "." + xInfoArr[45];
-					trace("version : ", xInfoArr[43] + "." + xInfoArr[44] + "." + xInfoArr[45]);
+					var verMajor:int = xInfoArr[43];
+					var verMinor:int = xInfoArr[44];
+					var verPatch:int = xInfoArr[45];
+					this.lb_version.text = "Ver "+ verMajor + "." + verMinor + "." + verPatch;
+					trace("version : ", verMajor + "." + verMinor + "." + verPatch);
 					this.lb_firmware.text = getFirmwareName(xInfoArr[46]);
 					trace("firmware : ", xInfoArr[46]);
 					this.ddl_lock_led_nl.selectedIndex = xInfoArr[47];
 					this.ddl_lock_led_cl.selectedIndex = xInfoArr[48];
 					this.ddl_lock_led_sl.selectedIndex = xInfoArr[49];
+					
+					if(verMajor >= 1 && verMinor >= 2 && verPatch >=4)
+					{
+						this.ddl_numlock_layer.enabled = true;
+						this.ddl_numlock_layer.selectedIndex = xInfoArr[50];
+					}
+					else
+					{
+						this.ddl_numlock_layer.enabled = false;
+						this.ddl_numlock_layer.selectedIndex = 0;
+					}
 										
 					this.grp_rgb.enabled = gHasRgb;
 				}
@@ -500,6 +515,16 @@
                 
                 GBManager.getInstance().runProcess(processArgs, __print);
             }
+			
+			protected function __onChangeNumlockLayer(event:Event):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(OPTION_INDEX_NUMLOCK_LAYER);
+				processArgs.push(this.ddl_numlock_layer.selectedIndex);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
             
 			protected function __onChangeLockLed(event:Event):void
 			{
@@ -783,7 +808,7 @@
 					<s:BorderContainer width="100%" height="100%" cornerRadius="7" borderWeight="2">
 						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
 							
-							<s:VGroup>
+							<s:VGroup width="100%">
 								<s:Label text="Esc to ~"/>
 								<s:HGroup width="30"> 
 									<s:RadioButton id="rb_esc_tilde0" width="200" label="Off"
@@ -794,21 +819,23 @@
 												   groupName="radio_grp_esc_tilde"/>
 								</s:HGroup>
 							</s:VGroup>
-							<!--<s:VGroup>
-								<s:Label text="FN Layer Lock LED"/>
-								<s:DropDownList id="ddl_fn_led"
-												change="__onChangeFnLed(event)"
-												width="200">    
+							<s:VGroup width="100%">
+								<s:Label text="NumLock Layer"/>
+								<s:DropDownList id="ddl_numlock_layer"
+												change="__onChangeNumlockLayer(event)"
+												width="150">    
 									<s:dataProvider>
 										<mx:ArrayList>
-											<fx:String>Disabled</fx:String>
-											<fx:String>Using Num lock LED</fx:String>
-											<fx:String>Using Scroll lock LED</fx:String>
+											<fx:String>N/A</fx:String>
+											<fx:String>FN Layer</fx:String>
+											<fx:String>FN2 Layer</fx:String>
+											<fx:String>FN3 Layer</fx:String>
 										</mx:ArrayList>
 									</s:dataProvider>
 								</s:DropDownList>
-							</s:VGroup>-->
-							
+							</s:VGroup>
+							<s:VGroup width="100%">
+							</s:VGroup>
 						</s:HGroup>
 						
 					</s:BorderContainer>
