@@ -49,8 +49,8 @@
 			}
             
             protected function parseInfo(xInfoArr:Array):void{
-				trace(xInfoArr.length);
-                trace(xInfoArr);
+//				trace(xInfoArr.length);
+//                trace(xInfoArr);
                 //[10,4,186, 136,255,0, 255,136,0 ,255,255,255, 0,255,0,0,0,255,0,255,170,255,0,0,0,0,0,255,255,255,255,255,0]
                 //num, mode, brightness, colol1,2,3, rainbow, key color1
                 // fade type 1byte, full led mode 1byte, full led brightness 1byte, esc to tilde 1byte, fn led 1byte
@@ -808,14 +808,14 @@
 					<s:BorderContainer width="100%" height="100%" cornerRadius="7" borderWeight="2">
 						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
 							
-							<s:VGroup width="100%">
+							<s:VGroup width="180">
 								<s:Label text="Esc to ~"/>
-								<s:HGroup width="30"> 
-									<s:RadioButton id="rb_esc_tilde0" width="200" label="Off"
+								<s:HGroup> 
+									<s:RadioButton id="rb_esc_tilde0" width="150" label="Off"
 												   groupName="radio_grp_esc_tilde"/>
 								</s:HGroup>
-								<s:HGroup width="30"> 
-									<s:RadioButton id="rb_esc_tilde1" width="200" label="On"
+								<s:HGroup> 
+									<s:RadioButton id="rb_esc_tilde1" width="150" label="On"
 												   groupName="radio_grp_esc_tilde"/>
 								</s:HGroup>
 							</s:VGroup>
