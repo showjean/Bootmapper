@@ -49,6 +49,22 @@
             "rows": 18
         }
     ],
+    "qmacroConfigArr": [
+        {
+            "targetName" : "ps2avrGB",
+            "fileName" : "macro_gb_",
+            "fileExt" : ".json",
+            "macroNum" : 12,
+            "macroLength" : 48
+        }, 
+        {
+            "targetName" : "ps2avrGB4U",
+            "fileName" : "macro_gb4u_",
+            "fileExt" : ".json",
+            "macroNum" : 12,
+            "macroLength" : 48
+        }
+    ],
     "macroConfigArr": [
         {
             "targetName" : "ps2avrGB",

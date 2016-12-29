@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <local:BootMapperContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                            xmlns:s="library://ns.adobe.com/flex/spark" 
-                           xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*" 
+                           xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*"
                            initialize="initDesktop()"
                            width="400" height="300">
     
@@ -14,7 +14,7 @@
             import spark.components.Alert;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.8.3"
+            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.9.0"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
@@ -74,6 +74,7 @@
                 
                 var gStr:String;
                 var gBool:Boolean;
+				var gIsQMacro:Boolean = false;
                 switch(e.currentTarget){
                     case this.btn_upload:
                         // keymap에서 현재 keymap의 hex data를 줄 바꿈 없이 가져온다.
@@ -104,6 +105,11 @@
                         }*/
                         break;
 					
+					case this.btn_upload_qmacro:
+						gStr = this.qmacro.getHexData();		
+						gIsQMacro = true;
+						break;
+					
 					case this.btn_upload_dualaction:
 						gStr = this.dualaction.getHexData();
 						gBool = this.cb_reboot_dualaction.selected
@@ -119,8 +125,11 @@
                     this, 
                     function (event:CloseEvent):void { 
                         
-                        if(event.detail == Alert.YES){                        
-                            if(gStr) {
+                        if(event.detail == Alert.YES){
+							if(gIsQMacro){								
+								GBManager.getInstance().uploadQuickMacro(gStr, __print);
+								showWaiting("processing...");
+							}else if(gStr) {
                                 GBManager.getInstance().writeFlash(gStr, __print, gBool);
                                 showWaiting("processing...");
                             }
@@ -210,6 +219,13 @@
 					
 					this.dualaction.applySerializeData(gObj.result);
 				}
+				else if(xSuc == 11){	// SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD
+					removeWaiting();
+					
+					trace("__print   :   ", gObj.result);
+					trace("__print   :   ", gObj.result.length/2);
+					this.qmacro.applySerializeData(gObj.result);
+				}
             }
             
             
@@ -219,9 +235,12 @@
                     case this.btn_download:
                         GBManager.getInstance().downloadKeymap(this.keymap.currentHexFileInfo, __print);
                         break;
-                    case this.btn_download_macro:
-                        GBManager.getInstance().downloadMacro(this.macro.currentMacroInfo, __print);
-                        break;
+					case this.btn_download_macro:
+						GBManager.getInstance().downloadMacro(this.macro.currentMacroInfo, __print);
+						break;
+					case this.btn_download_qmacro:
+						GBManager.getInstance().downloadQuickMacro(this.qmacro.currentMacroInfo, __print);
+						break;
                     case this.btn_download_dualaction:
                         GBManager.getInstance().downloadDualaction(this.dualaction.currentDualactionInfo, __print);
                         break;
@@ -248,12 +267,16 @@
 							this.grp_gb_keymap_control.enabled = false;                    
 						}
                     }
-                }else if(event.currentTarget == this.macro){
-                    if(this.macro.currentMacroInfo.fileName.indexOf("_gb_") > -1){
-                        this.grp_gb_macro_control.enabled = true;
-                    }else{
-                        this.grp_gb_macro_control.enabled = false;                    
-                    }
+				}else if(event.currentTarget == this.macro){
+					if(this.macro.currentMacroInfo.fileName.indexOf("_gb_") > -1){
+						this.grp_gb_macro_control.enabled = true;
+					}else{
+						this.grp_gb_macro_control.enabled = false;                    
+					}
+				}else if(event.currentTarget == this.qmacro){
+					
+					// 퀵매크로는 gb & gb4u 모두 가능;
+					
                 }else if(event.currentTarget == this.dualaction){
 					if(this.dualaction.currentDualactionInfo.fileName.indexOf("_gb_") > -1){
 						this.grp_gb_dualaction_control.enabled = true;
@@ -302,6 +325,10 @@
                         this.macro.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
                         this.macro.setData(bootMapperData);
                         this.macro.init();
+					}else if(this.qmacro && this.viewStack.selectedChild == this.nc_qmacro && !this.qmacro.isReady()){
+						this.qmacro.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
+						this.qmacro.setData(bootMapperData);
+						this.qmacro.init();
 					}else if(this.dualaction && this.viewStack.selectedChild == this.nc_dualaction && !this.dualaction.isReady()){
 						this.dualaction.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
 						this.dualaction.setData(bootMapperData);
@@ -345,7 +372,7 @@
                         <s:CheckBox id="cb_reboot" label="Reboot after uploading" selected="true"/>
 						</s:HGroup>
 						<s:HGroup width="100%" id="grp_gb_keymap_control_for_sharing">
-                        <s:Button id="btn_bootmapper" label="Toggle bootmapper" click="_onClickBootmapper(event)" />
+                        <s:Button id="btn_bootmapper" label="Toggle bootmapper" click="_onClickBootmapper(event)" skinClass="skins.RedButtonSkin" />
                         <s:CheckBox id="cb_bootmapper_state" enabled="false" />
 						</s:HGroup>
                     </s:HGroup>
@@ -375,6 +402,18 @@
                     <local:Macro id="macro" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
                 </s:VGroup>
             </s:NavigatorContent>
+			
+			<s:NavigatorContent id="nc_qmacro" label="Quick Macro">
+				<s:VGroup  width="100%" height="100%">
+					<s:HGroup width="100%" id="grp_gb_qmacro_control">                        
+						<s:Button id="btn_download_qmacro" label="Download" click="_onClickDownload(event)" />
+						<s:Spacer width="30%" minWidth="30" />                     
+						<s:Button id="btn_upload_qmacro" label="Upload" click="_onClick(event)" />
+					</s:HGroup>
+					<s:Spacer height="5" />
+					<local:QuickMacro id="qmacro" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
+				</s:VGroup>
+			</s:NavigatorContent>
 			
 			<s:NavigatorContent id="nc_dualaction" label="Dual Action">
 				<s:VGroup  width="100%" height="100%"> 

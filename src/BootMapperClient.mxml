@@ -4,6 +4,7 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx" 
 					   xmlns:local="*"
                        showStatusBar="false"
+					   backgroundColor="0x353d46"
 					   width="1030" height="1030" > 
 	
 	
