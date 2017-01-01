@@ -229,9 +229,10 @@
                     this.cb_bootmapper_state.selected = false;  
                 }else if(xSuc == 8){    // keymap download
                     removeWaiting();
-                    //                    trace(String(gObj.result).toUpperCase());
-                    //                    trace(String(gObj.result).length/2);  
-                    
+					
+//                    trace(String(gObj.result).toUpperCase());
+//                    trace(String(gObj.result).length/2);  
+
                     this.keymap.applySerializeData(gObj.result);
                 }else if(xSuc == 9){    // macro download
                     removeWaiting();
@@ -282,24 +283,42 @@
                 
                 if(event.currentTarget == this.keymap){
                     if(this.keymap.currentHexFileInfo.fileName.indexOf("_gb_") > -1){
-						this.grp_gb_keymap_control_gb_only.enabled = true;
+//						this.grp_gb_keymap_control_gb_only.enabled = true;
+						this.btn_upload.enabled = true;
+						this.cb_reboot.enabled = true;
                         this.grp_gb_keymap_control.enabled = true;
                     }else{
-						if(this.keymap.currentHexFileInfo.targetName.indexOf("GB4U") > -1)
+						 if(this.keymap.currentHexFileInfo.targetName.indexOf("GB4U") > -1)
 						{
-							this.grp_gb_keymap_control_gb_only.enabled = false;
+							 this.grp_gb_keymap_control.enabled = true;
+							 this.btn_upload.enabled = false;
+							 this.cb_reboot.enabled = false;
+							
+//							this.grp_gb_keymap_control_gb_only.enabled = false;
 //							this.grp_gb_keymap_control_for_sharing.enabled = true;
 						}
 						else
 						{							
 							this.grp_gb_keymap_control.enabled = false;                    
-						}
+						} 
                     }
 				}else if(event.currentTarget == this.macro){
 					if(this.macro.currentMacroInfo.fileName.indexOf("_gb_") > -1){
 						this.grp_gb_macro_control.enabled = true;
+						this.btn_upload_macro.enabled = true;
+						this.cb_reboot_macro.enabled = true;
 					}else{
-						this.grp_gb_macro_control.enabled = false;                    
+						if(this.macro.currentMacroInfo.targetName.indexOf("GB4U") > -1)
+						{
+							this.grp_gb_macro_control.enabled = true;
+							this.btn_upload_macro.enabled = false;
+							this.cb_reboot_macro.enabled = false;
+						}
+						else
+						{							
+							this.grp_gb_macro_control.enabled = false;                    
+						} 
+						                    
 					}
 				}else if(event.currentTarget == this.qmacro){
 					
@@ -308,8 +327,20 @@
                 }else if(event.currentTarget == this.dualaction){
 					if(this.dualaction.currentDualactionInfo.fileName.indexOf("_gb_") > -1){
 						this.grp_gb_dualaction_control.enabled = true;
+						this.btn_upload_dualaction.enabled = true;
+						this.cb_reboot_dualaction.enabled = true;
 					}else{
-						this.grp_gb_dualaction_control.enabled = false;                    
+						if(this.dualaction.currentDualactionInfo.targetName.indexOf("GB4U") > -1)
+						{
+							this.grp_gb_dualaction_control.enabled = true;
+							this.btn_upload_dualaction.enabled = false;
+							this.cb_reboot_dualaction.enabled = false;
+						}
+						else
+						{							
+							this.grp_gb_dualaction_control.enabled = false;                    
+						} 
+						                    
 					}
 				}
             }
@@ -394,14 +425,14 @@
                 <s:VGroup  width="100%" height="100%">
                     <s:HGroup width="100%" id="grp_gb_keymap_control">
 						<s:HGroup width="100%" id="grp_gb_keymap_control_gb_only">
-                        <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" />
-                        <s:Spacer width="30%" minWidth="30" />
-                        <s:Button id="btn_upload" label="Upload" click="_onClick(event)" />
-                        <s:CheckBox id="cb_reboot" label="Reboot after uploading" selected="true"/>
+	                        <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" />
+	                        <s:Spacer width="30%" minWidth="30" />
+	                        <s:Button id="btn_upload" label="Upload" click="_onClick(event)" />
+	                        <s:CheckBox id="cb_reboot" label="Reboot after uploading" selected="true"/>
 						</s:HGroup>
 						<s:HGroup width="100%" id="grp_gb_keymap_control_for_sharing">
-                        <s:Button id="btn_bootmapper" label="Toggle bootmapper" click="_onClickBootmapper(event)" skinClass="skins.RedButtonSkin" />
-                        <s:CheckBox id="cb_bootmapper_state" enabled="false" />
+	                        <s:Button id="btn_bootmapper" label="Toggle bootmapper" click="_onClickBootmapper(event)" skinClass="skins.RedButtonSkin" />
+	                        <s:CheckBox id="cb_bootmapper_state" enabled="false" />
 						</s:HGroup>
                     </s:HGroup>
                     <s:Spacer height="5" />

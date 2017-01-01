@@ -120,7 +120,7 @@
 					this.ddl_lock_led_cl.selectedIndex = xInfoArr[48];
 					this.ddl_lock_led_sl.selectedIndex = xInfoArr[49];
 					
-					if(verMajor >= 1 && verMinor >= 2 && verPatch >=4)
+					if(verMajor > 1 || (verMajor == 1 && verMinor > 2) || (verMajor == 1 && verMinor == 2 && verPatch > 3))
 					{
 						this.ddl_numlock_layer.enabled = true;
 						this.ddl_numlock_layer.selectedIndex = xInfoArr[50];

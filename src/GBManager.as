@@ -153,6 +153,10 @@ package
             
             var processArgs2:Vector.<String> = new Vector.<String>();
             processArgs2.push("-keymap");
+			if(xInfo.rows == 17)
+			{
+            	processArgs2.push("gb4u");
+			}
 //            processArgs2.push(String(xInfo.layers));
 //            processArgs2.push(String(xInfo.columns));
 //            processArgs2.push(String(xInfo.rows));
