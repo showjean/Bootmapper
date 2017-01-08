@@ -1124,6 +1124,104 @@
       "marginRight": 0,
       "label": "CST Mac12"
     }
+  ],
+  [
+    {
+      "keyIndex": 201,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro1"
+    },
+    {
+      "keyIndex": 202,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro2"
+    },
+    {
+      "keyIndex": 203,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro3"
+    },
+    {
+      "keyIndex": 204,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro4"
+    },
+    {
+      "keyIndex": 205,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro5"
+    },
+    {
+      "keyIndex": 206,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro6"
+    },
+    {
+      "keyIndex": 207,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro7"
+    },
+    {
+      "keyIndex": 208,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro8"
+    },
+    {
+      "keyIndex": 209,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro9"
+    },
+    {
+      "keyIndex": 210,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro 10"
+    },
+    {
+      "keyIndex": 211,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "Macro 11"
+    },
+    {
+      "keyIndex": 212,
+      "marginBottom": 0,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0.25,
+      "label": "Macro 12"
+    }
   ]
 ]
  

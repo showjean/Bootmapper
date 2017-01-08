@@ -143,12 +143,6 @@
                 
             }
 			
-/** TODO
-*
-* - 키간 딜레이 적용 : 0~255 loop (시간 단위 아님 )
-* - .json 저장/로딩
-* - 퀵 재귀 매크로;
-*/
 			
 			/*
 			aaaaaaaaaaaaaaaaaaaaaaaa
@@ -251,8 +245,8 @@
 				else if(xSuc == 11){	// SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD
 					removeWaiting();
 					
-					trace("__print   :   ", gObj.result);
-					trace("__print   :   ", gObj.result.length/2);
+//					trace("__print   :   ", gObj.result);
+//					trace("__print   :   ", gObj.result.length/2);
 					this.qmacro.applySerializeData(gObj.result);
 				}
             }
