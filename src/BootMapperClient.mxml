@@ -5,7 +5,7 @@
 					   xmlns:local="*"
                        showStatusBar="false"
 					   backgroundColor="0x353d46"
-					   width="1030" height="1030" > 
+					   width="980" height="950" > 
 	
 	
 	<fx:Declarations>
