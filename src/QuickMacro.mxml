@@ -757,8 +757,8 @@
 			<s:Spacer height="5"/>
 			<s:ButtonBar id="tabbar" dataProvider="{viewStack}" valueCommit="__onValueCommit(event)"/>
 			<s:Spacer height="10" />
-			<s:HGroup height="450" width="100%" >
-	            <s:VGroup width="100%" height ="100%">
+			<s:HGroup height="420" width="100%" >
+	            <s:VGroup width="300" height ="100%">
 	                <s:Label text = "String Parsing" />                
 	                <s:HGroup width="100%" >
 	                    <s:TextArea id="ta_string" width="100%" height ="100" />    
@@ -785,29 +785,42 @@
 					</s:HGroup>-->
 					<s:Spacer height="5" />
 					<s:Button label="Deselect " click="__onClickDeselect(event)"/>
+					<s:Spacer height="5" />
 					<s:Button label="Remove" click="__onClickRemove(event)"/>
 					<s:Button label="Remove all" click="__onClickRemoveAll(event)"/>
 					<s:Label text="" id="lb_char" />
 	                <s:Spacer height="10" />
-	                <s:HGroup width="100%" verticalAlign="middle">
-	                    <s:Label text="Copy To :" />
-	                    <s:DropDownList id="ddl_copy_to" width="200">
-							<s:layout>
-								<s:VerticalLayout gap="0"
-												  horizontalAlign="contentJustify"
-												  requestedRowCount="12" />
-							</s:layout>
-						</s:DropDownList>
-	                    <s:Button label="Go" click="__onClickCopyTo(event)"/>
-	                </s:HGroup>  
+	                
 					<s:Spacer height="100%" />
-					<s:Button label="Save .json" click="__onClickSaveJson(event)"/>
-					<s:Button label="Load .json" click="__onClickLoadJson(event)"/>
 					<s:Spacer height="10" />
 				</s:VGroup>			
 			</s:HGroup>
 			<mx:ViewStack id="viewStack" borderStyle="none" width="100%" />
-		</s:BorderContainer>	
+		</s:BorderContainer>		
+		<s:Spacer height="5"/>
+		
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout verticalAlign="middle"/>
+			</s:layout>
+			
+			<s:Button label="Save .json" click="__onClickSaveJson(event)"/>
+			<s:Button label="Load .json" click="__onClickLoadJson(event)"/>
+			<s:Spacer width="100%" />
+			
+			<s:HGroup verticalAlign="middle">
+				<s:Label text="Copy :" />
+				<s:DropDownList id="ddl_copy_to" width="200">
+					<s:layout>
+						<s:VerticalLayout gap="0"
+										  horizontalAlign="contentJustify"
+										  requestedRowCount="12" />
+					</s:layout>
+				</s:DropDownList>
+				<s:Button label="Go" click="__onClickCopyTo(event)"/>
+			</s:HGroup>  
+			<s:Spacer width="5"/>
+		</s:Group>
 		<s:Spacer height="5"/>
 		<s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">	
 			<s:layout>
