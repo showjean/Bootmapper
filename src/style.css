@@ -1,0 +1,19 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
+
+/*
+Aqua, Black, Blue, Fuchsia, Gray, Green, Lime, Maroon, Navy, Olive, Purple, Red, Silver, Teal, White, Yellow.
+*/
+s|Label {	
+/*	color: #DDEDDD;*/
+}
+
+s|Button {
+	skinClass: ClassReference("skins.LightGreyButtonSkin");
+}
+
+s|CheckBox {
+	skinClass: ClassReference("skins.CheckBox");
+}

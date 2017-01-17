@@ -686,7 +686,7 @@
                     gMacroKey.keyIndex = this.keycodeSelector.getIndexByCharacter(gChar);
                     gMacroKey.delay = 0;
                     gMacroKey.mode = MacroKey.MODE_DOWN_UP;
-                    trace(this.name, "index : ", gMacroKey.keyIndex);
+//                    trace(this.name, "index : ", gMacroKey.keyIndex);
                     addMacroKey(gMacroKey);
                 }
                 
@@ -747,24 +747,23 @@
 			<s:Label id="lb_target" text="Target :"/>
 			<s:DropDownList id="ddl_target" width="200" change="__onTargetValueCommit(event)" />
 		</s:HGroup>
-		<s:Spacer height="10"/>
-		<s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">	
-			<s:layout>
-				<s:VerticalLayout gap="0" paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
+		<s:Spacer height="5"/>
+		<local:BMBorderContainer width="100%">	
 					
-				</s:VerticalLayout>
-			</s:layout>
 			<s:Spacer height="5"/>
 			<s:ButtonBar id="tabbar" dataProvider="{viewStack}" valueCommit="__onValueCommit(event)"/>
 			<s:Spacer height="10" />
-			<s:HGroup height="420" width="100%" >
+			<s:HGroup height="410" width="100%" >
 	            <s:VGroup width="300" height ="100%">
 	                <s:Label text = "String Parsing" />                
-	                <s:HGroup width="100%" >
-	                    <s:TextArea id="ta_string" width="100%" height ="100" />    
-	                    <s:Button label="Parse string >>" click="__onClickParseString(event)"/>
-	                </s:HGroup>
-	                <s:Spacer height="10" />
+					<s:HGroup width="100%" >
+						<s:TextArea id="ta_string" width="100%" height ="100" />    
+					</s:HGroup>               
+					<s:HGroup width="100%" >
+						<s:Spacer width="100%" />	
+						<s:Button label="Parse string >>" click="__onClickParseString(event)"/>
+					</s:HGroup>
+					<s:Spacer height="5" />
 	                <s:Label text = "Test Area" />                
 	                <s:TextArea width="100%" height ="100%" />
 	            </s:VGroup>
@@ -796,7 +795,7 @@
 				</s:VGroup>			
 			</s:HGroup>
 			<mx:ViewStack id="viewStack" borderStyle="none" width="100%" />
-		</s:BorderContainer>		
+		</local:BMBorderContainer>		
 		<s:Spacer height="5"/>
 		
 		<s:Group width="100%">
@@ -822,14 +821,10 @@
 			<s:Spacer width="5"/>
 		</s:Group>
 		<s:Spacer height="5"/>
-		<s:BorderContainer width="100%" cornerRadius="7" borderWeight="2">	
-			<s:layout>
-				<s:VerticalLayout gap="0" paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
-					
-				</s:VerticalLayout>
-			</s:layout>
+		<local:BMBorderContainer width="100%">	
+			
 			<local:KeycodeSelector id="keycodeSelector" width="100%" height="324"/>
-		</s:BorderContainer>
+		</local:BMBorderContainer>
 	</s:Group>
     </s:Scroller>
 </local:TabUI>

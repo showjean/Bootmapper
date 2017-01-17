@@ -207,6 +207,10 @@
                     removeWaiting();
                 }else if(xSuc == 0){    // error
                     //                    trace(gObj.message);
+					// 에러라면 초기화;
+					isBootmapper = false;
+					this.cb_bootmapper_state.selected = false; 
+					
                     removeWaiting();
                     Alert.show(gObj.message, "error");
                 }else if(xSuc == 2){    // warning
@@ -417,14 +421,14 @@
                       paddingLeft="4" paddingRight="4" paddingTop="4">	
             <s:NavigatorContent id="nc_keymap" label="Key Mapper">
                 <s:VGroup  width="100%" height="100%">
-                    <s:HGroup width="100%" id="grp_gb_keymap_control">
-						<s:HGroup width="100%" id="grp_gb_keymap_control_gb_only">
-	                        <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" />
+                    <s:HGroup width="100%" id="grp_gb_keymap_control" verticalAlign="middle">
+						<s:HGroup width="100%" id="grp_gb_keymap_control_gb_only"  verticalAlign="middle">
+	                        <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 	                        <s:Spacer width="30%" minWidth="30" />
 	                        <s:Button id="btn_upload" label="Upload" click="_onClick(event)" />
 	                        <s:CheckBox id="cb_reboot" label="Reboot after uploading" selected="true"/>
 						</s:HGroup>
-						<s:HGroup width="100%" id="grp_gb_keymap_control_for_sharing">
+						<s:HGroup width="100%" id="grp_gb_keymap_control_for_sharing" verticalAlign="middle">
 	                        <s:Button id="btn_bootmapper" label="Toggle Bootmapper" click="_onClickBootmapper(event)" skinClass="skins.RedButtonSkin" />
 	                        <s:CheckBox id="cb_bootmapper_state" enabled="false" />
 						</s:HGroup>
@@ -446,7 +450,7 @@
             <s:NavigatorContent id="nc_macro" label="Custom Macro">
                 <s:VGroup  width="100%" height="100%">
                     <s:HGroup width="100%" id="grp_gb_macro_control">                        
-                        <s:Button id="btn_download_macro" label="Download" click="_onClickDownload(event)" />
+                        <s:Button id="btn_download_macro" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 						<s:Spacer width="30%" minWidth="30" />                     
                         <s:Button id="btn_upload_macro" label="Upload" click="_onClick(event)" />
                         <s:CheckBox id="cb_reboot_macro" label="Reboot after uploading" selected="true" />
@@ -459,7 +463,7 @@
 			<s:NavigatorContent id="nc_qmacro" label="Quick Macro">
 				<s:VGroup  width="100%" height="100%">
 					<s:HGroup width="100%" id="grp_gb_qmacro_control">                        
-						<s:Button id="btn_download_qmacro" label="Download" click="_onClickDownload(event)" />
+						<s:Button id="btn_download_qmacro" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 						<s:Spacer width="30%" minWidth="30" />                     
 						<s:Button id="btn_upload_qmacro" label="Upload" click="_onClick(event)" />
 					</s:HGroup>
@@ -471,7 +475,7 @@
 			<s:NavigatorContent id="nc_dualaction" label="Dual Action">
 				<s:VGroup  width="100%" height="100%"> 
 						<s:HGroup width="100%" id="grp_gb_dualaction_control">
-							<s:Button id="btn_download_dualaction" label="Download" click="_onClickDownload(event)" />
+							<s:Button id="btn_download_dualaction" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 							<s:Spacer width="30%" minWidth="30" />                     
 							<s:Button id="btn_upload_dualaction" label="Upload" click="_onClick(event)" />
 							<s:CheckBox id="cb_reboot_dualaction" label="Reboot after uploading" selected="true" />
