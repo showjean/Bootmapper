@@ -24,6 +24,11 @@
 			protected const OPTION_INDEX_LOCK_LED_CL:int     = 0x86;
 			protected const OPTION_INDEX_LOCK_LED_SL:int     = 0x87;
 			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 0x88;
+			
+			protected const FIRMWARE_GB:int     =              0;
+			protected const FIRMWARE_GB4U:int     =            1;
+			protected const FIRMWARE_GB_SPLIT:int     =        2;
+			protected const FIRMWARE_GB4U_SPLIT:int     =      3;
             
             protected var rainbowFadeTypeDataProvider:ArrayList;
             private var __optionsData:Object;
@@ -56,8 +61,8 @@
                 // fade type 1byte, full led mode 1byte, full led brightness 1byte, esc to tilde 1byte, fn led 1byte
 				
 				var gSize:uint = xInfoArr[0];
-				var gIsVersionLate12:Boolean = false;
-				var gHasRgb:Boolean = true;
+				var gIsVersionLate12:Boolean;
+				var gHasRgb:Boolean;
 				
 				if(gSize > 50)
 				{
@@ -65,14 +70,13 @@
 					xInfoArr.shift();
 					gIsVersionLate12 = true;
 					
-					if(xInfoArr[46] > 0)
-					{
-						gHasRgb = false;
-					}
+					gHasRgb = hasRgbOptions(xInfoArr[46]); //true;
 				}
 				else
 				{
 					// ver 1.1
+					gIsVersionLate12 = false;
+					gHasRgb = true;
 				}
 				
 					
@@ -141,6 +145,40 @@
 					this.grp_rgb.enabled = true;
 				}
             }
+			
+			private function hasRgbOptions(xId:String):Boolean
+			{
+				switch(int(xId))
+				{
+					case FIRMWARE_GB:
+						return true;
+					case FIRMWARE_GB4U:
+						return false;
+					case FIRMWARE_GB_SPLIT:
+						return true;
+					case FIRMWARE_GB4U_SPLIT:
+						return false;
+				}
+				
+				return false;
+			}
+			
+			private function getFirmwareName(xId:String):String
+			{
+				switch(int(xId))
+				{
+					case FIRMWARE_GB:
+						return "ps2avrGB";
+					case FIRMWARE_GB4U:
+						return "ps2avrGB4U";
+					case FIRMWARE_GB_SPLIT:
+						return "ps2avrGB Split";
+					case FIRMWARE_GB4U_SPLIT:
+						return "ps2avrGB4U Split";
+				}
+				
+				return "Frimware " + xId;
+			}
             
             protected function showWaiting(xMsg:String, xTitle:String = ""):void{
                 
@@ -548,23 +586,6 @@
 				GBManager.getInstance().runProcess(processArgs, __print);
 			}
 			
-			private function getFirmwareName(xId:String):String
-			{
-				switch(xId)
-				{
-					case "0":
-						return "ps2avrGB";
-					case "1":
-						return "ps2avrGB4U";
-					case "2":
-						return "ps2avrGB Split";
-					case "3":
-						return "ps2avrGB4U Split";
-				}
-				
-				return "Frimware " + xId;
-			}
-			
 		]]>
     </fx:Script>
 	
@@ -809,7 +830,7 @@
 						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
 							
 							<s:VGroup width="180">
-								<s:Label text="Esc to ~"/>
+								<s:Label text="Shift + Esc = ~"/>
 								<s:HGroup> 
 									<s:RadioButton id="rb_esc_tilde0" width="150" label="Off"
 												   groupName="radio_grp_esc_tilde"/>
