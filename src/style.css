@@ -17,3 +17,7 @@ s|Button {
 s|CheckBox {
 	skinClass: ClassReference("skins.CheckBox");
 }
+
+s|ButtonBar {
+	skinClass: ClassReference("skins.ButtonBarSkin");
+}

@@ -15,7 +15,7 @@
          {
             "ver": 160502,
             "targetName" : "ps2avrGB4U & ps2avrgb4U_split",
-            "fileName" : "keymap_part_",
+            "fileName" : "keymap_gb4u_",
             "fileExt" : ".hex",
             "startAddress": "6500",
             "startOffset": 0,
@@ -23,6 +23,18 @@
             "layers": 4,
             "columns": 8,
             "rows": 17
+        },
+         {
+            "ver": 170125,
+            "targetName" : "ps2avrGB4U_AIKON",
+            "fileName" : "keymap_gb4u_a_",
+            "fileExt" : ".hex",
+            "startAddress": "6500",
+            "startOffset": 0,
+            "layerNames" : ["Normal","FN","FN2","FN3"],
+            "layers": 4,
+            "columns": 8,
+            "rows": 18
         },
          {
             "ver": 131202,

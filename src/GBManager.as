@@ -155,7 +155,10 @@ package
             processArgs2.push("-keymap");
 			if(xInfo.rows == 17)
 			{
-            	processArgs2.push("gb4u");
+            	processArgs2.push("row17");
+			}else if(xInfo.rows == 18)
+			{
+				processArgs2.push("row18");
 			}
 //            processArgs2.push(String(xInfo.layers));
 //            processArgs2.push(String(xInfo.columns));
