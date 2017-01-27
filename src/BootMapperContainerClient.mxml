@@ -435,7 +435,6 @@
                     </s:HGroup>
                     <s:Spacer height="5" />
                     <local:Keymap id="keymap" width="100%" height="100%" initialize="__onInitTabUI(event)" />
-                    <s:Spacer height="5" />
                 </s:VGroup>
             </s:NavigatorContent>
             

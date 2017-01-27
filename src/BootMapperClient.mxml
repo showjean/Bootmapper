@@ -5,14 +5,21 @@
 					   xmlns:local="*"
                        showStatusBar="false"
 					   backgroundColor="0xFFFFFF"
-					   width="980" height="950" > 
+					   width="980" height="950" xmlns:skins="skins.*" > 
+	<fx:Script>
+		<![CDATA[
+			import skins.Color;
+		]]>
+	</fx:Script>
 	
 	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<skins:StylesheetMixin palettes="{[Color]}" />
 	</fx:Declarations>
 	
 	<fx:Style source="style.css"/>
+	
 		
 	<local:BootMapperContainerClient width="100%" height="100%"/>	
 </s:WindowedApplication>

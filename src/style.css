@@ -6,6 +6,13 @@
 /*
 Aqua, Black, Blue, Fuchsia, Gray, Green, Lime, Maroon, Navy, Olive, Purple, Red, Silver, Teal, White, Yellow.
 */
+
+global {
+	focusColor: BM_RED;	
+	rollOverColor: BM_LIGHT_GREY;
+	selectionColor: BM_RED;
+}
+
 s|Label {	
 /*	color: #DDEDDD;*/
 }
@@ -20,4 +27,22 @@ s|CheckBox {
 
 s|ButtonBar {
 	skinClass: ClassReference("skins.ButtonBarSkin");
+}
+
+s|ComboBox {
+	skinClass: ClassReference("skins.ComboBoxSkin");
+}
+
+s|DropDownList {
+	skinClass: ClassReference("skins.DropDownListSkin");
+}
+
+s|Scroller {
+	skinClass: ClassReference("skins.scroller.SimpleScrollerSkin");	
+}
+
+s|List {
+}
+
+s|DataGrid {
 }
