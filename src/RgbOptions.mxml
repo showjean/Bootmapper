@@ -641,7 +641,7 @@
 	        
 			
 			<s:Spacer height="10"/>
-	        <s:Group id="grp_option_ui" width="100%" enabled="true">
+	        <s:Group id="grp_option_ui" width="100%" enabled="false">
 	            <s:layout>
 	                <s:HorizontalLayout/>
 	            </s:layout>

@@ -11,6 +11,7 @@ global {
 	focusColor: BM_RED;	
 	rollOverColor: BM_LIGHT_GREY;
 	selectionColor: BM_RED;
+	fontFamily: "Arial";
 }
 
 s|Label {	
@@ -41,8 +42,11 @@ s|Scroller {
 	skinClass: ClassReference("skins.scroller.SimpleScrollerSkin");	
 }
 
-s|List {
+s|RadioButton {
+	skinClass: ClassReference("skins.RadioButtonSkin");
 }
 
-s|DataGrid {
+s|HSlider {
+	skinClass: ClassReference("skins.HSliderSkin");
 }
+
