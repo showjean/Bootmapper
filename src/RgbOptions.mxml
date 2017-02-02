@@ -877,17 +877,20 @@
 				</s:VGroup>
 	        </s:Group>
 	        
-	        <s:Spacer height="50"/>
-	        <s:Label text="Utils"/>
-	        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
-	                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
-	        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
-	        <s:Button id="btn_app" label="Set Keyboard" click="_onClick(event)"/>
-	        <s:Spacer height="30"/>
-	        <s:Label text="Bootloader"/>
-	        <s:Button id="btn_clear_num" label="Default Num of LEDs" click="_onClickEeprom(event)"/>
-	        <s:Button id="btn_clear_eeprom" label="EEPROM All Clear" click="_onClickEeprom(event)"/>
-	    
+	        <s:Spacer height="10"/>
+			<local:BMBorderContainer width="100%">
+				<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+					<s:Label text="Utils"/>
+			        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
+			                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
+			        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
+			        <s:Button id="btn_app" label="Set Keyboard" click="_onClick(event)"/>
+			        <s:Spacer height="30"/>
+			        <s:Label text="Bootloader"/>
+			        <s:Button id="btn_clear_num" label="Default Num of LEDs" click="_onClickEeprom(event)"/>
+			        <s:Button id="btn_clear_eeprom" label="EEPROM All Clear" click="_onClickEeprom(event)"/>
+				</s:VGroup>
+			</local:BMBorderContainer>
 	    </s:Group>
     </s:Scroller>
 </local:TabUI>
