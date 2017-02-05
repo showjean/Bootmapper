@@ -133,9 +133,9 @@
 	-->
 	 
 	<icon>
-		<image16x16>./icons/a87familysymbol_16x16.png</image16x16>
-		<image48x48>./icons/a87familysymbol_48x48.png</image48x48>
-		<image128x128>./icons/a87familysymbol_128x128.png</image128x128>
+		<image16x16>./icons/a87_family_symbol_16x16.png</image16x16>
+		<image48x48>./icons/a87_family_symbol_48x48.png</image48x48>
+		<image128x128>./icons/a87_family_symbol_128x128.png</image128x128>
 	</icon>
 
 	<!-- Whether the application handles the update when a user double-clicks an update version
