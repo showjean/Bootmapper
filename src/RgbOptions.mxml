@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<local:TabUI xmlns:fx="http://ns.adobe.com/mxml/2009"
-             xmlns:s="library://ns.adobe.com/flex/spark"
-             xmlns:mx="library://ns.adobe.com/flex/mx"
-             xmlns:local="*"
-             xmlns:ns="http://flex.apache.org/experimental/ns"
-             width="400" height="300">
+<local:TabUI xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" xmlns:local="*">
     
     <fx:Script>
+		
         <![CDATA[
+			import flash.events.MouseEvent;
+			
 			import mx.collections.ArrayList;
 			import mx.events.CloseEvent;
 			import mx.events.ColorPickerEvent;
@@ -15,15 +15,15 @@
 			import spark.components.Alert;
 			import spark.events.IndexChangeEvent;
 			
-			protected const LED2_INDEX_FULL_LED_MODE:int        = 0x80;
-			protected const LED2_INDEX_FULL_LED_BRIGHTNESS:int  = 0x81;
-			protected const LED2_INDEX_ESC_TO_TILDE:int         = 0x82;
-			protected const LED2_INDEX_FN_LED:int               = 0x83;
-			protected const LED2_INDEX_TRANSITION_DELAY:int     = 0x84;
-			protected const OPTION_INDEX_LOCK_LED_NL:int     = 0x85;
-			protected const OPTION_INDEX_LOCK_LED_CL:int     = 0x86;
-			protected const OPTION_INDEX_LOCK_LED_SL:int     = 0x87;
-			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 0x88;
+			protected const LED2_INDEX_FULL_LED_MODE:int        = 128; //0x80;
+			protected const LED2_INDEX_FULL_LED_BRIGHTNESS:int  = 129; //0x81;
+			protected const LED2_INDEX_ESC_TO_TILDE:int         = 130; //0x82;
+			protected const LED2_INDEX_FN_LED:int               = 131; //0x83;
+			protected const LED2_INDEX_TRANSITION_DELAY:int     = 132; //0x84;
+			protected const OPTION_INDEX_LOCK_LED_NL:int     = 133; //0x85;
+			protected const OPTION_INDEX_LOCK_LED_CL:int     = 134; //0x86;
+			protected const OPTION_INDEX_LOCK_LED_SL:int     = 135; //0x87;
+			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 136; //0x88;
 			
 			protected const FIRMWARE_GB:int     =              0;
 			protected const FIRMWARE_GB4U:int     =            1;
@@ -218,6 +218,18 @@
 				__print(xSuc, xStr);
 			}
 			
+			protected function __printForInterface(xSuc:int, xStr:String):void
+			{
+				var gObj:Object = JSON.parse(xStr);
+				// usb, ps/2 설정
+				if(xSuc == 1){  // complete
+					
+					Alert.show("Done", "");
+				}
+				
+				__print(xSuc, xStr);
+			}
+			
 			protected function __print (xSuc:int, xStr:String):void {
 				/*
 				#define SUCCESS_INDEX_LED2_INFO 3
@@ -269,23 +281,23 @@
 						GBManager.getInstance().runRelayProecss(new <Vector.<String>>[processArgs, processArgs2], gListener);
 						return;
 						
-						case this.btn_disconnect:
+					case this.btn_disconnect:
 						processArgs.push("-action");
 						break;
 					case this.btn_bootloader:
-					processArgs.push("-bootloader");
-					showWaiting("Waiting...");
-					gListener = __printForBootloader;
-					break;
+						processArgs.push("-bootloader");
+						showWaiting("Waiting...");
+						gListener = __printForBootloader;
+						break;
 					case this.btn_app:
-					processArgs.push("-app");
-					break;                   
+						processArgs.push("-app");
+						break;                   
 					case this.btn_save_num:
-					//.exe -led num VAL
-					processArgs.push("-led");
-					processArgs.push("num");
-					processArgs.push(this.cb_lednum.selectedItem);
-					break;
+						//.exe -led num VAL
+						processArgs.push("-led");
+						processArgs.push("num");
+						processArgs.push(this.cb_lednum.selectedItem);
+						break;
 				}
 				
 				
@@ -317,10 +329,10 @@
 				
 			}
 			
-			[Bindable]
+			/* [Bindable]
 			public var simpleDP:Array = ['0x000000', '0xFF0000', '0xFF8800',
 				'0xFFFF00', '0x88FF00', '0x00FF00', '0x00FF88', '0x00FFFF',
-				'0x0088FF', '0x0000FF', '0x8800FF', '0xFF00FF', '0xFF00AA', '0xFFFFFF'];
+				'0x0088FF', '0x0000FF', '0x8800FF', '0xFF00FF', '0xFF00AA', '0xFFFFFF']; */
 			
 			public function __onChangeColor(event:Event):void {
 				
@@ -608,7 +620,7 @@
 			{
 				var processArgs:Vector.<String> = new Vector.<String>();
 				
-				var gListener:Function = __print;
+				var gListener:Function = __printForInterface;
 				processArgs.push("-writeEeprom");
 				processArgs.push(EEPROM_INTERFACE);
 				
@@ -637,13 +649,12 @@
 			<fx:String>3: Lock Reverse</fx:String>
 			<fx:String>4: FN2 Lock Indicator</fx:String>
 			<fx:String>5: FN3 Lock Indicator</fx:String>
-			<fx:String>6: FN2/3 Lock Indicator</fx:String>
-			<!--<fx:String>5: FN3 Lock</fx:String> -->
+			<fx:String>6: FN2/3 Lock Indicator</fx:String>			
 		</mx:ArrayList>
 		
-		<s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event);"/>
-		<s:RadioButtonGroup id="radio_grp_led_keymode" itemClick="__onChangeKeyMode(event);"/>
-		<s:RadioButtonGroup id="radio_grp_esc_tilde" itemClick="__onChangeEscTilde(event);"/>
+		<s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event)"/>
+		<s:RadioButtonGroup id="radio_grp_led_keymode" itemClick="__onChangeKeyMode(event)"/>
+		<s:RadioButtonGroup id="radio_grp_esc_tilde" itemClick="__onChangeEscTilde(event)"/>
 	</fx:Declarations>
     
     <s:Scroller width="100%" height="100%">
@@ -673,14 +684,13 @@
 	            </s:layout>
 				
 				<s:VGroup width="50%">
-	            <s:Label text="RGB LED Settings"/>
-	            <s:Spacer height="0"/>
-	            <local:BMBorderContainer id="grp_rgb" width="100%">
+		            <s:Label text="RGB LED Settings"/>
+		            <s:Spacer height="0"/>
+		            <local:BMBorderContainer id="grp_rgb" width="100%">
 	                <s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 	                    <s:HGroup width="100%" verticalAlign="middle">                     
 	                        <s:Label text="Num of RGB LEDs"/>
-	                        <s:ComboBox id="cb_lednum" width="80" openOnInput="false">
-		
+	                        <s:ComboBox id="cb_lednum" width="80" openOnInput="false">		
 								<s:layout>
 									<s:VerticalLayout gap="0"
 													  horizontalAlign="contentJustify"
