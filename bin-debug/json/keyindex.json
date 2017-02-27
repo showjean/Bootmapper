@@ -133,8 +133,16 @@
       "marginBottom": 0.25,
       "width": 1,
       "height": 1,
-      "marginRight": 0,
+      "marginRight": 0.25,
       "label": ""
+    },
+    {
+      "keyIndex": 176,
+      "marginBottom": 0.25,
+      "width": 1,
+      "height": 1,
+      "marginRight": 0,
+      "label": "ESC\n~"
     }
   ],
   [
