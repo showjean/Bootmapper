@@ -35,6 +35,11 @@
 			protected const INTERFACE_PS2:int     	=		0;
 			protected const INTERFACE_USB:int     	=		1;
 			
+			protected const EEPROM_PS2_REPEAT_SPEED:int     	=		6;
+			protected const PS2_REPEAT_SPEED_SET_HIGH:int     	=		1;
+			protected const PS2_REPEAT_SPEED_SET_MIDD:int     	=		2;
+			protected const PS2_REPEAT_SPEED_SET_LOW:int     	=		3;
+			
 			protected var rainbowFadeTypeDataProvider:ArrayList;
 			private var __optionsData:Object;
 			
@@ -218,7 +223,7 @@
 				__print(xSuc, xStr);
 			}
 			
-			protected function __printForInterface(xSuc:int, xStr:String):void
+			protected function __printForEepromWrite(xSuc:int, xStr:String):void
 			{
 				var gObj:Object = JSON.parse(xStr);
 				// usb, ps/2 설정
@@ -620,7 +625,7 @@
 			{
 				var processArgs:Vector.<String> = new Vector.<String>();
 				
-				var gListener:Function = __printForInterface;
+				var gListener:Function = __printForEepromWrite;
 				processArgs.push("-writeEeprom");
 				processArgs.push(EEPROM_INTERFACE);
 				
@@ -638,6 +643,30 @@
 				
 			}
 			
+			protected function _onClickPs2RepeatSpeed(event:MouseEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				
+				var gListener:Function = __printForEepromWrite;
+				processArgs.push("-writeEeprom");
+				processArgs.push(EEPROM_PS2_REPEAT_SPEED);
+				
+				switch(event.currentTarget){
+					case this.btn_ps2_fast:
+						processArgs.push(PS2_REPEAT_SPEED_SET_HIGH);
+						break;
+					case this.btn_ps2_midd:
+						processArgs.push(PS2_REPEAT_SPEED_SET_MIDD);
+						break;
+					case this.btn_ps2_slow:
+						processArgs.push(PS2_REPEAT_SPEED_SET_LOW);
+						break;
+				}
+				
+				
+				GBManager.getInstance().runProcess(processArgs, gListener);
+				
+			}
 		]]>
     </fx:Script>
 	
@@ -914,23 +943,41 @@
 	        </s:Group>
 	        
 	        <s:Spacer height="10"/>
-			<local:BMBorderContainer width="100%">
-				<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+			<s:HGroup verticalAlign="top" width="100%" height="100%">
+				<s:VGroup width="50%" height="100%">
 					<s:Label text="Utils"/>
-			        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
-			                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
-			        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
-			        <s:Button id="btn_app" label="Set Keyboard" click="_onClick(event)"/>
-			        <s:Spacer height="30"/>
-			        <s:Label text="Bootloader"/>
-			        <s:Button id="btn_clear_num" label="Default Num of LEDs" click="_onClickEeprom(event)"/>
-			        <s:Button id="btn_clear_eeprom" label="EEPROM All Clear" click="_onClickEeprom(event)"/>
-					<s:HGroup>
-						<s:Button id="btn_usb" label="Set USB" click="_onClickInterface(event)"/>
-						<s:Button id="btn_ps2" label="Set PS/2" click="_onClickInterface(event)"/>						
-					</s:HGroup>
+					<local:BMBorderContainer width="100%" height="100%">
+						<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%">
+					        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
+					                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
+					        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
+					        <s:Button id="btn_app" label="Set Keyboard" click="_onClick(event)"/>
+					        <s:Spacer height="30"/>
+						</s:VGroup>
+					</local:BMBorderContainer>
 				</s:VGroup>
-			</local:BMBorderContainer>
+				<s:Spacer width="5"/>
+				<s:VGroup width="50%" height="100%">					
+					<s:Label text="Bootloader(HIDBoot)"/>
+					<local:BMBorderContainer width="100%" height="100%">
+						<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%">
+							<s:Button id="btn_clear_num" label="Default Num of LEDs" click="_onClickEeprom(event)"/>
+							<s:Button id="btn_clear_eeprom" label="EEPROM All Clear" click="_onClickEeprom(event)"/>
+							<s:HGroup verticalAlign="middle">
+								<s:Button id="btn_usb" label="Set USB" click="_onClickInterface(event)"/>
+								<s:Button id="btn_ps2" label="Set PS/2" click="_onClickInterface(event)"/>	
+								<s:Spacer width="20"/>
+							</s:HGroup>
+							<s:HGroup verticalAlign="middle">
+								<s:Label text="PS/2 Repeat Speed : "/>
+								<s:Button id="btn_ps2_fast" label="Fast" click="_onClickPs2RepeatSpeed(event)"/>
+								<s:Button id="btn_ps2_midd" label="Midd" click="_onClickPs2RepeatSpeed(event)"/>	
+								<s:Button id="btn_ps2_slow" label="Slow" click="_onClickPs2RepeatSpeed(event)"/>	
+							</s:HGroup>
+						</s:VGroup>
+					</local:BMBorderContainer>
+				</s:VGroup>
+			</s:HGroup>
 	    </s:Group>
     </s:Scroller>
 </local:TabUI>
