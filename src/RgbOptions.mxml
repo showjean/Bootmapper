@@ -24,6 +24,7 @@
 			protected const OPTION_INDEX_LOCK_LED_CL:int     = 134; //0x86;
 			protected const OPTION_INDEX_LOCK_LED_SL:int     = 135; //0x87;
 			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 136; //0x88;
+			protected const OPTION_INDEX_DEBOUNCE_VALUE:int     = 137; //0x88;
 			
 			protected const FIRMWARE_GB:int     =              0;
 			protected const FIRMWARE_GB4U:int     =            1;
@@ -134,6 +135,7 @@
 					this.ddl_lock_led_cl.selectedIndex = xInfoArr[48];
 					this.ddl_lock_led_sl.selectedIndex = xInfoArr[49];
 					
+					//numlock layer 1.2.4
 					if(verMajor > 1 || (verMajor == 1 && verMinor > 2) || (verMajor == 1 && verMinor == 2 && verPatch > 3))
 					{
 						this.ddl_numlock_layer.enabled = true;
@@ -143,6 +145,18 @@
 					{
 						this.ddl_numlock_layer.enabled = false;
 						this.ddl_numlock_layer.selectedIndex = 0;
+					}
+					
+					// debounce 1.3.0
+					if(verMajor > 1 || (verMajor == 1 && verMinor > 3) || (verMajor == 1 && verMinor == 3 && verPatch >= 0))
+					{
+						this.slider_debounce.enabled = true;
+						this.slider_debounce.value = xInfoArr[51];
+					}
+					else
+					{
+						this.slider_debounce.enabled = false;
+						this.slider_debounce.value = 0;
 					}
 					
 					this.grp_rgb.enabled = gHasRgb;
@@ -667,6 +681,16 @@
 				GBManager.getInstance().runProcess(processArgs, gListener);
 				
 			}
+			protected function __onChangeDebounce(event:Event):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(OPTION_INDEX_DEBOUNCE_VALUE);
+				processArgs.push(this.slider_debounce.value);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
 		]]>
     </fx:Script>
 	
@@ -785,7 +809,7 @@
 	                        <s:Label text="RGB LED Brightness"/>
 	                        <s:HSlider id="slider_brightness" change="__onChangeBrightness(event)"
 	                                   dataTipPrecision="0" liveDragging="false" maximum="255"
-	                                   minimum="1" snapInterval="10" stepSize="10" value="1"/>
+	                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
 	                    </s:HGroup>
 	                    <s:Spacer height="10"/>
 	                    <s:HGroup width="100%" verticalAlign="middle">                     
@@ -937,7 +961,15 @@
 							<s:VGroup width="100%">
 							</s:VGroup>
 						</s:HGroup>
-						
+						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
+							<s:VGroup width="180">
+								<s:Label text="Debounce Setting (Lower value, more sensitivity)"/>
+								<s:HSlider id="slider_debounce" change="__onChangeDebounce(event)"
+										   dataTipPrecision="0" liveDragging="false" maximum="10"
+										   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+								<s:Label text="(If you up the sensitivity, overlapping input can occur.)"/>
+							</s:VGroup>
+						</s:HGroup>
 					</local:BMBorderContainer>
 				</s:VGroup>
 	        </s:Group>
