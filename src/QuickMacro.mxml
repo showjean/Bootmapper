@@ -740,7 +740,7 @@
 				
 			</s:VerticalLayout>
 		</s:layout>
-		<s:HGroup verticalAlign="bottom" width="100%">		
+		<s:HGroup verticalAlign="middle" width="100%">		
 			<local:KeycodeDropDownList id="ddl_keycodes" width="150" prompt="Key codes...">
 			</local:KeycodeDropDownList>
 			<s:Spacer width="100%" />	
