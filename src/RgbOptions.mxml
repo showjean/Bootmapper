@@ -688,7 +688,7 @@
 				processArgs.push(OPTION_INDEX_DEBOUNCE_VALUE);
 				processArgs.push(this.slider_debounce.value);
 				
-				GBManager.getInstance().runProcess(processArgs, __print);
+				GBManager.getInstance().runProcess(processArgs, __printForEepromWrite);
 			}
 			
 		]]>
@@ -751,7 +751,7 @@
 								</s:layout>
 		
 	                        </s:ComboBox>
-	                        <s:Button id="btn_save_num" label="change" click="_onClick(event)"/>
+	                        <s:Button id="btn_save_num" label="Change" click="_onClick(event)"/>
 	                        <s:Spacer width="20"/>                
 	                    </s:HGroup>
 	                    <s:Spacer height="10"/>
@@ -773,7 +773,7 @@
 	                                <mx:ColorPicker id="color_picker_rainbow5"/>         
 	                                <mx:ColorPicker id="color_picker_rainbow6"/>         
 	                                <mx:ColorPicker id="color_picker_rainbow7"/>
-	                                <s:Button id="btn_save_rainbow" label="update color"
+	                                <s:Button id="btn_save_rainbow" label="Update Color"
 	                                          click="__onChangeRainbowColor(event)"/>
 	                            </s:HGroup>
 	                            <s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
@@ -964,9 +964,16 @@
 						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
 							<s:VGroup width="180">
 								<s:Label text="Debounce Setting (Lower value, more sensitivity)"/>
-								<s:HSlider id="slider_debounce" change="__onChangeDebounce(event)"
-										   dataTipPrecision="0" liveDragging="false" maximum="10"
-										   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+								<s:HGroup >
+									
+								<s:NumericStepper id="slider_debounce" width="55" value="1" stepSize="1" minimum="1" maximum="10"
+												  snapInterval="1" allowValueWrap="false"/>
+								<s:Button id="btn_update_debounce" label="Update"
+										  click="__onChangeDebounce(event)"/>
+								<!--<s:HSlider id="slider_debounce" change="__onChangeDebounce(event)"
+										   dataTipPrecision="0" liveDragging="false" maximum="100"
+										   minimum="1" snapInterval="1" stepSize="1" value="1"/>-->
+								</s:HGroup>
 								<s:Label text="(If you up the sensitivity, overlapping input can occur.)"/>
 							</s:VGroup>
 						</s:HGroup>
@@ -983,7 +990,6 @@
 					        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
 					                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
 					        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
-					        <s:Button id="btn_app" label="Set Keyboard" click="_onClick(event)"/>
 					        <s:Spacer height="30"/>
 						</s:VGroup>
 					</local:BMBorderContainer>
@@ -993,8 +999,8 @@
 					<s:Label text="Bootloader(HIDBoot)"/>
 					<local:BMBorderContainer width="100%" height="100%">
 						<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%">
-							<s:Button id="btn_clear_num" label="Default Num of LEDs" click="_onClickEeprom(event)"/>
-							<s:Button id="btn_clear_eeprom" label="EEPROM All Clear" click="_onClickEeprom(event)"/>
+							<s:Button id="btn_app" label="Set Keyboard" click="_onClick(event)"/>
+							<s:Spacer height="10"/>
 							<s:HGroup verticalAlign="middle">
 								<s:Button id="btn_usb" label="Set USB" click="_onClickInterface(event)"/>
 								<s:Button id="btn_ps2" label="Set PS/2" click="_onClickInterface(event)"/>	
@@ -1006,6 +1012,9 @@
 								<s:Button id="btn_ps2_midd" label="Midd" click="_onClickPs2RepeatSpeed(event)"/>	
 								<s:Button id="btn_ps2_slow" label="Slow" click="_onClickPs2RepeatSpeed(event)"/>	
 							</s:HGroup>
+							<s:Spacer height="10"/>
+							<s:Button id="btn_clear_num" label="Default Num of LEDs" click="_onClickEeprom(event)"/>
+							<s:Button id="btn_clear_eeprom" label="EEPROM All Clear" click="_onClickEeprom(event)"/>
 						</s:VGroup>
 					</local:BMBorderContainer>
 				</s:VGroup>
