@@ -25,7 +25,7 @@
 		<link>
 			<name>[source path] src</name>
 			<type>2</type>
-			<location>D:/git/BootMapper/src</location>
+			<locationURI>PARENT-1-PROJECT_LOC/BootMapper/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
