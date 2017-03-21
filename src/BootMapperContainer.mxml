@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" 
+		 xmlns:local="*"
+		 creationComplete="init()"
+		 width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			
+            protected var bootMapperData:Object;
+						
+            private function init():void
+			{
+				/*
+				.json loading
+				-> parsing
+				-> apply matrix
+				-> add event
+				*/				
+				loadList();
+				this.enabled = false;
+			}
+			
+			private function loadList():void
+			{
+				var gRequest:URLRequest = new URLRequest();	
+				gRequest.url = "json/bootMapper.json"
+				var gJsonLoader:JSONLoader = new JSONLoader();
+				try {
+					gJsonLoader.load(gRequest, __onLoadJson);
+				} catch (error:Error) {
+					Alert.show("Unable to load requested document.");
+				}	
+			}
+			
+			protected function __onLoadJson(event:Event):void
+			{
+				switch(event.type){
+					case Event.COMPLETE:
+						try{
+							var gURLoader:URLLoader = URLLoader(event.target);
+							//							 trace(this, gURLoader.data);
+							bootMapperData = JSON.parse(gURLoader.data)
+							
+							loadKeyIndex();
+							
+						}catch(e:Error){
+							trace("__onLoadJson: ", e);
+							Alert.show("__onLoadJson: " + e.toString());
+						}
+						
+						break;
+					
+					case ProgressEvent.PROGRESS:
+						break;
+					default:
+						//						trace(this, "__onLoadJson",  event);
+						Alert.show("__onLoadJson: " + event.toString());
+						break;
+				}
+			}
+			
+			private function loadKeyIndex():void
+			{
+				var gRequest:URLRequest = new URLRequest();	
+				gRequest.url = "json/keyindex.json"
+				var gJsonLoader:JSONLoader = new JSONLoader();
+				try {
+					gJsonLoader.load(gRequest, __onLoadKeyIndex);
+				} catch (error:Error) {
+					Alert.show("Unable to load requested document.");
+				}	
+			}
+			protected function __onLoadKeyIndex(event:Event):void
+			{
+				switch(event.type){
+					case Event.COMPLETE:
+						try{
+							var gURLoader:URLLoader = URLLoader(event.target);
+							//														trace(this, gURLoader.data);
+							var gArr:Array = JSON.parse(gURLoader.data) as Array;
+                            
+                            KeyIndex.setKeyIndexData(gArr);	
+                            
+							__start();
+                            
+//                            systemManager.stage.addEventListener(KeyboardEvent.KEY_UP, __onKeyUp);
+							
+						}catch(e:Error){
+							trace(this, e);
+						}
+						
+						break;
+					
+					case ProgressEvent.PROGRESS:
+						break;
+					default:
+						//						trace(this, "__onLoadJson",  event);
+						Alert.show("__onLoadJson: " + event.toString());
+						break;
+				}
+			}	
+            
+            protected function __start():void
+            {
+                
+            }
+            
+        ]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+</s:Group>

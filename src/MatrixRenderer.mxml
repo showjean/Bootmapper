@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:GridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" clipAndEnableScrolling="true"
+					minHeight="21" >
+	
+	<fx:Script>
+		<![CDATA[
+			override public function prepare(hasBeenRecycled:Boolean):void {			
+				if(data && column){
+					lblData.text = String(data[column.dataField]["label"]);
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Graphic id="gr_bg" x="0" y="0" />
+	<s:Rect top="0" bottom="0" left="0" right="0">
+		<s:fill>
+			<s:SolidColor id="bgColor" color="0xFFFFFF"/>
+		</s:fill>
+	</s:Rect>
+	<s:Label id="lblData" top="7" left="7"/>
+	
+</s:GridItemRenderer>

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 initialize="init()"
+		 >
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayList;
+			
+			import spark.components.gridClasses.CellPosition;
+			import spark.components.gridClasses.GridColumn;
+			
+			
+			public static const SELECT_INDEX:String = "SELECT_INDEX";
+			public static const LAYER_CHANGE:String = "LAYER_CHANGE";
+						
+			private var _data:Array;
+
+			private var _currentLayer:int;
+			private var _selectedCell:CellPosition;
+			private var __colLen:int;
+			private var __rowLen:int;
+			private var __layers:int;
+			private var __selectedKeyIndex:int = -1;
+			
+			public function get currentLayer():int
+			{
+				return _currentLayer;
+			}
+			
+			public function get selectedCell():CellPosition{
+				return _selectedCell; //this.grid_matrix.selectedCell;
+			}
+
+			public function get data():Array
+			{
+				return _data;
+			}
+
+			public function setMatrixData(xData:Array, xHexInfo:HexInfoKeymap):void {
+				_data = MatrixParser.migrateJsonData(xData, xHexInfo);				
+				
+				__colLen = xHexInfo.columns;
+				__rowLen = xHexInfo.rows;
+				__layers = xHexInfo.layers;
+				
+				_currentLayer = 0;
+				__selectedKeyIndex = -1;
+				
+				__updateCellColor();
+				
+				setRowGrid();
+				setGridColumns();
+				setDataProvider();
+			}
+			
+			protected function __updateCellColor():void
+			{
+				for(var i:int = 0; i < __colLen; ++i){
+					for(var k:int = 0; k < __rowLen; ++k){
+						setCellColor(i, k);
+					}
+				}
+			}
+			
+			public function setKeyIndex(xKeyindex:uint):void{
+				var gCellPosition:CellPosition = _selectedCell; //this.grid_matrix.selectedCell;
+				if(!gCellPosition) return;
+				
+				var gObj:CellObject = new CellObject(xKeyindex, KeyIndex.findNameByIndex(xKeyindex).replace(/\n/, " "));
+				if(Keymap.GLOBAL_APPLY_TO_ALL_LAYERS == true){
+					var gLen:int = _data.length;
+					for(var i:int = 0; i < gLen; ++i){
+						_data[i][gCellPosition.rowIndex][gCellPosition.columnIndex] = gObj;
+					}
+				}else{
+					_data[_currentLayer][gCellPosition.rowIndex][gCellPosition.columnIndex] = gObj;
+				}
+					
+				setCellColor(gCellPosition.columnIndex, gCellPosition.rowIndex);
+				
+				setDataProvider();
+				this.grid_matrix.selectedCell = _selectedCell; //gCellPosition;
+				
+			}
+			
+			override public function setFocus():void
+			{
+				this.grid_matrix.setFocus();
+			}
+			
+			public function selectCell(xCol:int, xRow:int):void{
+				this.grid_matrix.selectedCell = new CellPosition(xRow, xCol);
+			}
+            
+            public function selectCellsByKeyIndex(xKeyindex:uint):void
+            {
+                
+				__selectedKeyIndex = xKeyindex;
+                __selectCellsByKeyIndex();               
+                
+				setDataProvider();
+				this.grid_matrix.selectedCell = _selectedCell;
+				
+            }
+			public function __selectCellsByKeyIndex():void
+			{
+								
+				var gObj:CellObject;
+				for(var i:int = 0; i < __colLen; ++i){
+					for(var k:int = 0; k < __rowLen; ++k){
+						gObj = _data[_currentLayer][k][i] as CellObject;
+						
+						if(gObj.index == __selectedKeyIndex)
+						{
+							gObj.isFocused = true;
+						}
+						else
+						{
+							gObj.isFocused = false;
+							setCellColor(i, k);
+						}
+					}
+				}
+				
+			}
+			
+			public function copyLayer(xDestIndex:uint, xData:Array):void
+			{
+				_data[xDestIndex] = xData;
+				
+				// update color;
+				__updateCellColor();
+				setDataProvider();
+			}
+						
+			private function init():void{
+			}
+			
+			protected function __onSelectionChange(event:Event):void
+			{
+				var gCellPosition:CellPosition = this.grid_matrix.selectedCell;
+				if(!gCellPosition) return;
+												
+				_selectedCell = new CellPosition(gCellPosition.rowIndex, gCellPosition.columnIndex);	//gCellPosition;
+				var gColObject:Object = _data[_currentLayer][_selectedCell.rowIndex][_selectedCell.columnIndex];
+				
+				dispatchEvent(new KeyIndexEvent(SELECT_INDEX, gColObject.index));
+								
+//				trace(this.name, _selectedCell.columnIndex, _selectedCell.rowIndex);
+			}
+			
+			public function changeLayer(xIndex:int):void
+			{
+				if(_data == null || xIndex < 0) return;
+				
+				_currentLayer = xIndex;
+				setDataProvider();
+				__selectCellsByKeyIndex();
+				this.grid_matrix.selectedCell = _selectedCell;
+				
+				dispatchEvent(new Event(LAYER_CHANGE));
+			}
+			
+			private function setRowGrid():void
+			{				
+				var gRowLen:int = __rowLen;
+				var gRowHeaderArr:Array = [];
+				for(var i:int = 0; i < gRowLen; ++i){					
+					gRowHeaderArr[i] = {0:{index:-1, label:"Row "+(i + 1)}};
+				}
+				var gRowGridColumn:GridColumn = new GridColumn();
+				gRowGridColumn.headerText = "";
+				gRowGridColumn.dataField = "0";
+				this.grid_row_header.columns = new ArrayList([gRowGridColumn]);
+				this.grid_row_header.dataProvider = new ArrayList(gRowHeaderArr);
+			}
+			
+			private function setGridColumns():void
+			{				
+				var gLen:int = __colLen;
+				var gGridArr:Array = [];
+				for(var i:int = 0; i < gLen; ++i){
+					var gGC:GridColumn = new GridColumn();					
+					gGC.headerText = "Col " + (i+1);
+					gGC.dataField = "" + (i);
+					gGridArr.push(gGC);
+				}
+				this.grid_matrix.columns = new ArrayList(gGridArr);
+			}
+			
+			private function setDataProvider():void{
+				var gArr:Array = _data[_currentLayer];				
+				this.grid_matrix.dataProvider = new ArrayList(gArr);				
+			}
+			
+			private function setCellColor(xCol:int, xRow:int):void
+			{
+				var gObj:Object;
+				var gDifferFlag:int = 0;
+				var gisIncludingSpace:Boolean = false;
+				var gVal:int = -1;
+				var gIdx:int;
+				var gArr:Array;
+				for(var i:int = 0; i < __layers; ++i){	
+					gArr = _data[i] as Array;
+					if(gArr == null){
+						gArr = [];
+					}
+//					trace(i, "gArr : ", gArr);
+					if(gArr[xRow] == null){
+						gArr[xRow] = [];
+						for(var k:int = 0; k < __colLen; ++k){	
+							gArr[xRow][k] = new CellObject(0, "");
+						}
+					}
+					gObj = gArr[xRow][xCol];
+					if(gObj == null){
+						gArr[xRow][xCol] = new CellObject(0, "");
+						gObj = gArr[xRow][xCol];
+					}
+					gObj.color = CellObject.cellColorNormal;
+					gIdx = gObj.index;
+					if(gIdx == 0)
+					{
+						gisIncludingSpace = true;							
+					}
+					
+					if(gVal > -1 && gVal != gIdx)
+					{
+						gDifferFlag = 1;
+					}
+					
+					gVal = gIdx;					
+					
+				}
+				
+				if(gDifferFlag == 1){
+					for(i = 0; i < __layers; ++i){	
+						gArr = _data[i] as Array;
+						if(gArr == null) continue;
+						gObj = gArr[xRow][xCol];
+//						trace("gObj : ", gObj);
+						gObj.color = (gisIncludingSpace) ? CellObject.cellColorDiffSpace : CellObject.cellColorDiff;
+					}
+				}
+				
+			}
+			// rowBackground="DataGridRowBackground"			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:layout>
+		<s:VerticalLayout gap="0"/>
+	</s:layout>
+	<s:HGroup width="100%" height="100%" gap="0">
+		<s:DataGrid id="grid_row_header" width="55" height="100%" selectionMode="none" itemRenderer="MatrixRenderer" verticalScrollPolicy="off"
+					skinClass="skins.DataGridSkin"
+					/>
+		<s:DataGrid id="grid_matrix" width="100%" height="100%" selectionMode="singleCell" selectionColor="0xf06b31" caretColor="0xf06b31"
+				itemRenderer="MatrixColorRenderer" 
+				valueCommit="__onSelectionChange(event)"
+				skinClass="skins.DataGridSkin"
+				 />
+	</s:HGroup>
+</s:Group>

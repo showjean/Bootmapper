@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			protected var _isReady:Boolean;
+			protected var _index:int;			
+
+			public function setData(xObj:Object):void{
+			}
+			public function isReady():Boolean{
+				return _isReady;
+			}
+			public function init():void
+			{	
+			}
+			public function get index():int
+			{
+				return _index;
+			}
+			public function set index(value:int):void
+			{
+				_index = value;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+</s:Group>

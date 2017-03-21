@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			static public const KEYCAP_WIDTH:int = 38;
+			
+			public var index:int = 0;
+            
+            public var uppercase:String;
+            public var lowercase:String;
+			
+//			private var keycapWidth:int;
+//			private var keycapHeight:int;
+			private const gGap:int = 4;
+			private const gGapHalf:int = 2;				
+			private const bgStrokeWeight:int = 2;
+			private var bgColorNormal:uint = 0xCCCCCC;
+			private var bgColorMouseDown:uint = 0x8adeff;
+			private var bgColorMouseOver:uint = 0xF0F0F0;
+			private var lineColorSelected:uint = 0xf06b31;
+			private var lineColorNormal:uint = 0x666666;
+			private var _isSelected:Boolean;
+			
+			public function draw(xKeycapData:KeycapData):void{
+				
+				this.width = xKeycapData.width * KEYCAP_WIDTH;
+				this.height = xKeycapData.height * KEYCAP_WIDTH;				
+				
+//				keycapWidth = xKeycapData.width * KEYCAP_WIDTH - gGap;
+//				keycapHeight = xKeycapData.height * KEYCAP_WIDTH - gGap;
+				
+				drawBg(bgColorNormal)
+				
+				// keyindex
+				index = xKeycapData.keyIndex;		
+				
+				// label
+				this.lb_label.text = KeyIndex.findNameByIndex(index).replace(" ", "\n"); //xKeycapData.label;
+				this.lb_label.width = this.width;
+                
+                //character
+                uppercase = xKeycapData.uppercase;
+                lowercase = xKeycapData.lowercase;
+                
+				
+				this.useHandCursor = true;
+				
+				this.addEventListener(MouseEvent.MOUSE_DOWN, __onDown);
+				this.addEventListener(MouseEvent.MOUSE_UP, __onUp);
+				this.addEventListener(MouseEvent.MOUSE_OVER, __over);
+				this.addEventListener(MouseEvent.MOUSE_OUT, __out);
+				
+			}
+			
+			public function select(xBool:Boolean):void{
+				if(xBool){
+					_isSelected = true;
+					drawBg(bgColorNormal, lineColorSelected);
+					this.color_stroke.weight = 3;
+				}else{
+					_isSelected = false;
+					drawBg(bgColorNormal);
+					this.color_stroke.weight = bgStrokeWeight;
+				}
+			}
+			
+			protected function drawBg(xBgColor:uint, xLineColor:int = -1):void{
+				if(xLineColor == -1) xLineColor = lineColorNormal;
+				this.color_rect.color = xBgColor;
+				this.color_stroke.color = xLineColor;
+//				this.gr_keycap.graphics.clear();
+//				this.gr_keycap.graphics.beginFill(xBgColor, 1);
+//				this.gr_keycap.graphics.lineStyle(1, xLineColor);
+//				this.gr_keycap.graphics.drawRoundRect(gGapHalf, gGapHalf, keycapWidth, keycapHeight, 4, 4);
+//				this.gr_keycap.graphics.endFill();
+			}
+			
+			
+			protected function __onDown(event:MouseEvent):void
+			{
+				drawBg(bgColorMouseDown);
+				this.stage.addEventListener(MouseEvent.MOUSE_UP, __onUp);
+			}
+			
+			protected function __onUp(event:MouseEvent):void
+			{
+				this.stage.removeEventListener(MouseEvent.MOUSE_UP, __onUp);
+				drawBg(bgColorNormal);
+			}
+			
+			protected function __over(event:MouseEvent):void
+			{
+				drawBg(bgColorMouseOver);
+			}
+			
+			protected function __out(event:MouseEvent):void
+			{
+				select(_isSelected);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>	
+	<!--<s:Graphic id="gr_keycap" x="0" y="0" />-->
+	<s:Rect id="gr_keycap" top="{gGapHalf}" bottom="{gGapHalf}" left="{gGapHalf}" right="{gGapHalf}" radiusX="0" radiusY="0">				
+		<s:fill>
+			<s:SolidColor id="color_rect" />
+		</s:fill>
+		<s:stroke>		
+			<s:SolidColorStroke id="color_stroke" weight="{bgStrokeWeight}" caps="square" joints="miter"/>
+		</s:stroke>
+	</s:Rect>
+	
+	<s:Label id="lb_label" textAlign="center" verticalCenter="0" horizontalCenter="0" fontSize="12"/>
+</s:Group>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx" 
+	width="100%" cornerRadius="7" borderWeight="1">
+	<fx:Script>
+		<![CDATA[
+			import skins.Color;
+		]]>
+	</fx:Script>
+	<s:backgroundFill> 
+		<s:SolidColor 
+			color="{skins.Color.BM_VERY_LIGHT_GREY}" 
+			alpha="1"/> 
+	</s:backgroundFill> 
+	<s:layout>
+		<s:VerticalLayout gap="0" paddingBottom="4" paddingLeft="4" paddingRight="4" paddingTop="4">
+			
+		</s:VerticalLayout>
+	</s:layout>
+	
+</s:BorderContainer>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:DefaultGridItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+						   xmlns:s="library://ns.adobe.com/flex/spark" 
+						   xmlns:mx="library://ns.adobe.com/flex/halo"
+						   implements="spark.components.gridClasses.IGridVisualElement"
+						   backgroundColor="{data.color}" background="true" top="0" bottom="0" left="0" right="0">
+	
+	<fx:Script>
+		<![CDATA[
+			
+			import spark.components.Grid;
+			
+			protected var _color:uint = 0;
+			public function prepareGridVisualElement(grid:Grid, rowIndex:int, columnIndex:int):void
+			{
+				if (!grid.dataProvider || rowIndex >= grid.dataProvider.length)
+				{
+					data = null;
+					this.background = false;
+				}else{
+//					trace(rowIndex, columnIndex);
+//					if(grid.dataProvider.getItemAt(rowIndex))
+					{
+						this.background = true;
+//						data.color = grid.dataProvider.getItemAt(rowIndex).getItemAt(columnIndex);
+						var gArr:Array = grid.dataProvider.getItemAt(rowIndex) as Array;
+						var gCellObj:CellObject = gArr[columnIndex] as CellObject;
+						
+						if(gCellObj)
+						{
+							data.color = gCellObj.color;
+//							trace(rowIndex, columnIndex, data.color);
+						}
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+</s:DefaultGridItemRenderer>
