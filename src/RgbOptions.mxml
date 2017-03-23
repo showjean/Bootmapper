@@ -150,12 +150,12 @@
 					// debounce 1.3.0
 					if(verMajor > 1 || (verMajor == 1 && verMinor > 3) || (verMajor == 1 && verMinor == 3 && verPatch >= 0))
 					{
-						this.slider_debounce.enabled = true;
+						this.gp_debounce.enabled = true;
 						this.slider_debounce.value = xInfoArr[51];
 					}
 					else
 					{
-						this.slider_debounce.enabled = false;
+						this.gp_debounce.enabled = false;
 						this.slider_debounce.value = 0;
 					}
 					
@@ -964,7 +964,7 @@
 						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
 							<s:VGroup width="180">
 								<s:Label text="Debounce Setting (Lower value, more sensitivity)"/>
-								<s:HGroup >
+								<s:HGroup id="gp_debounce">
 									
 								<s:NumericStepper id="slider_debounce" width="55" value="1" stepSize="1" minimum="1" maximum="10"
 												  snapInterval="1" allowValueWrap="false"/>
