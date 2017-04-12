@@ -123,7 +123,7 @@ package
             processArgs2.push(xHexStr);
 //            trace(xHexStr);
             
-            runRelayProecss(new <Vector.<String>>[processArgs, processArgs2], xListener);
+            runRelayProecss([processArgs, processArgs2], xListener);
                         
         }
 		
@@ -142,7 +142,7 @@ package
 			processArgs3.push("-action");            
 			
 			
-			runRelayProecss(new <Vector.<String>>[processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
 		}
 		
         public function downloadKeymap(xInfo:HexInfoKeymap, xListener:Function = null):void 
@@ -168,7 +168,7 @@ package
             processArgs3.push("-action");            
             
             
-            runRelayProecss(new <Vector.<String>>[processArgs, processArgs2, processArgs3], xListener);
+            runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
             
         }
 		public function downloadMacro(xInfo:HexInfoMacro, xListener:Function = null):void 
@@ -186,7 +186,7 @@ package
 			processArgs3.push("-action");            
 			
 			
-			runRelayProecss(new <Vector.<String>>[processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
 			
 		}
 		public function downloadQuickMacro(xInfo:HexInfoMacro, xListener:Function = null):void 
@@ -204,7 +204,7 @@ package
 			processArgs3.push("-action");            
 			
 			
-			runRelayProecss(new <Vector.<String>>[processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
 			
 		}
 		
@@ -223,30 +223,35 @@ package
 			processArgs3.push("-action");            
 			
 			
-			runRelayProecss(new <Vector.<String>>[processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
 			
 		}
 		
-        protected var runVec:Vector.<Vector.<String>>;
-        public function runRelayProecss(xVec:Vector.<Vector.<String>>, xListener:Function = null):void{
-            runVec = xVec;
+		/**
+		 * vector를 이용하면 mxml에서 파싱이 제대로 안되서 문법 오류나 난다. 실행에는 문제가 없지만, 코딩이 번거로워 array로 변경;
+		 * */
+//        protected var runVec:Vector.<Vector.<String>>;
+        protected var runComs:Array;
+//        public function runRelayProecss(xVec:Vector.<Vector.<String>>, xListener:Function = null):void{
+		public function runRelayProecss(xComs:Array, xListener:Function = null):void{
+            runComs = xComs;
             __listener = xListener;
             
             __runNextProcess();
             
         }
         protected function hasNextProcess():Boolean{
-            return runVec && runVec.length > 0;
+            return runComs && runComs.length > 0;
         }
         protected function __clearNextProcess():void{
-            runVec = null;
+            runComs = null;
         }
         protected function __runNextProcess():void{
             if(!hasNextProcess()){
                 return;
             }
             
-            runProcess(runVec.shift(), __listener);
+            runProcess(runComs.shift(), __listener);
         }
         
         public function runProcess(xVec:Vector.<String>, xListener:Function = null):void{

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <local:TabUI xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			 xmlns:s="library://ns.adobe.com/flex/spark" 
-			 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" xmlns:local="*">
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" 
+			 xmlns:local="*">
     
-    <fx:Script>
-		
+    <fx:Script>		
         <![CDATA[
 			import flash.events.MouseEvent;
 			
@@ -287,38 +287,40 @@
 			
 			protected function _onClick(event:MouseEvent):void
 			{
-				var processArgs:Vector.<String> = new Vector.<String>();
-				
+				var processArgs:Vector.<String> = new Vector.<String>();	
+				var processArgs2:Vector.<String> = new Vector.<String>();			
 				var gListener:Function = __print;
 				
-				switch(event.currentTarget){
-					case this.btn_connect:
-						processArgs.push("-ready");
-						var processArgs2:Vector.<String> = new Vector.<String>();
-						processArgs2.push("-info");
-						
-						GBManager.getInstance().runRelayProecss(new <Vector.<String>>[processArgs, processArgs2], gListener);
-						return;
-						
+				switch(event.currentTarget)
+				{						
 					case this.btn_disconnect:
 						processArgs.push("-action");
 						break;
+					
 					case this.btn_bootloader:
 						processArgs.push("-bootloader");
 						showWaiting("Waiting...");
 						gListener = __printForBootloader;
 						break;
+					
 					case this.btn_app:
 						processArgs.push("-app");
-						break;                   
+						break;
+					
 					case this.btn_save_num:
 						//.exe -led num VAL
 						processArgs.push("-led");
 						processArgs.push("num");
 						processArgs.push(this.cb_lednum.selectedItem);
 						break;
+					
+					case this.btn_connect:
+						processArgs.push("-ready");
+						processArgs2.push("-info");
+						
+						GBManager.getInstance().runRelayProecss([processArgs, processArgs2], gListener);
+						return;
 				}
-				
 				
 				GBManager.getInstance().runProcess(processArgs, gListener);
 			}
@@ -528,7 +530,7 @@
 				processArgs2.push("-r");
 				processArgs2.push(gFile.nativePath);
 				
-				GBManager.getInstance().runRelayProecss(new <Vector.<String>>[processArgs, processArgs2], __print);
+				GBManager.getInstance().runRelayProecss([processArgs, processArgs2], __print);
 				
 				showWaiting("Waiting...");
 				
@@ -813,7 +815,7 @@
 	                    </s:HGroup>
 	                    <s:Spacer height="10"/>
 	                    <s:HGroup width="100%" verticalAlign="middle">                     
-	                        <s:Label text="RGB Transition Speed"/>
+	                        <s:Label text="RGB Transition Delay"/>
 	                        <s:HSlider id="slider_rgb_speed" change="__onChangeRgbSpeed(event)"
 	                                   dataTipPrecision="0" liveDragging="false" maximum="250"
 	                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
