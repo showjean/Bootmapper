@@ -7,6 +7,7 @@
     <fx:Script>		
         <![CDATA[
 			import flash.events.MouseEvent;
+			import flash.filesystem.*;
 			
 			import mx.collections.ArrayList;
 			import mx.events.CloseEvent;
