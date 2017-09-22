@@ -67,7 +67,7 @@
 			
 			protected function parseInfo(xInfoArr:Array):void{
 				//				trace(xInfoArr.length);
-				//                trace(xInfoArr);
+                trace(xInfoArr);
 				//[10,4,186, 136,255,0, 255,136,0 ,255,255,255, 0,255,0,0,0,255,0,255,170,255,0,0,0,0,0,255,255,255,255,255,0]
 				//num, mode, brightness, colol1,2,3, rainbow, key color1
 				// fade type 1byte, full led mode 1byte, full led brightness 1byte, esc to tilde 1byte, fn led 1byte
@@ -141,6 +141,7 @@
 					{
 						this.ddl_numlock_layer.enabled = true;
 						this.ddl_numlock_layer.selectedIndex = xInfoArr[50];
+						trace("num layer: ", xInfoArr[50]);
 					}
 					else
 					{
@@ -258,14 +259,14 @@
 				*/
 				var gObj:Object = JSON.parse(xStr);
 				if(xSuc == 1){  // complete
-					trace("complete : ", gObj.message);
+					trace("Complete : ", gObj.message);
 					removeWaiting();
 				}else if(xSuc == 0){    // error
 					//                    trace(gObj.message);
 					removeWaiting();
-					Alert.show(gObj.message, "error");
+					Alert.show(gObj.message, "Error");
 				}else if(xSuc == 2){    // warning                    
-					showWaiting(gObj.message, "uploading...");
+					showWaiting(gObj.message, "Uploading...");
 					trace("warning : ", gObj.message);
 				}else if(xSuc == 3){    // led2 info
 					

@@ -11,7 +11,7 @@ global {
 	focusColor: BM_RED;	
 	rollOverColor: BM_LIGHT_GREY;
 	selectionColor: BM_RED;
-	fontFamily: "Arial";
+	fontFamily: "Malgun Gothic", "Dotum", "Arial";
 }
 
 s|Label {	

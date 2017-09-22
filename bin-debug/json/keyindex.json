@@ -142,7 +142,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "ESC\n~"
+      "label": "~\nESC"
     }
   ],
   [
@@ -152,7 +152,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "`\n~"
+      "label": "~\n`"
     },
     {
       "keyIndex": 30,
@@ -160,7 +160,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "1\n!"
+      "label": "!\n1"
     },
     {
       "keyIndex": 31,
@@ -168,7 +168,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "2\n@"
+      "label": "@\n2"
     },
     {
       "keyIndex": 32,
@@ -176,7 +176,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "3\n#"
+      "label": "#\n3"
     },
     {
       "keyIndex": 33,
@@ -184,7 +184,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "4\n$"
+      "label": "$\n4"
     },
     {
       "keyIndex": 34,
@@ -192,7 +192,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "5\n%"
+      "label": "%\n5"
     },
     {
       "keyIndex": 35,
@@ -200,7 +200,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "6\n^"
+      "label": "^\n6"
     },
     {
       "keyIndex": 36,
@@ -208,7 +208,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "7\n&"
+      "label": "&\n7"
     },
     {
       "keyIndex": 37,
@@ -216,7 +216,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "8\n*"
+      "label": "*\n8"
     },
     {
       "keyIndex": 38,
@@ -224,7 +224,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "9\n("
+      "label": "(\n9"
     },
     {
       "keyIndex": 39,
@@ -232,7 +232,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "0\n)"
+      "label": ")\n0"
     },
     {
       "keyIndex": 45,
@@ -240,7 +240,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "-\n_"
+      "label": "_\n-"
     },
     {
       "keyIndex": 46,
@@ -248,7 +248,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "=\n+"
+      "label": "+\n="
     },
     {
       "keyIndex": 42,
@@ -410,7 +410,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "[\n{"
+      "label": "{\n["
     },
     {
       "keyIndex": 48,
@@ -418,7 +418,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "]\n}"
+      "label": "}\n]"
     },
     {
       "keyIndex": 49,
@@ -426,7 +426,7 @@
       "width": 1.5,
       "height": 1,
       "marginRight": 0.25,
-      "label": "\\\n|"
+      "label": "|\n\\"
     },
     {
       "keyIndex": 76,
@@ -702,7 +702,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": ",\n<"
+      "label": "<\n,"
     },
     {
       "keyIndex": 55,
@@ -710,7 +710,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": ".\n>"
+      "label": ">\n."
     },
     {
       "keyIndex": 56,
@@ -718,7 +718,7 @@
       "width": 1,
       "height": 1,
       "marginRight": 0,
-      "label": "/\n?"
+      "label": "?\n/"
     },
     {
       "keyIndex": 108,
