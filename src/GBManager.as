@@ -53,6 +53,14 @@ package
             process.addEventListener(NativeProcessExitEvent.EXIT, onExit);
             process.addEventListener(IOErrorEvent.STANDARD_ERROR_IO_ERROR, onIOError);
         }
+		
+		public function close():void
+		{
+			if(process.running)
+			{
+				process.exit(true);
+			}
+		}
         
         protected function onInputClose(event:Event):void
         {
