@@ -441,12 +441,12 @@
 		<s:HGroup verticalAlign="middle" width="100%">		
 			<s:ButtonBar id="tabbar" dataProvider="{viewStack}" valueCommit="__onValueCommit(event)" requireSelection="true"/>
 			<s:Spacer width="5" />
-			<s:CheckBox id="cb_allLayer" label="Apply to all layers" valueCommit="__onClickAllLayer(event)" />
+			<s:CheckBox id="cb_allLayer" label="{resourceManager.getString('lang','STR_APPLY_TO_ALL_LAYERS')}" valueCommit="__onClickAllLayer(event)" />
             <s:Spacer width="100%"/>
             <local:KeycodeDropDownList id="ddl_keycodes" width="150" prompt="Key codes...">
             </local:KeycodeDropDownList>
 			<s:Spacer width="100%"/>
-			<s:Label id="lb_target" text="Target :"/>
+			<s:Label id="lb_target" text="{resourceManager.getString('lang','STR_TARGET')}:"/>
 			<s:DropDownList id="ddl_target" width="200" change="__onTargetValueCommit(event)" >
 			</s:DropDownList>
 		</s:HGroup>
@@ -466,7 +466,7 @@
 			<s:Label id="lb_key" />	
 			<s:Spacer width="20" />
 			<s:HGroup width="100%" verticalAlign="middle">
-				<s:Label text="Copy :" />
+				<s:Label text="{resourceManager.getString('lang','STR_LAYER_COPY')}:" />
 				<s:DropDownList id="ddl_copy_to" width="200">
 					<s:layout>
 						<s:VerticalLayout gap="0"
@@ -474,7 +474,7 @@
 										  requestedRowCount="12" />
 					</s:layout>
 				</s:DropDownList>
-				<s:Button label="Go" click="__onClickCopyTo(event)"/>
+				<s:Button label="{resourceManager.getString('lang','STR_EXCUTE')}" click="__onClickCopyTo(event)"/>
 				<s:Spacer width="10"/>
 				<s:Label id="lb_version"/>
 			</s:HGroup>
@@ -483,7 +483,7 @@
 		<s:Spacer height="5"/>
 		<local:BMBorderContainer width="100%">			
 			<local:KeycodeSelector id="keycodeSelector" width="100%" height="100%"/>
-        	<s:Label id="lb_guide" text="Ctrl(CMD) + Click = Focus on matrix." />
+        	<s:Label id="lb_guide" text="{resourceManager.getString('lang','STR_FOCUS_ON_MATRIX')}" />
 		</local:BMBorderContainer>
 	</s:Group>
     </s:Scroller>

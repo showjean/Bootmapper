@@ -19,7 +19,7 @@
 			import spark.events.IndexChangeEvent;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "BootMapper Client Ver 0.9.1"
+            protected var VERSION_CLIENT:String = "Bootmapper Client Ver 0.9.1"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
@@ -446,13 +446,13 @@
                 <s:VGroup  width="100%" height="100%">
                     <s:HGroup width="100%" id="grp_gb_keymap_control" verticalAlign="middle">
 						<s:HGroup width="100%" id="grp_gb_keymap_control_gb_only"  verticalAlign="middle">
-	                        <s:Button id="btn_download" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
+	                        <s:Button id="btn_download" label="{resourceManager.getString('lang','STR_DOWNLOAD')}" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 	                        <s:Spacer width="30%" minWidth="30" />
-	                        <s:Button id="btn_upload" label="Upload" click="_onClick(event)" />
-	                        <s:CheckBox id="cb_reboot" label="Reboot after uploading" selected="true"/>
+	                        <s:Button id="btn_upload" label="{resourceManager.getString('lang','STR_UPLOAD')}" click="_onClick(event)" />
+	                        <s:CheckBox id="cb_reboot" label="{resourceManager.getString('lang','STR_REBOOT_AFTER_UPLOADING')}" selected="true"/>
 						</s:HGroup>
 						<s:HGroup width="100%" id="grp_gb_keymap_control_for_sharing" verticalAlign="middle">
-	                        <s:Button id="btn_bootmapper" label="Toggle Bootmapper" click="_onClickBootmapper(event)" skinClass="skins.RedButtonSkin" />
+	                        <s:Button id="btn_bootmapper" label="{resourceManager.getString('lang','STR_TOGGLE_BOOTMAPPER')}" click="_onClickBootmapper(event)" skinClass="skins.RedButtonSkin" />
 	                        <s:CheckBox id="cb_bootmapper_state" enabled="false" />
 						</s:HGroup>
                     </s:HGroup>
@@ -472,10 +472,10 @@
             <s:NavigatorContent id="nc_macro" label="{resourceManager.getString('lang','STR_CUSTOM_MACRO')}">
                 <s:VGroup  width="100%" height="100%">
                     <s:HGroup width="100%" id="grp_gb_macro_control" verticalAlign="middle">                        
-                        <s:Button id="btn_download_macro" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
+                        <s:Button id="btn_download_macro" label="{resourceManager.getString('lang','STR_DOWNLOAD')}" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 						<s:Spacer width="30%" minWidth="30" />                     
-                        <s:Button id="btn_upload_macro" label="Upload" click="_onClick(event)" />
-                        <s:CheckBox id="cb_reboot_macro" label="Reboot after uploading" selected="true" />
+                        <s:Button id="btn_upload_macro" label="{resourceManager.getString('lang','STR_UPLOAD')}" click="_onClick(event)" />
+                        <s:CheckBox id="cb_reboot_macro" label="{resourceManager.getString('lang','STR_REBOOT_AFTER_UPLOADING')}" selected="true" />
                     </s:HGroup>
                     <s:Spacer height="5" />
                     <local:Macro id="macro" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
@@ -485,9 +485,9 @@
 			<s:NavigatorContent id="nc_qmacro" label="{resourceManager.getString('lang','STR_QUICK_MACRO')}">
 				<s:VGroup  width="100%" height="100%">
 					<s:HGroup width="100%" id="grp_gb_qmacro_control" verticalAlign="middle">                        
-						<s:Button id="btn_download_qmacro" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
+						<s:Button id="btn_download_qmacro" label="{resourceManager.getString('lang','STR_DOWNLOAD')}" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 						<s:Spacer width="30%" minWidth="30" />                     
-						<s:Button id="btn_upload_qmacro" label="Upload" click="_onClick(event)" />
+						<s:Button id="btn_upload_qmacro" label="{resourceManager.getString('lang','STR_UPLOAD')}" click="_onClick(event)" />
 					</s:HGroup>
 					<s:Spacer height="5" />
 					<local:QuickMacro id="qmacro" width="100%" height="100%" initialize="__onInitTabUI(event)"/>
@@ -497,10 +497,10 @@
 			<s:NavigatorContent id="nc_dualaction" label="{resourceManager.getString('lang','STR_DUAL_ACTION')}">
 				<s:VGroup  width="100%" height="100%"> 
 						<s:HGroup width="100%" id="grp_gb_dualaction_control" verticalAlign="middle">
-							<s:Button id="btn_download_dualaction" label="Download" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
+							<s:Button id="btn_download_dualaction" label="{resourceManager.getString('lang','STR_DOWNLOAD')}" click="_onClickDownload(event)" skinClass="skins.GreyButtonSkin" />
 							<s:Spacer width="30%" minWidth="30" />                     
-							<s:Button id="btn_upload_dualaction" label="Upload" click="_onClick(event)" />
-							<s:CheckBox id="cb_reboot_dualaction" label="Reboot after uploading" selected="true" />
+							<s:Button id="btn_upload_dualaction" label="{resourceManager.getString('lang','STR_UPLOAD')}" click="_onClick(event)" />
+							<s:CheckBox id="cb_reboot_dualaction" label="{resourceManager.getString('lang','STR_REBOOT_AFTER_UPLOADING')}" selected="true" />
 						</s:HGroup>
 					<s:Spacer height="5" />
 					<local:DualAction id="dualaction" width="100%" height="100%" initialize="__onInitTabUI(event)"/>

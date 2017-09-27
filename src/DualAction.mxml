@@ -265,7 +265,7 @@
 				</s:layout>
 				<s:HGroup verticalAlign="middle" width="100%">	
 					<s:Spacer width="100%" />	
-					<s:Label id="lb_target" text="Target :"/>
+					<s:Label id="lb_target" text="{resourceManager.getString('lang','STR_TARGET')}:"/>
 					<s:DropDownList id="ddl_target" width="200" change="__onTargetValueCommit(event)" />
 				</s:HGroup>
 				<s:Spacer height="10"/>
@@ -290,7 +290,7 @@
 					<s:Button id="btn_save" label="Save .hex" click="__onClickSave(event)"/>
 					<s:Button id="btn_load" label="Load .hex" click="__onClickLoad(event)"/>
 					<s:Spacer width="100%"/>
-					<s:Button id="btn_clear_all" label="Clear All" click="__onClickClearAll(event)"/>
+					<s:Button id="btn_clear_all" label="{resourceManager.getString('lang','STR_CLEAR_ALL')}" click="__onClickClearAll(event)"/>
 				</s:HGroup>
 				
 			</s:Group>

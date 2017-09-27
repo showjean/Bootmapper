@@ -744,7 +744,7 @@
 			<local:KeycodeDropDownList id="ddl_keycodes" width="150" prompt="Key codes...">
 			</local:KeycodeDropDownList>
 			<s:Spacer width="100%" />	
-			<s:Label id="lb_target" text="Target :"/>
+			<s:Label id="lb_target" text="{resourceManager.getString('lang','STR_TARGET')}:"/>
 			<s:DropDownList id="ddl_target" width="200" change="__onTargetValueCommit(event)" />
 		</s:HGroup>
 		<s:Spacer height="5"/>
@@ -755,16 +755,16 @@
 			<s:Spacer height="10" />
 			<s:HGroup height="100%" width="100%" >
 	            <s:VGroup width="300" height ="100%">
-	                <s:Label text = "String Parsing" />                
+	                <s:Label text = "{resourceManager.getString('lang','STR_STRING_PARSING')}" />                
 					<s:HGroup width="100%" >
 						<s:TextArea id="ta_string" width="100%" height ="100" />    
 					</s:HGroup>               
 					<s:HGroup width="100%" >
 						<s:Spacer width="100%" />	
-						<s:Button label="Parse string >>" click="__onClickParseString(event)"/>
+						<s:Button label="{resourceManager.getString('lang','STR_PARSE_STRING')} >>" click="__onClickParseString(event)"/>
 					</s:HGroup>
 					<s:Spacer height="5" />
-	                <s:Label text = "Test Area" />                
+	                <s:Label text = "{resourceManager.getString('lang','STR_TEST_AREA')}" />                
 	                <s:TextArea width="100%" height ="100%" />
 	            </s:VGroup>
 				<s:List width="300" height="100%" id="list_macro" dragEnabled="true" dragMoveEnabled="true" dropEnabled="false"
@@ -772,7 +772,7 @@
 						click="__onClickList(event)" itemRenderer="MacroKeyListRenderer"
 						/>
 				<s:VGroup width="100%" height="100%">
-					<s:Button label="Split" click="__onClickSplit(event)"/>
+					<s:Button label="{resourceManager.getString('lang','STR_SPLIT')}" click="__onClickSplit(event)"/>
 					<s:Spacer height="5" />
 					<!--<s:HGroup width="100%" verticalAlign="middle">
 						<s:Button label="Apply delay" click="__onClickDelay(event)"/>
@@ -783,10 +783,10 @@
 	                    <s:Button label="Apply all" click="__onClickDelayAll(event)"/>
 					</s:HGroup>-->
 					<s:Spacer height="5" />
-					<s:Button label="Deselect " click="__onClickDeselect(event)"/>
+					<s:Button label="{resourceManager.getString('lang','STR_DESELECT')}" click="__onClickDeselect(event)"/>
 					<s:Spacer height="5" />
-					<s:Button label="Remove" click="__onClickRemove(event)"/>
-					<s:Button label="Remove all" click="__onClickRemoveAll(event)"/>
+					<s:Button label="{resourceManager.getString('lang','STR_REMOVE')}" click="__onClickRemove(event)"/>
+					<s:Button label="{resourceManager.getString('lang','STR_REMOVE_ALL')}" click="__onClickRemoveAll(event)"/>
 					<s:Label text="" id="lb_char" />
 	                <s:Spacer height="10" />
 	                
@@ -808,7 +808,7 @@
 			<s:Spacer width="100%" />
 			
 			<s:HGroup verticalAlign="middle">
-				<s:Label text="Copy :" />
+				<s:Label text="{resourceManager.getString('lang','STR_MACRO_COPY')}:" />
 				<s:DropDownList id="ddl_copy_to" width="200">
 					<s:layout>
 						<s:VerticalLayout gap="0"
@@ -816,7 +816,7 @@
 										  requestedRowCount="12" />
 					</s:layout>
 				</s:DropDownList>
-				<s:Button label="Go" click="__onClickCopyTo(event)"/>
+				<s:Button label="{resourceManager.getString('lang','STR_EXCUTE')}" click="__onClickCopyTo(event)"/>
 			</s:HGroup>  
 			<s:Spacer width="5"/>
 		</s:Group>

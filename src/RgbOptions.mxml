@@ -97,6 +97,7 @@
 					this.cb_lednum.selectedItem = xInfoArr[0];
 					this.radio_grp_led_mode.selectedIndex = xInfoArr[1];
 					this.slider_brightness.value = xInfoArr[2];
+					this.lbl_brightness.text = xInfoArr[2];
 					
 					this.color_picker1.selectedColor  = (xInfoArr[3]<<8) + (xInfoArr[4]<<16) + (xInfoArr[5]);
 					this.color_picker2.selectedColor  = (xInfoArr[6]<<8) + (xInfoArr[7]<<16) + (xInfoArr[8]);
@@ -115,6 +116,7 @@
 				
 				// full led mode, brightness;
 				this.slider_rgb_speed.value = xInfoArr[38];
+				this.lbl_rgb_speed.text = xInfoArr[38];
 				this.ddl_full_led_mode.selectedIndex = xInfoArr[39];                
 				this.slider_full_led_brightness.value = xInfoArr[40];
 				
@@ -483,6 +485,8 @@
 			}
 			protected function __onChangeBrightness(event:Event):void
 			{
+				this.lbl_brightness.text = String(this.slider_brightness.value);
+				
 				var processArgs:Vector.<String> = new Vector.<String>();
 				processArgs.push("-led");
 				processArgs.push("brightness");
@@ -599,6 +603,8 @@
 			
 			protected function __onChangeRgbSpeed(event:Event):void
 			{
+				this.lbl_rgb_speed.text = String(this.slider_rgb_speed.value);
+				
 				var processArgs:Vector.<String> = new Vector.<String>();
 				processArgs.push("-option");
 				processArgs.push(LED2_INDEX_TRANSITION_DELAY);
@@ -720,14 +726,11 @@
 	            <s:VerticalLayout gap="5">
 	                
 	            </s:VerticalLayout>
-	        </s:layout>
-	        <s:Label text="Settings"/>
+	        </s:layout> 
 	        
-	        <s:Spacer height="10"/>
-	        
-	        <s:HGroup width="100%">            
-	            <s:Button id="btn_connect" label="Connect" click="_onClick(event)" skinClass="skins.GreyButtonSkin"/>
-	            <s:Button id="btn_disconnect" label="Disconnect" click="_onClick(event)" enabled="false"/>
+	        <s:HGroup width="100%" verticalAlign="bottom">            
+	            <s:Button id="btn_connect" label="{resourceManager.getString('lang','STR_CONNECT')}" click="_onClick(event)" skinClass="skins.GreyButtonSkin"/>
+	            <s:Button id="btn_disconnect" label="{resourceManager.getString('lang','STR_DISCONNECT')}" click="_onClick(event)" enabled="false"/>
 				<s:Spacer width="100%"/>
 				<s:Label id="lb_firmware" text="Firmware"/>
 				<s:Label id="lb_version" text="Version"/>
@@ -735,18 +738,17 @@
 	        
 			
 			<s:Spacer height="10"/>
-	        <s:Group id="grp_option_ui" width="100%" enabled="false">
+	        <s:Group id="grp_option_ui" width="100%" height="100%" enabled="false">
 	            <s:layout>
 	                <s:HorizontalLayout/>
 	            </s:layout>
 				
-				<s:VGroup width="50%">
-		            <s:Label text="RGB LED Settings"/>
-		            <s:Spacer height="0"/>
+				<s:VGroup width="50%" height="100%">
+		            <s:Label text="{resourceManager.getString('lang','STR_RGB_LED_SETTINGS')}"/>
 		            <local:BMBorderContainer id="grp_rgb" width="100%">
 	                <s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
 	                    <s:HGroup width="100%" verticalAlign="middle">                     
-	                        <s:Label text="Num of RGB LEDs"/>
+	                        <s:Label text="{resourceManager.getString('lang','STR_NUM_OF_RGB_LEDS')}"/>
 	                        <s:ComboBox id="cb_lednum" width="80" openOnInput="false">		
 								<s:layout>
 									<s:VerticalLayout gap="0"
@@ -755,14 +757,14 @@
 								</s:layout>
 		
 	                        </s:ComboBox>
-	                        <s:Button id="btn_save_num" label="Change" click="_onClick(event)"/>
+	                        <s:Button id="btn_save_num" label="{resourceManager.getString('lang','STR_CHANGE')}" click="_onClick(event)"/>
 	                        <s:Spacer width="20"/>                
 	                    </s:HGroup>
 	                    <s:Spacer height="10"/>
 	                    
 	                    <s:VGroup width="100%">
 	                        <s:VGroup>
-	                            <s:Label text="RGB LED mode selection and color setting"/>
+	                            <s:Label text="{resourceManager.getString('lang','STR_RGB_LED_MODE_SETTING')}"/>
 	                            <s:HGroup width="100%"> 
 	                                <s:RadioButton id="rb_mode0" width="100" label="0. Off"
 	                                               groupName="radio_grp_led_mode"/>
@@ -777,7 +779,7 @@
 	                                <mx:ColorPicker id="color_picker_rainbow5"/>         
 	                                <mx:ColorPicker id="color_picker_rainbow6"/>         
 	                                <mx:ColorPicker id="color_picker_rainbow7"/>
-	                                <s:Button id="btn_save_rainbow" label="Update Color"
+	                                <s:Button id="btn_save_rainbow" label="{resourceManager.getString('lang','STR_UPDATE')}"
 	                                          click="__onChangeRainbowColor(event)"/>
 	                            </s:HGroup>
 	                            <s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
@@ -810,21 +812,23 @@
 	                    </s:VGroup>
 	                    <s:Spacer height="10"/>
 	                    <s:HGroup width="100%" verticalAlign="middle">                     
-	                        <s:Label text="RGB LED Brightness"/>
+	                        <s:Label text="{resourceManager.getString('lang','STR_RGB_LED_BRIGHTNESS')}"/>
 	                        <s:HSlider id="slider_brightness" change="__onChangeBrightness(event)"
 	                                   dataTipPrecision="0" liveDragging="false" maximum="255"
 	                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+							<s:Label id="lbl_brightness"/>
 	                    </s:HGroup>
 	                    <s:Spacer height="10"/>
 	                    <s:HGroup width="100%" verticalAlign="middle">                     
-	                        <s:Label text="RGB Transition Delay"/>
+	                        <s:Label text="{resourceManager.getString('lang','STR_RGB_TRANSITION_DELAY')}"/>
 	                        <s:HSlider id="slider_rgb_speed" change="__onChangeRgbSpeed(event)"
 	                                   dataTipPrecision="0" liveDragging="false" maximum="250"
 	                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+							<s:Label id="lbl_rgb_speed"/>
 	                    </s:HGroup>
 						<s:Spacer height="20"/>
 						<s:VGroup>
-							<s:Label text="RGB LED key event selection and color setting"/>
+							<s:Label text="{resourceManager.getString('lang','STR_RGB_LED_KEY_EVENT_SETTING')}"/>
 							<s:HGroup width="100%"> 
 								<s:RadioButton id="rb_keymode0" width="200" label="0. Off"
 											   groupName="radio_grp_led_keymode"/>
@@ -837,7 +841,7 @@
 							</s:HGroup>
 							<s:HGroup width="100%"> 
 								<s:RadioButton id="rb_keymode2" width="200"
-											   label="2. Complementary color"
+											   label="2. {resourceManager.getString('lang','STR_COMPLEMENTARY_COLOR')}"
 											   groupName="radio_grp_led_keymode"/>
 							</s:HGroup>
 						</s:VGroup>
@@ -849,13 +853,12 @@
 				<s:Spacer width="5"/>
 				
 				<s:VGroup width="50%" height="100%" >
-					<s:Label text="Full LED Settings"/>
-					<s:Spacer height="0"/>
-					<local:BMBorderContainer width="100%" height="50%" id="gp_full_led">
+					<s:Label text="{resourceManager.getString('lang','STR_FULL_LED_SETTINGS')}"/>
+					<local:BMBorderContainer width="100%" height="30%" id="gp_full_led">
 						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
 							
 							<s:VGroup>
-								<s:Label text="Full LED Mode"/>
+								<s:Label text="{resourceManager.getString('lang','STR_FULL_LED_MODE')}"/>
 								<s:DropDownList id="ddl_full_led_mode"
 												change="__onChangeFullLedMode(event)"
 												width="200">    
@@ -871,7 +874,7 @@
 								</s:DropDownList>
 							</s:VGroup>
 							<s:VGroup>
-								<s:Label text="Full LED Brightness"/>
+								<s:Label text="{resourceManager.getString('lang','STR_FULL_LED_BRIGHTNESS')}"/>
 								<s:HSlider id="slider_full_led_brightness" change="__onChangeFullLedBrightness(event)"
 										   dataTipPrecision="0" liveDragging="false" maximum="255"
 										   minimum="1" snapInterval="1" stepSize="1" value="1"/>
@@ -881,12 +884,10 @@
 						
 					</local:BMBorderContainer>
 					
-					<s:Spacer height="10"/>
-					<s:Label text="3 Lock LED Settings"/>
-					<s:Spacer height="0"/>
+					<s:Spacer height="5"/>
+					<s:Label text="{resourceManager.getString('lang','STR_LOCK_LED_SETTINGS')}"/>
 					<local:BMBorderContainer id="gp_3_lock" width="100%" height="50%">
-						<s:HGroup width="100%" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="10">
-							
+						<s:HGroup width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="10">							
 							<s:VGroup width="100%">
 								<s:Label text="Num lock"/>
 								<s:DropDownList id="ddl_lock_led_nl"
@@ -899,7 +900,7 @@
 									</s:layout>
 								</s:DropDownList>
 							</s:VGroup>
-							
+								
 							<s:VGroup width="100%">
 								<s:Label text="Caps lock"/>
 								<s:DropDownList id="ddl_lock_led_cl"
@@ -912,7 +913,7 @@
 									</s:layout>
 								</s:DropDownList>
 							</s:VGroup>
-							
+								
 							<s:VGroup width="100%">
 								<s:Label text="Scroll lock"/>
 								<s:DropDownList id="ddl_lock_led_sl"
@@ -925,16 +926,40 @@
 									</s:layout>
 								</s:DropDownList>
 							</s:VGroup>
-							
+								
 						</s:HGroup>
-						
+						<s:HGroup width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="10">
+							<s:VGroup width="100%" height="100%">
+								<s:Label text="FN2 lock"/>
+								<s:DropDownList id="ddl_lock_FN2"
+												change="__onChangeLockLed(event)"
+												width="100%"> 
+									<s:layout>
+										<s:VerticalLayout gap="0"
+														  horizontalAlign="contentJustify"
+														  requestedRowCount="9" />
+									</s:layout>
+								</s:DropDownList>
+							</s:VGroup>
+							<s:VGroup width="100%" height="100%">
+								<s:Label text="FN3 lock"/>
+								<s:DropDownList id="ddl_lock_FN3"
+												change="__onChangeLockLed(event)"
+												width="100%"> 
+									<s:layout>
+										<s:VerticalLayout gap="0"
+														  horizontalAlign="contentJustify"
+														  requestedRowCount="9" />
+									</s:layout>
+								</s:DropDownList>
+							</s:VGroup>
+						</s:HGroup>						
 					</local:BMBorderContainer>
 					
-					<s:Spacer height="10"/>
-					<s:Label text="Options"/>
-					<s:Spacer height="0"/>
-					<local:BMBorderContainer width="100%" height="100%" >
-						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
+					<s:Spacer height="5"/>
+					<s:Label text="{resourceManager.getString('lang','STR_OPTIONS')}"/>
+					<local:BMBorderContainer width="100%" height="70%" >
+						<s:HGroup height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="50">
 							
 							<s:VGroup width="180">
 								<s:Label text="Shift + Esc = ~"/>
@@ -954,7 +979,7 @@
 												width="150">    
 									<s:dataProvider>
 										<mx:ArrayList>
-											<fx:String>N/A</fx:String>
+											<fx:String>{resourceManager.getString('lang','STR_NA')}</fx:String>
 											<fx:String>FN Layer</fx:String>
 											<fx:String>FN2 Layer</fx:String>
 											<fx:String>FN3 Layer</fx:String>
@@ -962,23 +987,21 @@
 									</s:dataProvider>
 								</s:DropDownList>
 							</s:VGroup>
-							<s:VGroup width="100%">
-							</s:VGroup>
 						</s:HGroup>
-						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
+						<s:HGroup height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="50">
 							<s:VGroup width="180">
-								<s:Label text="Debounce Setting (Lower value, more sensitivity)"/>
+								<s:Label text="{resourceManager.getString('lang','STR_DEBOUNCE_SETTING')}"/>
 								<s:HGroup id="gp_debounce">
 									
 								<s:NumericStepper id="slider_debounce" width="55" value="1" stepSize="1" minimum="1" maximum="10"
 												  snapInterval="1" allowValueWrap="false"/>
-								<s:Button id="btn_update_debounce" label="Update"
+								<s:Button id="btn_update_debounce" label="{resourceManager.getString('lang','STR_UPDATE')}"
 										  click="__onChangeDebounce(event)"/>
 								<!--<s:HSlider id="slider_debounce" change="__onChangeDebounce(event)"
 										   dataTipPrecision="0" liveDragging="false" maximum="100"
 										   minimum="1" snapInterval="1" stepSize="1" value="1"/>-->
 								</s:HGroup>
-								<s:Label text="(If you up the sensitivity, overlapping input can occur.)"/>
+								<s:Label text="{resourceManager.getString('lang','STR_IF_YOU_UP_THE_SENSITIVITY')}"/>
 							</s:VGroup>
 						</s:HGroup>
 					</local:BMBorderContainer>

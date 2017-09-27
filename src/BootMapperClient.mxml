@@ -4,11 +4,18 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx" 
 					   xmlns:local="*"
                        showStatusBar="false"
-					   backgroundColor="0xFFFFFF"
+					   backgroundColor="0xFFFFFF"	
+					   close="windowedapplication1_closeHandler(event)"
 					   width="980" height="950" xmlns:skins="skins.*" > 
 	<fx:Script>
 		<![CDATA[
 			import skins.Color;
+			
+			protected function windowedapplication1_closeHandler(event:Event):void
+			{
+				GBManager.getInstance().close();
+			}
+			
 		]]>
 	</fx:Script>
 	
