@@ -23,6 +23,8 @@
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
+
+            private var so:SharedObject;
             
             private function loadOptionsData():void
             {
@@ -69,10 +71,27 @@
             
             private function initDesktop():void
             {
+				var locale:String;
+				so = SharedObject.getLocal("__BMC_LOCALE__");
+				if(so.data.locale == undefined)
+				{
+					locale = "en_US"
+				}
+				else
+				{
+					locale = so.data.locale;
+				}
 				//locale 
-//				resourceManager.localeChain = ["en_US"];
-				resourceManager.localeChain = ["en_US"];
-				this.ddl_locale.selectedIndex = 0;
+				resourceManager.localeChain = [locale];
+				if(locale == "en_US")
+				{
+					this.ddl_locale.selectedIndex = 0;
+				}
+				else
+				{	// ko_KR
+					this.ddl_locale.selectedIndex = 1;
+				}
+				
                 
                 this.tabbar.selectedIndex = -1;
                 
@@ -407,8 +426,11 @@
             }
             
 			protected function __onLocaleValueCommit(event:IndexChangeEvent):void
-			{				
-				resourceManager.localeChain = [ String(this.ddl_locale.selectedItem.data) ];
+			{	
+				var locale:String = String(this.ddl_locale.selectedItem.data);
+				so.data.locale = locale;
+				so.flush(); 
+				resourceManager.localeChain = [ locale ];
 			}
 			
 		]]>
