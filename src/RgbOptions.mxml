@@ -296,7 +296,10 @@
 				var gListener:Function = __print;
 				
 				switch(event.currentTarget)
-				{						
+				{			
+					case this.btn_donation:
+						
+						break;			
 					case this.btn_disconnect:
 						processArgs.push("-action");
 						break;
@@ -327,6 +330,11 @@
 				}
 				
 				GBManager.getInstance().runProcess(processArgs, gListener);
+			}
+			protected function _onClickDonation(event:MouseEvent):void
+			{
+				var request:URLRequest = new URLRequest("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NLVL3ZHDSY8BL");
+				navigateToURL(request);
 			}
 			protected function _onClickEeprom(event:MouseEvent):void
 			{
@@ -1012,14 +1020,23 @@
 			<s:HGroup verticalAlign="top" width="100%" height="100%">
 				<s:VGroup width="50%" height="100%">
 					<s:Label text="Utils"/>
-					<local:BMBorderContainer width="100%">
-						<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%"  height="100%">
-					        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
-					                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
-					        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
-					        <s:Spacer height="30"/>
-						</s:VGroup>
-					</local:BMBorderContainer>
+					<s:VGroup width="100%" height="100%">
+						<local:BMBorderContainer width="100%">
+							<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%"  height="100%">
+						        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
+						                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
+						        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
+						        <s:Spacer height="30"/>
+							</s:VGroup>
+						</local:BMBorderContainer>
+					</s:VGroup>
+					<s:Spacer height="5"/>
+					<s:VGroup width="100%" height="100%" paddingLeft="10" >
+						<s:Label text="Buy me a coffee!" fontSize="16" />
+						<s:TextArea width="100%" height="50" borderVisible="false"
+									text="Thank you for using Bootmapper Client. If the app is useful, buy me a coffee! Your donation will motivate and revitalize every effort. You can donate via PayPal." />
+						<s:Button id="btn_donation" label="Buy me a coffee!" click="_onClickDonation(event)"  skinClass="skins.YellowButtonSkin"/>
+					</s:VGroup>
 				</s:VGroup>
 				<s:Spacer width="5"/>
 				<s:VGroup width="50%" height="100%">					
