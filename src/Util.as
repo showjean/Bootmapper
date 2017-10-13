@@ -6,6 +6,12 @@ package
 	public class Util
 	{
 		[inline]
+		static public function isVersionGreaterOrEqual(xMaj:int, xMin:int, xPat:int, xTMaj:int, xTMin:int, xTPat:int):Boolean
+		{
+			return (xMaj > xTMaj || (xMaj == xTMaj && xMin > xTMin) || (xMaj == xTMaj && xMin == xTMin && xPat >= xTPat));
+		}
+		
+		[inline]
 		static public function toDigitalType(n:String):String {
 			var out:String = n;
 			
