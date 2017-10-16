@@ -25,7 +25,8 @@
 			protected const OPTION_INDEX_LOCK_LED_CL:int     = 134; //0x86;
 			protected const OPTION_INDEX_LOCK_LED_SL:int     = 135; //0x87;
 			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 136; //0x88;
-			protected const OPTION_INDEX_DEBOUNCE_VALUE:int     = 137; //0x88;
+			protected const OPTION_INDEX_DEBOUNCE_VALUE:int     = 137; //0x89;
+			protected const OPTION_INDEX_FNLOCK_LED:int     = 138; //0x8A;
 			
 			protected const FIRMWARE_GB:int     =              0;
 			protected const FIRMWARE_GB4U:int     =            1;
@@ -67,6 +68,9 @@
 				this.ddl_lock_led_nl.dataProvider = lock_led_options;
 				this.ddl_lock_led_cl.dataProvider = lock_led_options;
 				this.ddl_lock_led_sl.dataProvider = lock_led_options;
+				
+				this.ddl_fn2_lock.dataProvider = fn_lock_led_options;
+				this.ddl_fn3_lock.dataProvider = fn_lock_led_options;
 			}
 			
 			protected function parseInfo(xInfoArr:Array):void{
@@ -160,6 +164,7 @@
 					//if(verMajor > 1 || (verMajor == 1 && verMinor > 3) || (verMajor == 1 && verMinor == 3 && verPatch >= 0))
 					if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 3, 0))
 					{
+						trace("debounce : ", xInfoArr[51]);
 						this.gp_debounce.enabled = true;
 						this.slider_debounce.value = xInfoArr[51];
 					}
@@ -169,18 +174,24 @@
 						this.slider_debounce.value = 0;
 					}
 					
+					trace("fn lock: ", xInfoArr[52]);
+					var fn3lock:int = xInfoArr[52] & 0x0F;
+					var fn2lock:int = xInfoArr[52] >> 4;
+					trace("fn2lock: ", fn2lock, " fn3lock: ", fn3lock);
 					// fn lock 1.4.0
 					if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 4, 0))
 					{
 						this.gp_fn_lock.enabled = true;
-						this.ddl_lock_FN2.selectedIndex;
-						this.ddl_lock_FN3.selectedIndex;
+						this.ddl_fn2_lock.selectedIndex = Util.getItemIndexWithData(this.fn_lock_led_options, fn2lock);
+						this.ddl_fn3_lock.selectedIndex = Util.getItemIndexWithData(this.fn_lock_led_options, fn3lock);			
+						if(-1 == this.ddl_fn2_lock.selectedIndex) this.ddl_fn2_lock.selectedIndex = 0;
+						if(-1 == this.ddl_fn3_lock.selectedIndex) this.ddl_fn3_lock.selectedIndex = 0;
 					}
 					else
 					{
 						this.gp_fn_lock.enabled = false;
-						this.ddl_lock_FN2.selectedIndex = 0;
-						this.ddl_lock_FN3.selectedIndex = 0;
+						this.ddl_fn2_lock.selectedIndex = 0;
+						this.ddl_fn3_lock.selectedIndex = 0;
 					}
 					
 					this.grp_rgb.enabled = gHasRgb;
@@ -720,13 +731,27 @@
 				
 			}
 			protected function __onChangeDebounce(event:Event):void
-			{
+			{				
 				var processArgs:Vector.<String> = new Vector.<String>();
 				processArgs.push("-option");
 				processArgs.push(OPTION_INDEX_DEBOUNCE_VALUE);
 				processArgs.push(this.slider_debounce.value);
 				
 				GBManager.getInstance().runProcess(processArgs, __printForEepromWrite);
+			}
+			
+			protected function __onChangeFnLockLed(event:Event):void
+			{
+				var fnLockLed:int;
+				fnLockLed = ((this.ddl_fn2_lock.selectedItem.data & 0x0F) << 4) | (this.ddl_fn3_lock.selectedItem.data & 0x0F);
+				trace("fnLockLed: ", fnLockLed);
+				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(OPTION_INDEX_FNLOCK_LED);				
+				processArgs.push(fnLockLed);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
 			}
 			
 		]]>
@@ -742,7 +767,14 @@
 			<fx:String>5: FN3 Lock Indicator</fx:String>
 			<fx:String>6: FN2/3 Lock Indicator</fx:String>			
 		</mx:ArrayList>
-		
+				
+		<mx:ArrayList id="fn_lock_led_options">
+			<fx:Object label="None" data="0x0F"/>
+			<fx:Object label="RGB Color 1" data="0"/>
+			<fx:Object label="RGB Color 2" data="1"/>
+			<fx:Object label="RGB Color 3" data="2"/>
+		</mx:ArrayList>
+			
 		<s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event)"/>
 		<s:RadioButtonGroup id="radio_grp_led_keymode" itemClick="__onChangeKeyMode(event)"/>
 		<s:RadioButtonGroup id="radio_grp_esc_tilde" itemClick="__onChangeEscTilde(event)"/>
@@ -811,7 +843,7 @@
 	                                          click="__onChangeRainbowColor(event)"/>
 	                            </s:HGroup>
 	                            <s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
-	                                <s:Label text="type:"/>
+	                                <s:Label text="Type:"/>
 	                                <s:DropDownList id="ddl_rainbow_fade_type"
 	                                                change="__onChangeRainbowFadeType(event)"
 	                                                labelField="label">                               
@@ -959,8 +991,8 @@
 						<s:HGroup id="gp_fn_lock" width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="10">
 							<s:VGroup width="100%" height="100%">
 								<s:Label text="FN2 lock"/>
-								<s:DropDownList id="ddl_lock_FN2"
-												change="__onChangeLockLed(event)"
+								<s:DropDownList id="ddl_fn2_lock"
+												change="__onChangeFnLockLed(event)"
 												width="100%"> 
 									<s:layout>
 										<s:VerticalLayout gap="0"
@@ -971,8 +1003,8 @@
 							</s:VGroup>
 							<s:VGroup width="100%" height="100%">
 								<s:Label text="FN3 lock"/>
-								<s:DropDownList id="ddl_lock_FN3"
-												change="__onChangeLockLed(event)"
+								<s:DropDownList id="ddl_fn3_lock"
+												change="__onChangeFnLockLed(event)"
 												width="100%"> 
 									<s:layout>
 										<s:VerticalLayout gap="0"
@@ -1056,7 +1088,7 @@
 						<s:VGroup width="100%" height="100%" paddingLeft="10" >						
 							<s:Label text="Do you like coffee?" fontSize="16" fontWeight="bold"/>
 							<s:TextArea width="370" minWidth="200" height="52" borderVisible="false" editable="false" selectable="false" 
-										text="Thank you for using 'Bootmapper Client'. If you are satisfied with this program, please buy me a coffee! Your donation motivates me to come up with a good idea. You can make donations via PayPal." />
+										text="Thank you for using 'Bootmapper Client'. If you are satisfied with this program, please buy me a coffee! Your donation motivates me to come up with a better idea. You can make donations via PayPal." />
 							<s:Button id="btn_donation" label="Motivate Me" click="_onClickDonation(event)"  skinClass="skins.YellowButtonSkin"/>
 						</s:VGroup>
 					</s:HGroup>

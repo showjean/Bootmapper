@@ -1,10 +1,23 @@
 package
 {
 	
+	import mx.collections.IList;
 	import mx.utils.ObjectProxy;
 	
 	public class Util
 	{
+		static public function getItemIndexWithData(xList:IList, xData:Object):int
+		{
+			var gLen:int = xList.length;
+			for(var i:int = 0; i < gLen; ++i)
+			{
+				if(xList.getItemAt(i).data == xData)
+					return i;
+			}
+			return -1;
+		}
+		
+		
 		[inline]
 		static public function isVersionGreaterOrEqual(xMaj:int, xMin:int, xPat:int, xTMaj:int, xTMin:int, xTPat:int):Boolean
 		{
