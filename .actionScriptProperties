@@ -15,11 +15,7 @@
     </libraryPath>
     <sourceAttachmentPath/>
   </compiler>
-  <applications>
-    <application path="BootmapperClient.mxml">
-      <airExcludes/>
-    </application>
-  </applications>
+  <applications/>
   <modules/>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
