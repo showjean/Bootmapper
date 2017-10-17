@@ -28,5 +28,5 @@
 	<fx:Style source="style.css"/>
 	
 		
-	<local:BootMapperContainerClient width="100%" height="100%"/>	
+	<local:BootmapperContainerClient width="100%" height="100%"/>	
 </s:WindowedApplication>
