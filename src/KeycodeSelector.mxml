@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 >
+	
+	<fx:Script>
+		<![CDATA[
+						
+			public function init(xArr:Array):void{
+								
+				var gKeycapsArr:Array = xArr
+				var gColLen:int = gKeycapsArr.length;
+//				trace(this, "gColLen", gColLen);
+				var gTx:Number = 0;
+				var gTy:Number = 0;
+				for(var i:int = 0; i < gColLen; ++i){
+					var gVec:Array = gKeycapsArr[i];
+					var gLen:int = gVec.length;
+//					trace(this, "gLen", gLen);
+					gTx = 0;
+					var gColHeight:Number = 0;
+					for(var k:int = 0; k < gLen; ++k){
+						var gKeycapData:KeycapData = gVec[k] as KeycapData; //(gObj.label, gObj.keyIndex, gObj.width, gObj.height, gObj.marginRight, gObj.marginBottom);
+//						trace(this, gKeycapData.toJSON());
+						
+						var gKeycap:Keycap = new Keycap();
+						gKeycap.x = int(gTx);
+						gKeycap.y = int(gTy);
+						
+						gTx += (gKeycapData.width + gKeycapData.marginRight) * Keycap.KEYCAP_WIDTH;
+						
+						var gCurrentHeight:Number = (1 + gKeycapData.marginBottom) * Keycap.KEYCAP_WIDTH;
+						if(gColHeight < gCurrentHeight){
+							gColHeight = gCurrentHeight;
+						}
+						
+						gKeycap.draw(gKeycapData);
+						
+						gKeycap.useHandCursor = true;
+						gKeycap.addEventListener(MouseEvent.CLICK, __onClickKeycap);
+						this.addElement(gKeycap);
+					}
+					gTy += gColHeight;					
+				}
+			}
+			
+			protected function __onClickKeycap(event:MouseEvent):void
+			{
+				var gKeycap:Keycap = event.currentTarget as Keycap;
+//				trace(gKeycap.index);
+				
+                if(event.ctrlKey)
+                {
+                    dispatchEvent(new KeyIndexEvent(ConstString.SELECTED_KEY_INDEX_WITH_CTRLKEY,gKeycap.index));    
+                }
+                else
+                {
+				    dispatchEvent(new KeyIndexEvent(ConstString.SELECTED_KEY_INDEX,gKeycap.index));
+                }
+			}
+			
+			public function select(xIdx:int):void
+			{
+				// :Vector.<Vector.<KeycapData>>
+				var gLen:int = this.numElements;
+				for(var i:int = 0; i < gLen; ++i){
+					var gKeycap:Keycap = this.getElementAt(i) as Keycap;
+					if(gKeycap == null) continue;
+					
+					if(xIdx == gKeycap.index){
+						gKeycap.select(true);
+					}else{
+						gKeycap.select(false);
+					}
+					
+				}
+			}
+            
+            public function getIndexByCharacter(xChar:String):int{
+                
+                var gIndex:int = 0;
+                
+                var gLen:int = this.numElements;
+                for(var i:int = 0; i < gLen; ++i){
+                    var gKeycap:Keycap = this.getElementAt(i) as Keycap;
+                    if(gKeycap == null) continue;
+                    
+                    if(xChar == gKeycap.uppercase || xChar == gKeycap.lowercase){
+                        gIndex = gKeycap.index;
+                        break;
+                    }
+                    
+                }
+                
+                return gIndex;
+            }
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:Group>

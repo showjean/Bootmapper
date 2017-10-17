@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+ADOBE SYSTEMS INCORPORATED
+Copyright 2008 Adobe Systems Incorporated
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file
+in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<!--- 
+The default skin class for Spark TabBar buttons.  
+
+@see spark.components.TabBar
+@see spark.skins.spark.TabBarSkin
+
+@langversion 3.0
+@playerversion Flash 10
+@playerversion AIR 1.5
+@productversion Flex 4
+-->
+
+<s:SparkButtonSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
+                   xmlns:s="library://ns.adobe.com/flex/spark" 
+                   xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+                   minWidth="70" minHeight="27" 
+                   alpha.disabled="0.5">
+    
+    <!-- host component -->
+    <fx:Metadata>
+        <![CDATA[ 
+        /** 
+         * @copy spark.skins.spark.ApplicationSkin#hostComponent
+         */
+        [HostComponent("spark.components.ButtonBarButton")]
+        ]]>
+    </fx:Metadata>
+    
+    <fx:Script fb:purpose="styling" >
+        
+		import spark.components.TabBar;
+
+        static private const exclusions:Array = ["labelDisplay"];
+        
+        /** 
+         * @private
+         */     
+        override public function get colorizeExclusions():Array {return exclusions;}
+        
+        /**
+         * @private
+         */
+        override protected function initializationComplete():void
+        {
+            useChromeColor = true;
+            super.initializationComplete();
+        }
+
+        private var cornerRadius:Number = 2
+        
+        /**
+         *  @private
+         *  The borderTop s:Path is just a s:Rect with the bottom edge left out.
+         *  Given the rounded corners per the cornerRadius style, the result is 
+         *  roughly an inverted U with the specified width, height, and cornerRadius.
+         * 
+         *  Circular arcs are drawn with two curves per flash.display.Graphics.GraphicsUtil.
+        */        
+        private function updateBorderTop(width:Number, height:Number):void
+        {
+            // Generate path data and lay it out. The path is not being layout by the default BasicLayout of this skin
+            // since we excluded it from the layout.
+            var path:String = createPathData(true);
+            borderTop.data = path;
+            borderTop.setLayoutBoundsSize(width, height, false);
+            borderTop.setLayoutBoundsPosition(0, 0, false);
+        }
+        
+        /**
+         *  @private
+         *  Draw the selected highlight strokes.  The highlight is the same shape as the tab's
+         *  border and is inset just within the border.   It must be rendererd with three separate paths, 
+         *  since the top leg is rendered with two horizontal lines, with different stroke 
+         *  alpha values, and the left and right vertical legs are rendered with a third alpha value.
+         *  
+         *  Circular arcs are drawn with two curves per flash.display.Graphics.GraphicsUtil.
+         */    
+        private function updateSelectedHighlight(width:Number, height:Number):void
+        {
+           
+        }  
+        
+        /**
+         *  @private
+         *  This function creates the path data used by borderTop and selectedHighlight.
+         */
+        private function createPathData(isBorder:Boolean):String
+        {
+            var left:Number = 0;
+            var right:Number = width;
+            var top:Number = 0.5;
+            var bottom:Number = height;
+            
+            var a:Number = cornerRadius * 0.292893218813453;
+            var s:Number = cornerRadius * 0.585786437626905;
+            
+            // If the path is for the highlight,
+            // Draw the vertical part of the selected tab highlight that's rendered 
+            // with alpha=0.07.  The s:Path is configured to include only the left and 
+            // right edges of an s:Rect, along with the top left,right rounded corners. 
+            // Otherwise, we draw a full path.
+            var path:String = "";
+            path +=  "M " + left + " " + bottom;
+            path += " L " + left + " " + (top + cornerRadius);
+            path += " Q " + left + " " + (top + s) + " " + (left + a) + " " + (top + a);
+            path += " Q " + (left + s) + " " + top + " " + (left + cornerRadius) + " " + top;
+            
+            if (isBorder)
+                path += " L " + (right - cornerRadius) + " " + top;
+            else
+                path += " M " + (right - cornerRadius) + " " + top;
+            
+            path += " Q " + (right - s) + " " + top + " " + (right - a) + " " + (top + a);
+            path += " Q " + right + " " + (top + s) + " " + right + " " + (top + cornerRadius);
+            path += " L " + right + " " + bottom;
+            
+            return path;
+        }
+        
+        /**
+         *  @private
+         *  The cornerRadius style is specified by the TabBar, not the button itself.   
+         * 
+         *  Rather than bind the corner radius properties of the s:Rect's in the markup 
+         *  below to hostComponent.owner.getStyle("cornerRadius"), we reset them here, 
+         *  each time a change in the value of the style is detected.  Note that each 
+         *  corner radius property is explicitly initialized to the default value of 
+         *  the style; the initial value of the private cornerRadius property.
+         */
+        private function updateCornerRadius():void
+        {
+            var cr:Number = getStyle("cornerRadius");
+            if (cornerRadius != cr)
+            {
+                cornerRadius = cr;
+                fill.topLeftRadiusX = cornerRadius;
+                fill.topRightRadiusX = cornerRadius;
+            }
+        }
+
+        /**
+         *  @private
+         */
+        override protected function updateDisplayList(unscaledWidth:Number, unscaleHeight:Number):void
+        {
+            updateCornerRadius();
+            updateSelectedHighlight(unscaledWidth, unscaledHeight); 
+            updateBorderTop(unscaledWidth, unscaledHeight);
+            super.updateDisplayList(unscaledWidth, unscaledHeight);
+        }
+    </fx:Script>
+    
+    <!-- states -->
+    <s:states>
+        <s:State name="up" />
+        <s:State name="over" stateGroups="overStates" />
+        <s:State name="down" stateGroups="downStates" />
+        <s:State name="disabled" stateGroups="disabledStates" />
+        <s:State name="upAndSelected" stateGroups="selectedStates, selectedUpStates" />
+        <s:State name="overAndSelected" stateGroups="overStates, selectedStates" />
+        <s:State name="downAndSelected" stateGroups="downStates, selectedStates" />
+        <s:State name="disabledAndSelected" stateGroups="selectedUpStates, disabledStates, selectedStates" />
+    </s:states>
+
+    <!--- layer 2: fill @private-->
+    <s:Rect id="fill" left="1" right="1" top="1" bottom="0" topLeftRadiusX="1" topRightRadiusX="1" width="70" height="22">
+        <s:fill>
+			<s:SolidColor color="{skins.Color.BM_WHITE}" 
+						  color.selectedStates="{skins.Color.BM_GREY}"						  
+						  alpha="1" />
+        </s:fill>
+    </s:Rect>
+    
+    <!--- layer 3: fill lowlight @private-->
+    
+    <!--- layer 4: fill highlight @private-->
+    
+    <!--- layer 5: highlight stroke (all states except down) @private -->
+    
+    <!--- layer 6: highlight stroke, selected tab, alpha=0.0 when not selected.
+          Set includeInLayout="false" as we regenerate the path data and lay out the path in
+          the updateDisplayList() override and we don't want it to affect measurement. @private
+    -->
+    <!--- @private -->
+    <!--- @private -->
+
+    <!--- layer 7: border - put on top of the fill so it doesn't disappear when scale is less than 1 @private -->
+    <s:Line id="borderBottom" left="0" right="0" bottom="0">
+        <s:stroke>
+            <s:SolidColorStroke weight="1" 
+                                color="{skins.Color.BM_GREY}" 
+                                alpha="1"  />
+        </s:stroke>
+    </s:Line>
+    <!--- Set includeInLayout="false" as we regenerate the path data and lay out the path in
+          the updateDisplayList() override and we don't want it to affect measurement. @private
+    -->
+    <s:Path id="borderTop" left="0" right="0" top="0" bottom="0" includeInLayout="false">
+        <s:stroke> 
+			<s:SolidColorStroke weight="1" 
+									   color="{skins.Color.BM_GREY}"
+									   alpha="1" 
+									   alpha.overAndSelected="1" 
+									   alpha.over="0.5" />
+        </s:stroke>
+    </s:Path>
+    
+    <!-- layer 8: text -->
+    <!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
+    <s:Label id="labelDisplay"
+             textAlign="center"
+             verticalAlign="middle"
+             maxDisplayedLines="1"
+			 color="0" 
+			 color.selectedStates="{skins.Color.BM_LIGHT_GREY}"
+             horizontalCenter="0" verticalCenter="1"
+             left="10" right="10" top="2" bottom="2">
+    </s:Label>
+    
+</s:SparkButtonSkin>

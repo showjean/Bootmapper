@@ -1,0 +1,28 @@
+{
+    "numOfRgbLeds": [
+        2,4,8,10,12,16,20,24 
+    ],
+    "rainbowModes":[
+        {
+            "label":"Fading", 
+            "data":0
+        }, 
+        {
+            "label":"Immediately", 
+            "data":1
+        }, 
+        {
+            "label":"Sequential", 
+            "data":2
+        }, 
+        {
+            "label":"Static", 
+            "data":3
+        }, 
+        {
+            "label":"Flow", 
+            "data":4
+        }
+    ]
+    
+}

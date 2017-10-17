@@ -1,0 +1,1122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:TabUI xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			 xmlns:s="library://ns.adobe.com/flex/spark" 
+			 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" 
+			 xmlns:local="*">
+    
+    <fx:Script>		
+        <![CDATA[
+			import flash.events.MouseEvent;
+			import flash.filesystem.*;
+			
+			import mx.collections.ArrayList;
+			import mx.events.CloseEvent;
+			import mx.events.ColorPickerEvent;
+			
+			import spark.components.Alert;
+			import spark.events.IndexChangeEvent;
+			
+			protected const LED2_INDEX_FULL_LED_MODE:int        = 128; //0x80;
+			protected const LED2_INDEX_FULL_LED_BRIGHTNESS:int  = 129; //0x81;
+			protected const LED2_INDEX_ESC_TO_TILDE:int         = 130; //0x82;
+			protected const LED2_INDEX_FN_LED:int               = 131; //0x83;
+			protected const LED2_INDEX_TRANSITION_DELAY:int     = 132; //0x84;
+			protected const OPTION_INDEX_LOCK_LED_NL:int     = 133; //0x85;
+			protected const OPTION_INDEX_LOCK_LED_CL:int     = 134; //0x86;
+			protected const OPTION_INDEX_LOCK_LED_SL:int     = 135; //0x87;
+			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 136; //0x88;
+			protected const OPTION_INDEX_DEBOUNCE_VALUE:int     = 137; //0x89;
+			protected const OPTION_INDEX_FNLOCK_LED:int     = 138; //0x8A;
+			
+			protected const FIRMWARE_GB:int     =              0;
+			protected const FIRMWARE_GB4U:int     =            1;
+			protected const FIRMWARE_GB_SPLIT:int     =        2;
+			protected const FIRMWARE_GB4U_SPLIT:int     =      3;
+			protected const FIRMWARE_GB4U_A:int     	=      4;
+			
+			protected const EEPROM_INTERFACE:int     	=		12;
+			protected const INTERFACE_PS2:int     	=		0;
+			protected const INTERFACE_USB:int     	=		1;
+			
+			protected const EEPROM_PS2_REPEAT_SPEED:int     	=		6;
+			protected const PS2_REPEAT_SPEED_SET_HIGH:int     	=		1;
+			protected const PS2_REPEAT_SPEED_SET_MIDD:int     	=		2;
+			protected const PS2_REPEAT_SPEED_SET_LOW:int     	=		3;
+			
+			protected var rainbowFadeTypeDataProvider:ArrayList;
+			private var __optionsData:Object;
+			
+			[Embed(source="assets/img/coffee0.png")]
+			[Bindable]
+			public var imgCoffee:Class;
+			
+			override public function setData(xObj:Object):void{
+				
+				__optionsData = xObj;
+				
+			}
+			
+			override public function init():void
+			{			
+				_isReady = true;
+				
+				rainbowFadeTypeDataProvider = new ArrayList(__optionsData.rainbowModes);
+				this.ddl_rainbow_fade_type.dataProvider = rainbowFadeTypeDataProvider;
+				
+				this.cb_lednum.dataProvider = new ArrayList(__optionsData.numOfRgbLeds);
+				
+				this.ddl_lock_led_nl.dataProvider = lock_led_options;
+				this.ddl_lock_led_cl.dataProvider = lock_led_options;
+				this.ddl_lock_led_sl.dataProvider = lock_led_options;
+				
+				this.ddl_fn2_lock.dataProvider = fn_lock_led_options;
+				this.ddl_fn3_lock.dataProvider = fn_lock_led_options;
+			}
+			
+			protected function parseInfo(xInfoArr:Array):void{
+				//				trace(xInfoArr.length);
+                trace(xInfoArr);
+				//[10,4,186, 136,255,0, 255,136,0 ,255,255,255, 0,255,0,0,0,255,0,255,170,255,0,0,0,0,0,255,255,255,255,255,0]
+				//num, mode, brightness, colol1,2,3, rainbow, key color1
+				// fade type 1byte, full led mode 1byte, full led brightness 1byte, esc to tilde 1byte, fn led 1byte
+				
+				var gSize:uint = xInfoArr[0];
+				var gIsVersionLate12:Boolean;
+				var gHasRgb:Boolean;
+				
+				if(gSize > 50)
+				{
+					// ver 1.2
+					xInfoArr.shift();
+					gIsVersionLate12 = true;
+					
+					gHasRgb = hasRgbOptions(xInfoArr[46]); //true;
+				}
+				else
+				{
+					// ver 1.1
+					gIsVersionLate12 = false;
+					gHasRgb = true;
+				}
+				
+				
+				if(gHasRgb)
+				{
+					this.cb_lednum.selectedItem = xInfoArr[0];
+					this.radio_grp_led_mode.selectedIndex = xInfoArr[1];
+					this.slider_brightness.value = xInfoArr[2];
+					this.lbl_brightness.text = xInfoArr[2];
+					
+					this.color_picker1.selectedColor  = (xInfoArr[3]<<8) + (xInfoArr[4]<<16) + (xInfoArr[5]);
+					this.color_picker2.selectedColor  = (xInfoArr[6]<<8) + (xInfoArr[7]<<16) + (xInfoArr[8]);
+					this.color_picker3.selectedColor  = (xInfoArr[9]<<8) + (xInfoArr[10]<<16) + (xInfoArr[11]);
+					
+					var gOffset:int = 0;
+					for(var i:int = 0 ; i < 7; ++i){
+						gOffset = i * 3;
+						this["color_picker_rainbow"+(i+1)].selectedColor = (xInfoArr[12+gOffset]<<8) + (xInfoArr[13+gOffset]<<16) + (xInfoArr[14+gOffset]);
+					}
+					this.radio_grp_led_keymode.selectedIndex = xInfoArr[33];
+					this.color_picker_key1.selectedColor  = (xInfoArr[34]<<8) + (xInfoArr[35]<<16) + (xInfoArr[36]);
+					this.ddl_rainbow_fade_type.selectedIndex = xInfoArr[37] == 255 ? 0 : xInfoArr[37];
+				}
+				// firmware Ver 1.1
+				
+				// full led mode, brightness;
+				this.slider_rgb_speed.value = xInfoArr[38];
+				this.lbl_rgb_speed.text = xInfoArr[38];
+				this.ddl_full_led_mode.selectedIndex = xInfoArr[39];                
+				this.slider_full_led_brightness.value = xInfoArr[40];
+				
+				this.radio_grp_esc_tilde.selectedIndex = xInfoArr[41];
+				//                this.ddl_fn_led.selectedIndex = xInfoArr[42];
+				
+				// firmware ver 1.2
+				if(gIsVersionLate12)
+				{
+					this.gp_3_lock.enabled = true;
+					var verMajor:int = xInfoArr[43];
+					var verMinor:int = xInfoArr[44];
+					var verPatch:int = xInfoArr[45];
+					this.lb_version.text = "Ver "+ verMajor + "." + verMinor + "." + verPatch;
+					trace("version : ", verMajor + "." + verMinor + "." + verPatch);
+					this.lb_firmware.text = getFirmwareName(xInfoArr[46]);
+					trace("firmware : ", xInfoArr[46]);
+					this.ddl_lock_led_nl.selectedIndex = xInfoArr[47];
+					this.ddl_lock_led_cl.selectedIndex = xInfoArr[48];
+					this.ddl_lock_led_sl.selectedIndex = xInfoArr[49];
+					
+					//numlock layer 1.2.4
+					//if(verMajor > 1 || (verMajor == 1 && verMinor > 2) || (verMajor == 1 && verMinor == 2 && verPatch > 3))
+					if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 2, 4))
+					{
+						this.ddl_numlock_layer.enabled = true;
+						this.ddl_numlock_layer.selectedIndex = xInfoArr[50];
+						trace("num layer: ", xInfoArr[50]);
+					}
+					else
+					{
+						this.ddl_numlock_layer.enabled = false;
+						this.ddl_numlock_layer.selectedIndex = 0;
+					}
+					
+					// debounce 1.3.0
+					//if(verMajor > 1 || (verMajor == 1 && verMinor > 3) || (verMajor == 1 && verMinor == 3 && verPatch >= 0))
+					if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 3, 0))
+					{
+						trace("debounce : ", xInfoArr[51]);
+						this.gp_debounce.enabled = true;
+						this.slider_debounce.value = xInfoArr[51];
+					}
+					else
+					{
+						this.gp_debounce.enabled = false;
+						this.slider_debounce.value = 0;
+					}
+					
+					var fn3lock:int = xInfoArr[42] & 0x0F;
+					var fn2lock:int = xInfoArr[42] >> 4;
+					trace("fn2lock: ", fn2lock, " fn3lock: ", fn3lock);
+					// fn lock 1.4.0
+					if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 4, 0))
+					{
+						this.gp_fn_lock.enabled = true;
+						this.ddl_fn2_lock.selectedIndex = Util.getItemIndexWithData(this.fn_lock_led_options, fn2lock);
+						this.ddl_fn3_lock.selectedIndex = Util.getItemIndexWithData(this.fn_lock_led_options, fn3lock);			
+						if(-1 == this.ddl_fn2_lock.selectedIndex) this.ddl_fn2_lock.selectedIndex = 0;
+						if(-1 == this.ddl_fn3_lock.selectedIndex) this.ddl_fn3_lock.selectedIndex = 0;
+					}
+					else
+					{
+						this.gp_fn_lock.enabled = false;
+						this.ddl_fn2_lock.selectedIndex = 0;
+						this.ddl_fn3_lock.selectedIndex = 0;
+					}
+					
+					this.grp_rgb.enabled = gHasRgb;
+				}
+				else
+				{
+					this.gp_3_lock.enabled = false;
+					this.lb_version.text = "Version";
+					this.lb_firmware.text = "Firmware";
+					this.grp_rgb.enabled = true;
+				}
+				
+				if(xInfoArr[46] == FIRMWARE_GB4U_A)
+				{
+					this.gp_full_led.enabled = false;
+				}
+				else
+				{
+					this.gp_full_led.enabled = true;
+				}
+			}
+			
+			private function hasRgbOptions(xId:String):Boolean
+			{
+				switch(int(xId))
+				{
+					case FIRMWARE_GB:
+						return true;
+					case FIRMWARE_GB4U:
+						return false;
+					case FIRMWARE_GB_SPLIT:
+						return true;
+					case FIRMWARE_GB4U_SPLIT:
+						return false;
+					case FIRMWARE_GB4U_A:
+						return false;
+				}
+				
+				return false;
+			}
+			
+			private function getFirmwareName(xId:String):String
+			{
+				switch(int(xId))
+				{
+					case FIRMWARE_GB:
+						return "ps2avrGB";
+					case FIRMWARE_GB4U:
+						return "ps2avrGB4U";
+					case FIRMWARE_GB_SPLIT:
+						return "ps2avrGB Split";
+					case FIRMWARE_GB4U_SPLIT:
+						return "ps2avrGB4U Split";
+					case FIRMWARE_GB4U_A:
+						return "ps2avrGB4U AIKON";
+				}
+				
+				return "Frimware " + xId;
+			}
+			
+			protected function showWaiting(xMsg:String, xTitle:String = ""):void{
+				
+				WaitAlert.getInstance().showWaiting(xMsg, xTitle);
+				
+			}
+			protected function removeWaiting():void{
+				WaitAlert.getInstance().removeWaiting();
+			}
+			
+			protected function __printForBootloader(xSuc:int, xStr:String):void
+			{
+				// bootloader <-> app
+				if(xSuc == 1){  // complete
+					// 부트로더, 키보드 간에 전환이 성공하면 ui는 비활성화;
+					__setUiEnabled(false);
+				}
+				
+				__print(xSuc, xStr);
+			}
+			
+			protected function __printForEepromWrite(xSuc:int, xStr:String):void
+			{
+				var gObj:Object = JSON.parse(xStr);
+				// usb, ps/2 설정
+				if(xSuc == 1){  // complete
+					
+					Alert.show("Done", "");
+				}
+				
+				__print(xSuc, xStr);
+			}
+			
+			protected function __print (xSuc:int, xStr:String):void {
+				/*
+				#define SUCCESS_INDEX_LED2_INFO 3
+				#define SUCCESS_INDEX_DEVICE_READY 4
+				#define SUCCESS_INDEX_DEVICE_ACTION 5
+				*/
+				var gObj:Object = JSON.parse(xStr);
+				if(xSuc == 1){  // complete
+					trace("Complete : ", gObj.message);
+					removeWaiting();
+				}else if(xSuc == 0){    // error
+					//                    trace(gObj.message);
+					removeWaiting();
+					Alert.show(gObj.message, "Error");
+				}else if(xSuc == 2){    // warning                    
+					showWaiting(gObj.message, "Uploading...");
+					trace("warning : ", gObj.message);
+				}else if(xSuc == 3){    // led2 info
+					
+					parseInfo(gObj.result);
+					
+					__setUiEnabled(true);
+					
+				}else if(xSuc == 5){    // SUCCESS_INDEX_DEVICE_ACTION
+					//                    trace(gObj.message);
+					__setUiEnabled(false);
+				}
+			}
+			
+			protected function __setUiEnabled(xEnabled:Boolean):void
+			{
+				this.btn_connect.enabled = !xEnabled;
+				this.btn_disconnect.enabled = xEnabled;
+				this.grp_option_ui.enabled = xEnabled;
+			}
+			
+			protected function _onClick(event:MouseEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();	
+				var processArgs2:Vector.<String> = new Vector.<String>();			
+				var gListener:Function = __print;
+				
+				switch(event.currentTarget)
+				{			
+					case this.btn_donation:
+						
+						break;			
+					case this.btn_disconnect:
+						processArgs.push("-action");
+						break;
+					
+					case this.btn_bootloader:
+						processArgs.push("-bootloader");
+						showWaiting("Waiting...");
+						gListener = __printForBootloader;
+						break;
+					
+					case this.btn_app:
+						processArgs.push("-app");
+						break;
+					
+					case this.btn_save_num:
+						//.exe -led num VAL
+						processArgs.push("-led");
+						processArgs.push("num");
+						processArgs.push(this.cb_lednum.selectedItem);
+						break;
+					
+					case this.btn_connect:
+						processArgs.push("-ready");
+						processArgs2.push("-info");
+						
+						GBManager.getInstance().runRelayProecss([processArgs, processArgs2], gListener);
+						return;
+				}
+				
+				GBManager.getInstance().runProcess(processArgs, gListener);
+			}
+			protected function _onClickDonation(event:MouseEvent):void
+			{
+				var request:URLRequest = new URLRequest("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NLVL3ZHDSY8BL");
+				navigateToURL(request);
+			}
+			protected function _onClickEeprom(event:MouseEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				
+				switch(event.currentTarget){
+					
+					case this.btn_clear_num:
+						processArgs.push("-clearNumOfLeds");
+						break;
+					case this.btn_clear_eeprom:
+						processArgs.push("-clearEeprom");
+						break;
+				}
+				
+				Alert.show(
+					"GO?", 
+					"Confirm", 
+					Alert.YES|Alert.NO, 
+					this, 
+					function (event:CloseEvent):void { if(event.detail == Alert.YES) {GBManager.getInstance().runProcess(processArgs, __print)}}, 
+					null, 
+					Alert.YES, 
+					null);                
+				
+			}
+			
+			/* [Bindable]
+			public var simpleDP:Array = ['0x000000', '0xFF0000', '0xFF8800',
+				'0xFFFF00', '0x88FF00', '0x00FF00', '0x00FF88', '0x00FFFF',
+				'0x0088FF', '0x0000FF', '0x8800FF', '0xFF00FF', '0xFF00AA', '0xFFFFFF']; */
+			
+			public function __onChangeColor(event:Event):void {
+				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-led");
+				processArgs.push("color");
+				
+				switch(event.currentTarget){
+					case this.color_picker1:
+						processArgs.push("1");
+						break;
+					case this.color_picker2:
+						processArgs.push("2");
+						break;
+					case this.color_picker3:
+						processArgs.push("3");
+						break;
+				}
+				
+				var gColor:uint = event.currentTarget.selectedColor;
+				var gR:uint = (gColor >> 16) & 0xFF;
+				var gG:uint = (gColor >> 8) & 0xFF;
+				var gB:uint = (gColor) & 0xFF;
+				processArgs.push(gG);  // g
+				processArgs.push(gR);  // r
+				processArgs.push(gB);  // b
+				trace("color : ", gColor, gR, gG, gB);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function __onChangeKeyColor(event:ColorPickerEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-led");
+				processArgs.push("keycolor");
+				
+				switch(event.currentTarget){
+					case this.color_picker_key1:
+						processArgs.push("1");
+						break;
+				}
+				
+				var gColor:uint = event.currentTarget.selectedColor;
+				var gR:uint = (gColor >> 16) & 0xFF;
+				var gG:uint = (gColor >> 8) & 0xFF;
+				var gB:uint = (gColor) & 0xFF;
+				processArgs.push(gG);  // g
+				processArgs.push(gR);  // r
+				processArgs.push(gB);  // b
+				trace("color : ", gColor, gR, gG, gB);                
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			public function __onChangeRainbowColor(event:Event):void {
+				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-led");
+				processArgs.push("rainbow");
+				
+				var gColor:uint;
+				var gR:uint;
+				var gG:uint;
+				var gB:uint;
+				for(var i:int = 0 ; i < 7; ++i){
+					gColor = this["color_picker_rainbow"+(i+1)].selectedColor;
+					gR = (gColor >> 16) & 0xFF;
+					gG = (gColor >> 8) & 0xFF;
+					gB = (gColor) & 0xFF;
+					processArgs.push(gG);  // g
+					processArgs.push(gR);  // r
+					processArgs.push(gB);  // b
+					
+					trace(gG.toString(16) + gR.toString(16) + gB.toString(16));
+				}
+				
+				//                trace(processArgs.join(""));
+				
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function __onChangeMode(evnet:Event):void{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-led");
+				processArgs.push("mode");
+				trace(this.name, this.radio_grp_led_mode.selectedIndex);
+				switch(this.radio_grp_led_mode.selection){
+					case this.rb_mode0:
+						processArgs.push("0");
+						break;
+					case this.rb_mode1:
+						processArgs.push("1");
+						break;
+					case this.rb_mode2:
+						processArgs.push("2");
+						break;
+					case this.rb_mode3:
+						processArgs.push("3");
+						break;
+					case this.rb_mode4:
+						processArgs.push("4");
+						break;
+				}
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			protected function __onChangeKeyMode(evnet:Event):void{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-led");
+				processArgs.push("keymode");
+				//                trace(this.name, this.radio_grp_led_keymode.selection.id);
+				switch(this.radio_grp_led_keymode.selection){
+					case this.rb_keymode0:
+						processArgs.push("0");
+						break;
+					case this.rb_keymode1:
+						processArgs.push("1");
+						break;
+					case this.rb_keymode2:
+						processArgs.push("2");
+						break;
+				}
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			protected function __onChangeBrightness(event:Event):void
+			{
+				this.lbl_brightness.text = String(this.slider_brightness.value);
+				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-led");
+				processArgs.push("brightness");
+				processArgs.push(this.slider_brightness.value);
+				
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function _onClickFirmup(event:MouseEvent):void
+			{
+				var fileToOpen:File = new File();
+				var txtFilter:FileFilter = new FileFilter(".hex", "*.hex");
+				
+				try 
+				{
+					fileToOpen.browseForOpen("Open", [txtFilter]);
+					fileToOpen.addEventListener(Event.SELECT, __onFileSelected);
+				}
+				catch (error:Error)
+				{
+					trace("Failed:", error.message);
+				}
+				
+			}
+			protected function __onFileSelected(event:Event):void 
+			{
+				var gFile:File = event.target as File;
+				
+				var stream:FileStream = new FileStream();
+				stream.open(gFile, FileMode.READ);
+				var gFileData:String = stream.readUTFBytes(stream.bytesAvailable);             
+				
+				var gStartAddress:int = parseInt(HexParser.getStartAddress(gFileData), 16);
+				if(gStartAddress >= 0x7000){
+					Alert.show("Don't upload \"bootloader.hex!!\"", "error");
+					return;
+				}
+				//                trace(this.name, gFile.nativePath);
+				// processArgs.push("-bootloader");
+				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-bootloader");
+				processArgs.push("ignore");
+				
+				var processArgs2:Vector.<String> = new Vector.<String>();
+				processArgs2.push("-r");
+				processArgs2.push(gFile.nativePath);
+				
+				GBManager.getInstance().runRelayProecss([processArgs, processArgs2], __print);
+				
+				showWaiting("Waiting...");
+				
+			}
+			
+			
+			
+			protected function __onChangeRainbowFadeType(event:IndexChangeEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-led");
+				processArgs.push("fade");
+				processArgs.push(this.ddl_rainbow_fade_type.selectedIndex);                
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			
+			protected function __onChangeEscTilde(evnet:Event):void{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(LED2_INDEX_ESC_TO_TILDE);
+				//                trace(this.name, this.radio_grp_led_keymode.selection.id);
+				switch(this.radio_grp_esc_tilde.selection){
+					case this.rb_esc_tilde0:
+						processArgs.push("0");
+						break;
+					case this.rb_esc_tilde1:
+						processArgs.push("1");
+						break;
+				}
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			//            protected function __onChangeFnLed(event:IndexChangeEvent):void
+			//            {
+			//                var processArgs:Vector.<String> = new Vector.<String>();
+			//                processArgs.push("-option");
+			//                processArgs.push(LED2_INDEX_FN_LED);
+			//                processArgs.push(this.ddl_fn_led.selectedIndex);                
+			//                
+			//                GBManager.getInstance().runProcess(processArgs, __print);
+			//            }
+			
+			protected function __onChangeFullLedBrightness(event:Event):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(LED2_INDEX_FULL_LED_BRIGHTNESS);
+				processArgs.push(this.slider_full_led_brightness.value);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function __onChangeFullLedMode(event:IndexChangeEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(LED2_INDEX_FULL_LED_MODE);
+				processArgs.push(this.ddl_full_led_mode.selectedIndex);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function __onChangeRgbSpeed(event:Event):void
+			{
+				this.lbl_rgb_speed.text = String(this.slider_rgb_speed.value);
+				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(LED2_INDEX_TRANSITION_DELAY);
+				processArgs.push(this.slider_rgb_speed.value);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function __onChangeNumlockLayer(event:Event):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(OPTION_INDEX_NUMLOCK_LAYER);
+				processArgs.push(this.ddl_numlock_layer.selectedIndex);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function __onChangeLockLed(event:Event):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				
+				switch(event.currentTarget){
+					case this.ddl_lock_led_nl:
+						processArgs.push(OPTION_INDEX_LOCK_LED_NL);
+						break;
+					case this.ddl_lock_led_cl:
+						processArgs.push(OPTION_INDEX_LOCK_LED_CL);
+						break;
+					case this.ddl_lock_led_sl:
+						processArgs.push(OPTION_INDEX_LOCK_LED_SL);
+						break;
+				}
+				processArgs.push(DropDownList(event.currentTarget).selectedIndex);
+				
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+			protected function _onClickInterface(event:MouseEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				
+				var gListener:Function = __printForEepromWrite;
+				processArgs.push("-writeEeprom");
+				processArgs.push(EEPROM_INTERFACE);
+				
+				switch(event.currentTarget){
+					case this.btn_usb:
+						processArgs.push(INTERFACE_USB);
+						break;
+					case this.btn_ps2:
+						processArgs.push(INTERFACE_PS2);
+						break;
+				}
+				
+				
+				GBManager.getInstance().runProcess(processArgs, gListener);
+				
+			}
+			
+			protected function _onClickPs2RepeatSpeed(event:MouseEvent):void
+			{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				
+				var gListener:Function = __printForEepromWrite;
+				processArgs.push("-writeEeprom");
+				processArgs.push(EEPROM_PS2_REPEAT_SPEED);
+				
+				switch(event.currentTarget){
+					case this.btn_ps2_fast:
+						processArgs.push(PS2_REPEAT_SPEED_SET_HIGH);
+						break;
+					case this.btn_ps2_midd:
+						processArgs.push(PS2_REPEAT_SPEED_SET_MIDD);
+						break;
+					case this.btn_ps2_slow:
+						processArgs.push(PS2_REPEAT_SPEED_SET_LOW);
+						break;
+				}
+				
+				
+				GBManager.getInstance().runProcess(processArgs, gListener);
+				
+			}
+			protected function __onChangeDebounce(event:Event):void
+			{				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(OPTION_INDEX_DEBOUNCE_VALUE);
+				processArgs.push(this.slider_debounce.value);
+				
+				GBManager.getInstance().runProcess(processArgs, __printForEepromWrite);
+			}
+			
+			protected function __onChangeFnLockLed(event:Event):void
+			{
+				var fnLockLed:int;
+				fnLockLed = ((this.ddl_fn2_lock.selectedItem.data & 0x0F) << 4) | (this.ddl_fn3_lock.selectedItem.data & 0x0F);
+				trace("fnLockLed: ", fnLockLed);
+				
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(OPTION_INDEX_FNLOCK_LED);				
+				processArgs.push(fnLockLed);
+				
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+			
+		]]>
+    </fx:Script>
+	
+	<fx:Declarations>		
+		<mx:ArrayList id="lock_led_options">
+			<fx:String>0: Lock Indicator</fx:String>
+			<fx:String>1: Always On</fx:String>
+			<fx:String>2: Always Off</fx:String>
+			<fx:String>3: Lock Reverse</fx:String>
+			<fx:String>4: FN2 Lock Indicator</fx:String>
+			<fx:String>5: FN3 Lock Indicator</fx:String>
+			<fx:String>6: FN2/3 Lock Indicator</fx:String>			
+		</mx:ArrayList>
+				
+		<mx:ArrayList id="fn_lock_led_options">
+			<fx:Object label="None" data="0x0F"/>
+			<fx:Object label="RGB Color 1" data="0"/>
+			<fx:Object label="RGB Color 2" data="1"/>
+			<fx:Object label="RGB Color 3" data="2"/>
+		</mx:ArrayList>
+			
+		<s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event)"/>
+		<s:RadioButtonGroup id="radio_grp_led_keymode" itemClick="__onChangeKeyMode(event)"/>
+		<s:RadioButtonGroup id="radio_grp_esc_tilde" itemClick="__onChangeEscTilde(event)"/>
+	</fx:Declarations>
+    
+    <s:Scroller width="100%" height="100%">
+	    <s:Group id="grp_ui" width="100%" height="100%">
+	        <s:layout>
+	            <s:VerticalLayout gap="5">
+	                
+	            </s:VerticalLayout>
+	        </s:layout> 
+	        
+	        <s:HGroup width="100%" verticalAlign="bottom">            
+	            <s:Button id="btn_connect" label="{resourceManager.getString('lang','STR_CONNECT')}" click="_onClick(event)" skinClass="skins.GreyButtonSkin"/>
+	            <s:Button id="btn_disconnect" label="{resourceManager.getString('lang','STR_DISCONNECT')}" click="_onClick(event)" enabled="false"/>
+				<s:Spacer width="100%"/>
+				<s:Label id="lb_firmware" text="Firmware"/>
+				<s:Label id="lb_version" text="Version"/>
+	        </s:HGroup>
+	        
+			
+			<s:Spacer height="10"/>
+	        <s:Group id="grp_option_ui" width="100%" height="100%" enabled="false">
+	            <s:layout>
+	                <s:HorizontalLayout/>
+	            </s:layout>
+				
+				<s:VGroup width="50%" height="100%" minWidth="400">
+		            <s:Label text="{resourceManager.getString('lang','STR_RGB_LED_SETTINGS')}"/>
+		            <local:BMBorderContainer id="grp_rgb" width="100%">
+	                <s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10">
+	                    <s:HGroup width="100%" verticalAlign="middle">                     
+	                        <s:Label text="{resourceManager.getString('lang','STR_NUM_OF_RGB_LEDS')}"/>
+	                        <s:ComboBox id="cb_lednum" width="80" openOnInput="false">		
+								<s:layout>
+									<s:VerticalLayout gap="0"
+													  horizontalAlign="contentJustify"
+													  requestedRowCount="10" />
+								</s:layout>
+		
+	                        </s:ComboBox>
+	                        <s:Button id="btn_save_num" label="{resourceManager.getString('lang','STR_CHANGE')}" click="_onClick(event)"/>
+	                        <s:Spacer width="20"/>                
+	                    </s:HGroup>
+	                    <s:Spacer height="10"/>
+	                    
+	                    <s:VGroup width="100%">
+	                        <s:VGroup>
+	                            <s:Label text="{resourceManager.getString('lang','STR_RGB_LED_MODE_SETTING')}"/>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode0" width="100" label="0. Off"
+	                                               groupName="radio_grp_led_mode"/>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode1" width="100" label="1. Rainbow"
+	                                               groupName="radio_grp_led_mode"/>           
+	                                <mx:ColorPicker id="color_picker_rainbow1"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow2"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow3"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow4"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow5"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow6"/>         
+	                                <mx:ColorPicker id="color_picker_rainbow7"/>
+	                                <s:Button id="btn_save_rainbow" label="{resourceManager.getString('lang','STR_UPDATE')}"
+	                                          click="__onChangeRainbowColor(event)"/>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
+	                                <s:Label text="Type:"/>
+	                                <s:DropDownList id="ddl_rainbow_fade_type"
+	                                                change="__onChangeRainbowFadeType(event)"
+	                                                labelField="label">                               
+	                                </s:DropDownList>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode2" width="100" label="2. Color 1"
+	                                               groupName="radio_grp_led_mode"/>            
+	                                <mx:ColorPicker id="color_picker1" width="50"
+	                                                change="__onChangeColor(event)"/>
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode3" width="100" label="3. Color 2"
+	                                               groupName="radio_grp_led_mode"/>              
+	                                <mx:ColorPicker id="color_picker2" width="50"
+	                                                change="__onChangeColor(event)"/>  
+	                            </s:HGroup>
+	                            <s:HGroup width="100%"> 
+	                                <s:RadioButton id="rb_mode4" width="100" label="4. Color 3"
+	                                               groupName="radio_grp_led_mode"/>           
+	                                <mx:ColorPicker id="color_picker3" width="50"
+	                                                change="__onChangeColor(event)"/>     
+	                            </s:HGroup>
+	                            
+	                        </s:VGroup>
+	                    </s:VGroup>
+	                    <s:Spacer height="10"/>
+	                    <s:HGroup width="100%" verticalAlign="middle">                     
+	                        <s:Label text="{resourceManager.getString('lang','STR_RGB_LED_BRIGHTNESS')}"/>
+	                        <s:HSlider id="slider_brightness" change="__onChangeBrightness(event)"
+	                                   dataTipPrecision="0" liveDragging="false" maximum="255"
+	                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+							<s:Label id="lbl_brightness"/>
+	                    </s:HGroup>
+	                    <s:Spacer height="10"/>
+	                    <s:HGroup width="100%" verticalAlign="middle">                     
+	                        <s:Label text="{resourceManager.getString('lang','STR_RGB_TRANSITION_DELAY')}"/>
+	                        <s:HSlider id="slider_rgb_speed" change="__onChangeRgbSpeed(event)"
+	                                   dataTipPrecision="0" liveDragging="false" maximum="250"
+	                                   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+							<s:Label id="lbl_rgb_speed"/>
+	                    </s:HGroup>
+						<s:Spacer height="20"/>
+						<s:VGroup>
+							<s:Label text="{resourceManager.getString('lang','STR_RGB_LED_KEY_EVENT_SETTING')}"/>
+							<s:HGroup width="100%"> 
+								<s:RadioButton id="rb_keymode0" width="200" label="0. Off"
+											   groupName="radio_grp_led_keymode"/>
+							</s:HGroup>
+							<s:HGroup width="100%"> 
+								<s:RadioButton id="rb_keymode1" width="200" label="1. Color"
+											   groupName="radio_grp_led_keymode"/>            
+								<mx:ColorPicker id="color_picker_key1" width="50"
+												change="__onChangeKeyColor(event)"/>
+							</s:HGroup>
+							<s:HGroup width="100%"> 
+								<s:RadioButton id="rb_keymode2" width="200"
+											   label="2. {resourceManager.getString('lang','STR_COMPLEMENTARY_COLOR')}"
+											   groupName="radio_grp_led_keymode"/>
+							</s:HGroup>
+						</s:VGroup>
+	                </s:VGroup>
+	            
+	            </local:BMBorderContainer>
+				</s:VGroup>
+				
+				<s:Spacer width="5"/>
+				
+				<s:VGroup width="50%" height="100%" minWidth="400">
+					<s:Label text="{resourceManager.getString('lang','STR_FULL_LED_SETTINGS')}"/>
+					<local:BMBorderContainer width="100%" height="30%" id="gp_full_led">
+						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
+							
+							<s:VGroup>
+								<s:Label text="{resourceManager.getString('lang','STR_FULL_LED_MODE')}"/>
+								<s:DropDownList id="ddl_full_led_mode"
+												change="__onChangeFullLedMode(event)"
+												width="200">    
+									<s:dataProvider>
+										<mx:ArrayList>
+											<fx:String>0: Off</fx:String>
+											<fx:String>1: Fading</fx:String>
+											<fx:String>2: On</fx:String>
+											<fx:String>3: Press Level Up</fx:String>
+											<fx:String>4: Press Level Down</fx:String>
+										</mx:ArrayList>
+									</s:dataProvider>
+								</s:DropDownList>
+							</s:VGroup>
+							<s:VGroup>
+								<s:Label text="{resourceManager.getString('lang','STR_FULL_LED_BRIGHTNESS')}"/>
+								<s:HSlider id="slider_full_led_brightness" change="__onChangeFullLedBrightness(event)"
+										   dataTipPrecision="0" liveDragging="false" maximum="255"
+										   minimum="1" snapInterval="1" stepSize="1" value="1"/>
+							</s:VGroup>
+							
+						</s:HGroup>
+						
+					</local:BMBorderContainer>
+					
+					<s:Spacer height="5"/>
+					<s:Label text="{resourceManager.getString('lang','STR_LOCK_LED_SETTINGS')}"/>
+					<local:BMBorderContainer width="100%" height="50%">
+						<s:HGroup id="gp_3_lock" width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="10">							
+							<s:VGroup width="100%">
+								<s:Label text="Num lock"/>
+								<s:DropDownList id="ddl_lock_led_nl"
+												change="__onChangeLockLed(event)" 
+												width="100%">
+									<s:layout>
+										<s:VerticalLayout gap="0"
+														  horizontalAlign="contentJustify"
+														  requestedRowCount="9" />
+									</s:layout>
+								</s:DropDownList>
+							</s:VGroup>
+								
+							<s:VGroup width="100%">
+								<s:Label text="Caps lock"/>
+								<s:DropDownList id="ddl_lock_led_cl"
+												change="__onChangeLockLed(event)"
+												width="100%">  
+									<s:layout>
+										<s:VerticalLayout gap="0"
+														  horizontalAlign="contentJustify"
+														  requestedRowCount="9" />
+									</s:layout>
+								</s:DropDownList>
+							</s:VGroup>
+								
+							<s:VGroup width="100%">
+								<s:Label text="Scroll lock"/>
+								<s:DropDownList id="ddl_lock_led_sl"
+												change="__onChangeLockLed(event)"
+												width="100%"> 
+									<s:layout>
+										<s:VerticalLayout gap="0"
+														  horizontalAlign="contentJustify"
+														  requestedRowCount="9" />
+									</s:layout>
+								</s:DropDownList>
+							</s:VGroup>
+								
+						</s:HGroup>
+						<s:HGroup id="gp_fn_lock" width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="10">
+							<s:VGroup width="100%" height="100%">
+								<s:Label text="FN2 lock"/>
+								<s:DropDownList id="ddl_fn2_lock"
+												change="__onChangeFnLockLed(event)"
+												width="100%"> 
+									<s:layout>
+										<s:VerticalLayout gap="0"
+														  horizontalAlign="contentJustify"
+														  requestedRowCount="9" />
+									</s:layout>
+								</s:DropDownList>
+							</s:VGroup>
+							<s:VGroup width="100%" height="100%">
+								<s:Label text="FN3 lock"/>
+								<s:DropDownList id="ddl_fn3_lock"
+												change="__onChangeFnLockLed(event)"
+												width="100%"> 
+									<s:layout>
+										<s:VerticalLayout gap="0"
+														  horizontalAlign="contentJustify"
+														  requestedRowCount="9" />
+									</s:layout>
+								</s:DropDownList>
+							</s:VGroup>
+						</s:HGroup>						
+					</local:BMBorderContainer>
+					
+					<s:Spacer height="5"/>
+					<s:Label text="{resourceManager.getString('lang','STR_OPTIONS')}"/>
+					<local:BMBorderContainer width="100%" height="70%" >
+						<s:HGroup width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="50">
+							
+							<s:VGroup width="160">
+								<s:Label text="Shift + Esc = ~"/>
+								<s:HGroup> 
+									<s:RadioButton id="rb_esc_tilde0" width="150" label="Off"
+												   groupName="radio_grp_esc_tilde"/>
+								</s:HGroup>
+								<s:HGroup> 
+									<s:RadioButton id="rb_esc_tilde1" width="150" label="On"
+												   groupName="radio_grp_esc_tilde"/>
+								</s:HGroup>
+							</s:VGroup>
+							<s:VGroup>
+								<s:Label text="NumLock Layer"/>
+								<s:DropDownList id="ddl_numlock_layer"
+												change="__onChangeNumlockLayer(event)"
+												width="150">    
+									<s:dataProvider>
+										<mx:ArrayList>
+											<fx:String>{resourceManager.getString('lang','STR_NA')}</fx:String>
+											<fx:String>FN Layer</fx:String>
+											<fx:String>FN2 Layer</fx:String>
+											<fx:String>FN3 Layer</fx:String>
+										</mx:ArrayList>
+									</s:dataProvider>
+								</s:DropDownList>
+							</s:VGroup>
+						</s:HGroup>
+						<s:HGroup height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="50">
+							<s:VGroup width="180">
+								<s:Label text="{resourceManager.getString('lang','STR_DEBOUNCE_SETTING')}"/>
+								<s:HGroup id="gp_debounce">
+									
+								<s:NumericStepper id="slider_debounce" width="55" value="1" stepSize="1" minimum="1" maximum="10"
+												  snapInterval="1" allowValueWrap="false"/>
+								<s:Button id="btn_update_debounce" label="{resourceManager.getString('lang','STR_UPDATE')}"
+										  click="__onChangeDebounce(event)"/>
+								<!--<s:HSlider id="slider_debounce" change="__onChangeDebounce(event)"
+										   dataTipPrecision="0" liveDragging="false" maximum="100"
+										   minimum="1" snapInterval="1" stepSize="1" value="1"/>-->
+								</s:HGroup>
+								<s:Label text="{resourceManager.getString('lang','STR_IF_YOU_UP_THE_SENSITIVITY')}"/>
+							</s:VGroup>
+						</s:HGroup>
+					</local:BMBorderContainer>
+				</s:VGroup>
+	        </s:Group>
+	        
+	        <s:Spacer height="10"/>
+			<s:HGroup verticalAlign="top" width="100%" height="100%">
+				<s:VGroup width="50%" height="100%">
+					<s:Label text="Utils"/>
+					<s:VGroup width="100%" height="100%">
+						<local:BMBorderContainer width="100%">
+							<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%"  height="100%">
+						        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
+						                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
+						        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
+						        <s:Spacer height="30"/>
+							</s:VGroup>
+						</local:BMBorderContainer>
+					</s:VGroup>
+					<s:Spacer height="5"/>
+					<s:HGroup width="100%" height="100%" paddingLeft="10" >
+						<s:Image source="{imgCoffee}" />
+						<s:VGroup width="100%" height="100%" paddingLeft="10" >						
+							<s:Label text="Do you like coffee?" fontSize="16" fontWeight="bold"/>
+							<s:TextArea width="370" minWidth="200" height="52" borderVisible="false" editable="false" selectable="false" 
+										text="Thank you for using 'Bootmapper Client'. If you are satisfied with this program, please buy me a coffee! Your donation motivates me to come up with a better idea. You can make donations via PayPal." />
+							<s:Button id="btn_donation" label="Motivate Me" click="_onClickDonation(event)"  skinClass="skins.YellowButtonSkin"/>
+						</s:VGroup>
+					</s:HGroup>
+				</s:VGroup>
+				<s:Spacer width="5"/>
+				<s:VGroup width="50%" height="100%" minWidth="380">					
+					<s:Label text="Bootloader(HIDBoot)"/>
+					<local:BMBorderContainer width="100%">
+						<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%" height="100%">
+							<s:Button id="btn_app" label="Set Keyboard" click="_onClick(event)"/>
+							<s:Spacer height="10"/>
+							<s:HGroup verticalAlign="middle">
+								<s:Button id="btn_usb" label="Set USB" click="_onClickInterface(event)"/>
+								<s:Button id="btn_ps2" label="Set PS/2" click="_onClickInterface(event)"/>	
+								<s:Spacer width="20"/>
+							</s:HGroup>
+							<s:HGroup verticalAlign="middle">
+								<s:Label text="PS/2 Repeat Speed : "/>
+								<s:Button id="btn_ps2_fast" label="Fast" click="_onClickPs2RepeatSpeed(event)"/>
+								<s:Button id="btn_ps2_midd" label="Midd" click="_onClickPs2RepeatSpeed(event)"/>	
+								<s:Button id="btn_ps2_slow" label="Slow" click="_onClickPs2RepeatSpeed(event)"/>	
+							</s:HGroup>
+							<s:Spacer height="10"/>
+							<s:Button id="btn_clear_num" label="Default Num of LEDs" click="_onClickEeprom(event)"/>
+							<s:Button id="btn_clear_eeprom" label="EEPROM All Clear" click="_onClickEeprom(event)"/>
+						</s:VGroup>
+					</local:BMBorderContainer>
+				</s:VGroup>
+			</s:HGroup>
+	    </s:Group>
+    </s:Scroller>
+</local:TabUI>

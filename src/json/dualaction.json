@@ -1,0 +1,83 @@
+{
+    "compoundKeys": [
+        {
+            "label":"None", 
+            "index":0
+        },
+        {
+            "label":"FN", 
+            "index":254
+        },
+        {
+            "label":"FN2", 
+            "index":248
+        },
+        {
+            "label":"FN3", 
+            "index":246
+        },
+        {
+            "label":"R Shift", 
+            "index":108
+        },
+        {
+            "label":"L Shift", 
+            "index":104
+        },
+        {
+            "label":"R Alt", 
+            "index":109
+        },
+        {
+            "label":"L Alt", 
+            "index":105
+        },
+        {
+            "label":"R Ctrl", 
+            "index":107
+        },
+        {
+            "label":"L Ctrl", 
+            "index":103
+        },
+        {
+            "label":"R GUI", 
+            "index":110
+        },
+        {
+            "label":"L GUI", 
+            "index":106
+        }
+    ],
+    "aloneKeys":[
+        {
+            "label":"None", 
+            "index":0
+        },
+        {
+            "label":"Tab", 
+            "index":43
+        },
+        {
+            "label":"Caps Lock", 
+            "index":57
+        },
+        {
+            "label":"Space", 
+            "index":44
+        },
+        {
+            "label":"Back Slash", 
+            "index":49
+        },
+        {
+            "label":"Han/Eng", 
+            "index":142
+        },
+        {
+            "label":"漢字", 
+            "index":141
+        }
+    ]
+    
+}

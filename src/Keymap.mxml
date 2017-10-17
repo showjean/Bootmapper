@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:TabUI xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300" xmlns:local="*">
+	<fx:Script>
+		<![CDATA[
+			public static var GLOBAL_APPLY_TO_ALL_LAYERS:Boolean = false;
+			
+			import flash.events.Event;
+			
+			import mx.collections.ArrayList;
+			import mx.controls.Alert;
+			
+			import spark.components.NavigatorContent;
+			import spark.components.gridClasses.CellPosition;
+			
+			private var urlLoader:URLLoader;
+			private var jsonDataArray:Array;
+			private var _currentHexFileInfo:HexInfoKeymap;
+			private var hexData:String;
+			private var matrixListener:MatrixListener;
+			
+			private var fileReference:FileReference;
+			
+			private var selectedHexFile:Object;
+			private var __loadedFileName:LoadedFileName;
+
+			override public function setData(xObj:Object):void{
+				jsonDataArray = xObj["targetDataArr"];
+			}
+			override public function init():void
+			{
+				_isReady = true;
+				
+				this.cb_allLayer.selected = GLOBAL_APPLY_TO_ALL_LAYERS;
+				
+				this.keycodeSelector.init(KeyIndex.getKeyIndexData());
+				this.ddl_keycodes.init(KeyIndex.getKeyIndexData());
+                				
+				this.grp_ui.enabled = false;
+				applyTargetList();		
+				begin();
+				
+				
+			}
+			
+			private function parse():void
+			{	
+				//				var gMatrixLen:int = latestHexFileInfo.layers * latestHexFileInfo.columns * latestHexFileInfo.rows;
+				//				gMatrixLen = gMatrixLen * 2 + int(latestHexFileInfo.startOffset);
+				//				var gLines:int = Math.ceil(gMatrixLen / MatrixParser.DATA_LENGTH);
+				//				var gEndOffset:int = MatrixParser.DATA_LENGTH - (gMatrixLen % MatrixParser.DATA_LENGTH);
+				//				latestHexFileInfo.endOffset = gEndOffset == MatrixParser.DATA_LENGTH ? 0 : gEndOffset;
+				//				latestHexFileInfo.lines = gLines;
+				
+//				trace(this.name, "start offset: "+ _currentHexFileInfo.startOffset); //, "end offset: "+latestHexFileInfo.endOffset, "lines : " + latestHexFileInfo.lines); 
+				
+				var gMatrixVec:Array = MatrixParser.parseKeymap(hexData, _currentHexFileInfo);
+				if(gMatrixVec == null) {
+					Alert.show("invalid keymap target");
+					return;
+				}
+				applyMatrixData(gMatrixVec);				
+			}
+			
+			private function __onLoadHex(event:Event):void
+			{
+				switch(event.type){
+					case Event.COMPLETE:
+						try{
+							var gURLoader:URLLoader = URLLoader(event.target);
+							//							trace(this, gURLoader.data);
+							hexData = gURLoader.data;
+//							trace(this, hexData.length);
+							parse();
+							
+						}catch(e:Error){
+							trace(this, e);		
+							Alert.show("__onLoadHex: " + e.message);
+						}
+						
+						break;
+					
+					case ProgressEvent.PROGRESS:
+						break;
+					default:
+						trace(this, "__onLoadHex", event);
+						Alert.show("__onLoadHex: " + event.toString());
+						break;
+				}
+			}
+			
+			protected function __onClickAllLayer(event:Event):void
+			{
+				GLOBAL_APPLY_TO_ALL_LAYERS = this.cb_allLayer.selected;
+			}
+			
+			protected function __onClickSaveHex(event:Event):void
+			{
+				selectedHexFile = {};	
+				selectedHexFile.fileName = _currentHexFileInfo.fileName;
+				
+				// 기본 데이터 없이 keymap_part만 저장하므로 로드할 필요없이 바로 파스-> 저장;
+				saveKeymapPartHexFile(); 
+			}			
+			
+			protected function __onSelected(event:KeyIndexEvent):void
+			{
+                if(event.type == ConstString.SELECTED_KEY_INDEX_WITH_CTRLKEY)
+                {
+                    //
+                    this.keyMatrix.selectCellsByKeyIndex(event.index);
+                }
+                else
+                {
+				    this.keyMatrix.setKeyIndex(event.index);                    
+                }
+			}
+			
+			protected function __onKeyUp(event:KeyboardEvent):void
+			{
+				matrixListener.push(String.fromCharCode(event.charCode));
+			}
+			
+			protected function __onSelectedCell(event:MatrixEvent):void
+			{	
+				this.keyMatrix.selectCell(event.column, event.row);	
+				this.keyMatrix.setFocus();
+			}
+			
+			protected function __onSelectedIndex(event:KeyIndexEvent):void
+			{
+				this.keycodeSelector.select(event.index);
+                this.ddl_keycodes.select(event.index);
+				
+				displayMatrixInfo();
+			}
+			
+			protected function __onClickSaveJson(event:Event):void
+			{
+				var gJsonStr:String = JSON.stringify(keyMatrix.data);
+				var gFile:FileReference = new FileReference();
+				var gDate:Date = new Date();
+				var gName:String;
+                if(__loadedFileName && __loadedFileName.hasName())
+                {
+                    gName = __loadedFileName.name ;
+                }
+                else
+                {
+                    gName = "bootmapper_"+ Util.dateToString(gDate) ;
+                }
+                gName += ".json";
+                
+				//				trace(gJsonStr);
+				gFile.save(gJsonStr, gName);
+			}
+			
+			protected function __onClickLoad(event:Event):void
+			{
+				fileReference = new FileReference();
+				fileReference.addEventListener(Event.SELECT, __onFileReference);
+				fileReference.addEventListener(Event.CANCEL, __onFileReference);
+				fileReference.addEventListener(Event.COMPLETE, __onFileReference);
+				fileReference.browse([new FileFilter("ps2avrU keymap_part.hex file (*.hex)", "*.hex"), new FileFilter("ps2avrU .json file (*.json)", "*.json")]);
+			}
+			
+			protected function __onFileReference(event:Event):void
+			{
+				switch(event.type){
+					case Event.SELECT:
+						fileReference.load();
+						
+						break;
+					case Event.CANCEL:
+						break;
+					case Event.COMPLETE:
+						try{
+							__loadedFileName = new LoadedFileName();
+							__loadedFileName.name = fileReference.name;
+							
+							trace("__loadedFileName.type : " + __loadedFileName.type);
+							
+							if(__loadedFileName.type == "hex"){
+								hexData = fileReference.data.toString();
+								if(HexParser.getStartAddress(hexData) != _currentHexFileInfo.startAddress){
+									throw new Error("\""+fileReference.name + "\" is not keymap file");
+								}
+								parse();
+							}else if(__loadedFileName.type == "json"){
+								var gJsonData:Object = JSON.parse(fileReference.data.toString());
+								var gArr:Array = gJsonData as Array;
+								if(gArr == null) {
+									throw new Error("invalid JSON data");
+								}
+								
+								applyMatrixData(gArr);
+								
+							}else{
+								__loadedFileName = null;
+								
+								throw new Error("invalid file type");
+							}
+							
+						}catch(e:Error){							
+							Alert.show(e.message);
+							return;
+						}
+						break;
+					
+				}
+			}
+			
+			protected function __onChangedLayer(event:Event):void
+			{
+				displayMatrixInfo();				
+			}
+			
+			private function displayMatrixInfo():void
+			{				
+				var gCellPosition:CellPosition = this.keyMatrix.selectedCell;
+				if(!gCellPosition) {
+					clearText();
+					return;
+				}
+				setText(this.keyMatrix.currentLayer, gCellPosition.columnIndex, gCellPosition.rowIndex);
+			}
+			
+			public function setText(xLayer:int, xCol:int, xRow:int):void{
+				
+				this.lb_key.text = "Layer: " + (xLayer+1) + ", Col: " + (xCol+1) + ", Row: " + (xRow+1);
+			}
+			public function clearText():void{
+				this.lb_key.text = "";
+			}
+			
+			private function parseBlank():void
+			{
+				applyMatrixData(MatrixParser.parseBlank(_currentHexFileInfo));
+			}
+			private function applyMatrixData(xMatrixArr:Array):void{
+				
+				keyMatrix.setMatrixData(xMatrixArr, _currentHexFileInfo);
+				
+				keyMatrix.minHeight = 21 * ( _currentHexFileInfo.rows + 1 ) + 10;
+				
+				applyTabBar();
+			}
+			
+			private function begin():void
+			{
+				keyMatrix.addEventListener(KeyMatrix.SELECT_INDEX, __onSelectedIndex);
+				keyMatrix.addEventListener(KeyMatrix.LAYER_CHANGE, __onChangedLayer);
+				
+				this.keycodeSelector.addEventListener(ConstString.SELECTED_KEY_INDEX, __onSelected);
+				this.keycodeSelector.addEventListener(ConstString.SELECTED_KEY_INDEX_WITH_CTRLKEY, __onSelected);
+                this.ddl_keycodes.addEventListener(ConstString.SELECTED_KEY_INDEX, __onSelected);
+				
+                systemManager.stage.addEventListener(KeyboardEvent.KEY_UP, __onKeyUp);
+//				this.stage.addEventListener(ResizeEvent.RESIZE, __onResize);
+				
+				matrixListener = new MatrixListener();
+				matrixListener.addEventListener(MatrixListener.SELECTED_CELL, __onSelectedCell);
+				
+				this.keyMatrix.setFocus();
+				
+				this.grp_ui.enabled = true;
+			}
+			
+			private function saveKeymapPartHexFile():void
+			{
+				var gLen:int = _currentHexFileInfo.layers * _currentHexFileInfo.columns * _currentHexFileInfo.rows;
+				var gHexStr:String = HexParser.convertToHex(MatrixParser.serialize(keyMatrix.data, _currentHexFileInfo), gLen, parseInt(_currentHexFileInfo.startAddress, 16));
+				var gFile:FileReference = new FileReference();
+				var gDate:Date = new Date();
+				var gName:String;
+                if(__loadedFileName && __loadedFileName.hasName())
+                {
+                    gName = __loadedFileName.name + _currentHexFileInfo.fileExt ;
+                }
+                else
+                {
+                    gName = selectedHexFile.fileName + Util.dateToString(gDate) + _currentHexFileInfo.fileExt ;
+                }
+				gFile.save(gHexStr, gName);
+			}
+            
+            public function getHexData():String{
+                var gLen:int = _currentHexFileInfo.layers * _currentHexFileInfo.columns * _currentHexFileInfo.rows;
+                var gHexStr:String = HexParser.convertToHex(MatrixParser.serialize(keyMatrix.data, _currentHexFileInfo), gLen, parseInt(_currentHexFileInfo.startAddress, 16), true);
+                return gHexStr;
+            }
+			
+            public function applySerializeData(xDataStr:String):void{
+                var gMatrixVec:Array = MatrixParser.parseToGridData(xDataStr, _currentHexFileInfo);
+                if(gMatrixVec == null) {
+                    Alert.show("invalid keymap target");
+                    return;
+                }
+                applyMatrixData(gMatrixVec);	
+            }
+            
+            public function getCurrnetKeymapLength():int{
+                return _currentHexFileInfo.layers * _currentHexFileInfo.columns * _currentHexFileInfo.rows;
+            }
+            
+            public function get currentHexFileInfo():HexInfoKeymap
+            {
+                return _currentHexFileInfo;
+            }
+//			protected function __onResize(event:Event):void
+//			{
+//				if(this.stage){
+//					//					trace(this, this.stage.height);
+//				}
+//			}
+			
+			protected function __onValueCommit(event:Event):void
+			{
+				var gIndex:int = this.viewStack.selectedIndex;
+				if(gIndex > -1)
+				{
+					this.keyMatrix.changeLayer(gIndex);
+				}
+			}
+			
+			private function clearViewStack():void
+			{				
+				this.viewStack.removeAllElements();
+			}
+			
+			
+			protected function __onTargetValueCommit(event:Event):void
+			{				
+				applyTarget();
+			}
+			
+			private function applyTabBar():void
+			{
+				clearViewStack();
+				var gLen:int = _currentHexFileInfo.layers;
+				for(var i:int = 0; i < gLen; ++i){
+					var gContent:NavigatorContent = new NavigatorContent();
+					gContent.label = _currentHexFileInfo.layerNames[i]; //"layer "+ (i+1);
+					this.viewStack.addElement(gContent);
+				}
+				
+				this.lb_version.text = "keymap Ver: " + _currentHexFileInfo.ver
+			}
+			
+			private function applyTargetList():void
+			{
+				this.ddl_target.labelField = "targetName";
+				this.ddl_target.dataProvider = new ArrayList(jsonDataArray);
+				this.ddl_target.selectedIndex = 0;
+				applyTarget();
+			}
+			
+			private function applyTarget():void
+			{
+				if(this.ddl_target.selectedIndex > -1){
+									
+                    
+                    __loadedFileName = null;
+                    
+					_currentHexFileInfo = new HexInfoKeymap(jsonDataArray[this.ddl_target.selectedIndex]);				
+					parseBlank();
+					
+					
+					// copy layer
+					var gLen:int = _currentHexFileInfo.layers;
+					var gCopyToArr:Array = [];
+					for(var i:int = 0; i < gLen; ++i){
+						
+						// copy to 
+						gCopyToArr.push({label:_currentHexFileInfo.layerNames[i], data:i});
+					}
+					
+					this.ddl_copy_to.prompt = "Destination";
+					this.ddl_copy_to.dataProvider = new ArrayList(gCopyToArr);
+					
+                    dispatchEvent(new Event(ConstString.CHANGE_TARGET));
+				}
+			}
+			protected function __onClickCopyTo(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				/**
+				 * 현재 키맵 값을 ddl_copy_to 의 값 키맵으로 복사
+				 */
+				var gCurrentIndex:int = this.viewStack.selectedIndex;
+				var gDestinationIndex:int = this.ddl_copy_to.selectedIndex;
+				
+				if(gCurrentIndex == gDestinationIndex) return;
+				
+				
+				var gCurrentData:Array = this.keyMatrix.data[gCurrentIndex];
+				
+				var gColLen:int = _currentHexFileInfo.columns;
+				var gRowLen:int = _currentHexFileInfo.rows;
+				var gDestinationData:Array = [];				
+				var gObj:CellObject;
+				var gCurrentObj:CellObject;
+				for(var row:int = 0;row < gRowLen; ++row){
+					gDestinationData[row] = [];
+					for(var col:int = 0;col < gColLen; ++col){
+						gCurrentObj = gCurrentData[row][col] as CellObject;
+						if(gCurrentObj == null)
+						{							
+							gObj = new CellObject(0, KeyIndex.findNameByIndex(0));
+						}else{
+							
+							gObj = new CellObject(gCurrentObj.index, gCurrentObj.label);
+						}
+						
+						gDestinationData[row][col] = gObj;						
+					}
+				}
+				
+				this.keyMatrix.copyLayer(gDestinationIndex, gDestinationData);
+				
+				
+				
+			}
+				
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+    <s:Scroller width="100%" height="100%">
+	<s:Group id="grp_ui" width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout gap="0">
+				
+			</s:VerticalLayout>
+		</s:layout>
+		<mx:ViewStack id="viewStack" borderStyle="none" width="100%" />
+		<s:HGroup verticalAlign="middle" width="100%">		
+			<s:ButtonBar id="tabbar" dataProvider="{viewStack}" valueCommit="__onValueCommit(event)" requireSelection="true"/>
+			<s:Spacer width="5" />
+			<s:CheckBox id="cb_allLayer" label="{resourceManager.getString('lang','STR_APPLY_TO_ALL_LAYERS')}" valueCommit="__onClickAllLayer(event)" />
+            <s:Spacer width="100%"/>
+            <local:KeycodeDropDownList id="ddl_keycodes" width="150" prompt="Key codes...">
+            </local:KeycodeDropDownList>
+			<s:Spacer width="100%"/>
+			<s:Label id="lb_target" text="{resourceManager.getString('lang','STR_TARGET')}:"/>
+			<s:DropDownList id="ddl_target" width="200" change="__onTargetValueCommit(event)" >
+			</s:DropDownList>
+		</s:HGroup>
+		<s:Spacer height="5"/>
+		<local:KeyMatrix id="keyMatrix" width="100%" height="100%" minHeight="410" maxHeight="430"/>		
+		<s:Spacer height="5"/>
+			
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout verticalAlign="middle"/>
+			</s:layout>
+			
+			<s:Button id="btn_download" label="Save .hex" click="__onClickSaveHex(event)"/>
+			<s:Button id="btn_save" label="Save .json" click="__onClickSaveJson(event)" />
+			<s:Button id="btn_load" label="Load .hex / .json" click="__onClickLoad(event)" />	
+			<s:Spacer width="100%" />
+			<s:Label id="lb_key" />	
+			<s:Spacer width="20" />
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('lang','STR_LAYER_COPY')}:" />
+				<s:DropDownList id="ddl_copy_to" width="200">
+					<s:layout>
+						<s:VerticalLayout gap="0"
+										  horizontalAlign="contentJustify"
+										  requestedRowCount="12" />
+					</s:layout>
+				</s:DropDownList>
+				<s:Button label="{resourceManager.getString('lang','STR_EXCUTE')}" click="__onClickCopyTo(event)"/>
+				<s:Spacer width="10"/>
+				<s:Label id="lb_version"/>
+			</s:HGroup>
+		</s:Group>
+		
+		<s:Spacer height="5"/>
+		<local:BMBorderContainer width="100%">			
+			<local:KeycodeSelector id="keycodeSelector" width="100%" height="100%"/>
+        	<s:Label id="lb_guide" text="{resourceManager.getString('lang','STR_FOCUS_ON_MATRIX')}" />
+		</local:BMBorderContainer>
+	</s:Group>
+    </s:Scroller>
+</local:TabUI>

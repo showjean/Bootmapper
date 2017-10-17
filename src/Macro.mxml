@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="utf-8"?>
+<local:TabUI xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="100%" height="100%"
+		 xmlns:local="*"
+		 >
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayList;
+			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.DragManager;
+			
+			import spark.components.NavigatorContent;
+			import spark.layouts.supportClasses.DropLocation;
+			
+			private static const BYTE_PER_ONE_KEY_OF_MACRO:uint = 4;
+			
+			private var jsonDataArray:Array;
+			private var _currentMacroInfo:HexInfoMacro;
+			protected var _isOut:Boolean;
+			protected var _prevDropIndex:int = -1;
+			private var _macroIndex:int;
+			
+			private var macroVector:Vector.<IList>;	// ArrayList
+			private var _isFullMacroKey:Boolean;
+			private var fileReference:FileReference;
+			private var hexData:String;
+			private var _countSelectedPush:int;
+			private var __loadedFileName:LoadedFileName;
+			
+
+			override public function setData(xObj:Object):void{
+				jsonDataArray = xObj["macroConfigArr"];
+//				trace(this, jsonDataArray);
+				
+			}
+			
+			override public function init():void
+			{			
+				_isReady = true;
+				
+//				trace(this, "init");
+				
+				applyTargetList();		
+				
+				loadKeyIndex();
+			}
+			
+			private function start():void
+			{
+				this.list_macro.dataProvider = null;
+				_macroIndex = -1;
+				if(this.tabbar.selectedIndex != 0){
+					this.tabbar.selectedIndex = 0;
+				}else{
+					changeMacroIndex(0);
+				}
+			}
+			private function loadKeyIndex():void
+			{
+				var gRequest:URLRequest = new URLRequest();	
+				gRequest.url = "json/keyindexmacro.json"
+				var gJsonLoader:JSONLoader = new JSONLoader();
+				try {
+					gJsonLoader.load(gRequest, __onLoadKeyIndex);
+				} catch (error:Error) {
+					Alert.show("Unable to load requested document.");
+				}	
+			}
+			protected function __onLoadKeyIndex(event:Event):void
+			{
+				switch(event.type){
+					case Event.COMPLETE:
+						try{
+							var gURLoader:URLLoader = URLLoader(event.target);
+							//							trace(this, gURLoader.data);
+							var gArr:Array = JSON.parse(gURLoader.data) as Array;
+							//							trace(this, gArr);
+														
+                            gArr = KeyIndex.parseKeyIndex(gArr);
+							this.keycodeSelector.init(gArr);                            
+                            this.ddl_keycodes.init(gArr);
+							
+							this.keycodeSelector.addEventListener(ConstString.SELECTED_KEY_INDEX, __onSelected);
+                            this.ddl_keycodes.addEventListener(ConstString.SELECTED_KEY_INDEX, __onSelected);
+							
+						}catch(e:Error){
+							trace(this, e);
+						}
+						
+						break;
+					
+					case ProgressEvent.PROGRESS:
+						break;
+					default:
+						//						trace(this, "__onLoadJson",  event);
+						Alert.show("__onLoadJson: " + event.toString());
+						break;
+				}
+			}
+			private function clearMacroIndex(xIdx:int):void{
+				macroVector[_macroIndex] = null;
+			}
+			private function changeMacroIndex(xIdx:int):void{
+				if(xIdx < 0 || xIdx >= macroVector.length) return;
+				var gList:IList
+				_macroIndex = xIdx;
+				gList = macroVector[_macroIndex];
+				if(!gList){
+					gList = new ArrayList();
+					macroVector[_macroIndex] = gList;
+				}
+				this.list_macro.dataProvider = gList;
+				
+				calcMacroKeyLength();
+				
+			}
+			
+			private function calcMacroKeyLength():void{
+				var gList:IList = this.list_macro.dataProvider;
+				if(!gList){
+					_isFullMacroKey = false;
+					return;
+				}
+				var gLen:int = gList.length;
+				var gItem:Object;
+				var gSelectedMacroKey:MacroKey;
+				var gKeyCount:int = 0;
+				for(var i:int = 0;i < gLen; ++i){
+					gItem = gList.getItemAt(i);
+					gSelectedMacroKey = gItem.macroKey as MacroKey;
+					gKeyCount += gSelectedMacroKey.getMacroLength();
+				}
+				var gMacroLen:int = _currentMacroInfo.macroLength;
+				if(gKeyCount >= gMacroLen){
+					_isFullMacroKey = true;
+				}else{
+					_isFullMacroKey = false;
+				}
+				
+//				trace("key count : ", gKeyCount);
+				this.lb_char.text = (gKeyCount/BYTE_PER_ONE_KEY_OF_MACRO) + "/" + (gMacroLen/BYTE_PER_ONE_KEY_OF_MACRO);  
+			}
+			
+			private function isFullMacroKey():Boolean{
+				return _isFullMacroKey;
+			}			
+			
+			protected function __onSelected(event:KeyIndexEvent):void
+			{
+				if(isFullMacroKey()) return;
+								
+				var gMacroKey:MacroKey = new MacroKey();
+				gMacroKey.keyIndex = event.index;
+				gMacroKey.delay = 0;
+				gMacroKey.mode = MacroKey.MODE_DOWN_UP;
+				
+				addMacroKey(gMacroKey);
+				
+			}
+			
+			protected function __onValueCommit(event:FlexEvent):void
+			{
+				changeMacroIndex(this.viewStack.selectedIndex);
+				
+			}
+			protected function __onDrag(event:DragEvent):void
+			{
+//				trace(this.name, event.action, event.type, event.dragInitiator.name);
+				
+				switch(event.type){
+					case DragEvent.DRAG_OVER:
+												
+						// up키가 down 키보다 위로 오면 안된다.
+						var dropLocal:DropLocation = event.currentTarget.layout.calculateDropLocation(event);
+						var gDropIdx:int = dropLocal.dropIndex;
+						if(_prevDropIndex != gDropIdx) {						
+							var gItem:Object = this.list_macro.selectedItem;
+							var gSelectedMacroKey:MacroKey = gItem.macroKey as MacroKey;
+							var gSelectedIndex:int = this.list_macro.selectedIndex;
+							
+//							trace(this.name, _prevDropIndex, gDropIdx, gSelectedIndex, gSelectedMacroKey.splitIndex, gSelectedMacroKey.mode);	
+							if(gSelectedIndex < 0) break;
+							if(gSelectedMacroKey.splitIndex == -1) break;
+							
+							var gCoupleIdx:int = getCoupleIndexBySplitIndex(gSelectedMacroKey.splitIndex, gSelectedMacroKey.mode);
+//							trace(gSelectedMacroKey.mode, "gDropIdx: ", gDropIdx, "gCoupleIdx: ", gCoupleIdx);
+							if(gSelectedMacroKey.mode == MacroKey.MODE_DOWN){
+								// gDropIdx : down, gCoupleIdx : up
+								if(gDropIdx <= gCoupleIdx){
+									DragManager.showFeedback(DragManager.MOVE);
+									this.list_macro.dropEnabled = true;
+								}else{
+									DragManager.showFeedback(DragManager.NONE);	
+									this.list_macro.dropEnabled = false;
+								}
+							}else{
+								// gDropIdx : up, gCoupleIdx : down
+								if(gCoupleIdx < gDropIdx){
+									DragManager.showFeedback(DragManager.MOVE);
+									this.list_macro.dropEnabled = true;
+								}else{
+									DragManager.showFeedback(DragManager.NONE);
+									this.list_macro.dropEnabled = false;
+								}
+								
+							}
+							
+							_prevDropIndex = gDropIdx;
+						}
+						break;
+					case DragEvent.DRAG_ENTER:
+						if(event.currentTarget == event.dragInitiator){							
+							this.list_macro.dropEnabled = true;							
+							DragManager.acceptDragDrop(this);
+							_isOut = false;
+						}
+						break;
+					case DragEvent.DRAG_COMPLETE:
+						this.list_macro.dropEnabled = false;	
+						if(DragManager.mx_internal::dragProxy) DragManager.mx_internal::dragProxy.visible = false; // 애니메이션을 보여주지 않는다.
+						if(_isOut){
+							if(this.list_macro.selectedIndex > -1){								
+								removeSelectedMacroKey();
+							}
+						}
+						_isOut = false;
+						
+						break;
+					case DragEvent.DRAG_EXIT:
+						//밖으로 나가면 삭제
+						_isOut = true;
+						
+						DragManager.showFeedback(DragManager.MOVE);
+						break;
+					case DragEvent.DRAG_DROP:
+						break;
+					case DragEvent.DRAG_OVER:
+						break;
+				}
+				
+			}
+			
+			protected function __onClickList(event:MouseEvent):void
+			{
+				if(event.shiftKey){
+					// split key
+					splitKey();
+				}
+				_countSelectedPush = 0;
+			}
+			
+			private function splitKey():void
+			{
+				if(this.list_macro.selectedIndex < 0) return;
+				
+				var gIdx:int = this.list_macro.selectedIndex;
+				var gArrayList:IList = this.list_macro.dataProvider;
+				var gData:Object = this.list_macro.selectedItem;	//gArrayList.getItemAt(gIdx);
+				var gSelectedMacroKey:MacroKey = gData.macroKey as MacroKey;
+				if(gSelectedMacroKey == null || gSelectedMacroKey.mode != MacroKey.MODE_DOWN_UP) return;
+				
+				var gSplitIdx:uint = MacroKey.getNextSplitIndex();
+				
+				var gDelay:uint = gSelectedMacroKey.delay;
+				gSelectedMacroKey.delay = 0;
+				gSelectedMacroKey.mode = MacroKey.MODE_DOWN;
+				gSelectedMacroKey.splitIndex = gSplitIdx;
+				gData.label = Util.getLabel(gSelectedMacroKey);
+				
+				var gMacroKey:MacroKey = new MacroKey();
+				gMacroKey.keyIndex = gSelectedMacroKey.keyIndex;
+				gMacroKey.delay = gDelay;
+				gMacroKey.mode = MacroKey.MODE_UP;
+				gMacroKey.splitIndex = gSplitIdx;
+				gArrayList.addItemAt(Util.getListObjectProxy(gMacroKey), gIdx+1)
+					
+			}
+						
+			protected function __onClickSplit(event:MouseEvent):void
+			{
+				splitKey();
+			}
+			
+			private function removeSelectedMacroKey():void
+			{
+				var gItem:Object = this.list_macro.selectedItem;
+				var gSelectedMacroKey:MacroKey = gItem.macroKey as MacroKey;
+				var gSelectedIndex:int = this.list_macro.selectedIndex;
+				if(gSelectedIndex < 0) return;
+				
+				if(gSelectedMacroKey.splitIndex == -1){
+					this.list_macro.dataProvider.removeItemAt(gSelectedIndex);
+				}else{
+					var gCoupleIdx:int = getCoupleIndexBySplitIndex(gSelectedMacroKey.splitIndex, gSelectedMacroKey.mode);
+					if(gCoupleIdx > gSelectedIndex){
+						this.list_macro.dataProvider.removeItemAt(gCoupleIdx);
+						this.list_macro.dataProvider.removeItemAt(gSelectedIndex);
+						
+					}else{
+						this.list_macro.dataProvider.removeItemAt(gSelectedIndex);
+						this.list_macro.dataProvider.removeItemAt(gCoupleIdx);
+						
+					}
+				}
+				calcMacroKeyLength();
+			}
+			
+			private function getCoupleIndexBySplitIndex(xSplitIndex:int, xMode:String):int
+			{
+				var gList:IList = this.list_macro.dataProvider;
+				var gLen:int = gList.length;
+				var gItem:Object;
+				var gSelectedMacroKey:MacroKey;
+				for(var i:int = 0;i < gLen; ++i){
+					gItem = gList.getItemAt(i);
+					gSelectedMacroKey = gItem.macroKey as MacroKey;
+					if(gSelectedMacroKey.splitIndex == xSplitIndex && gSelectedMacroKey.mode != xMode){
+						return i;
+					}
+				}
+				return -1;
+			}
+			
+			protected function __onClickRemove(event:MouseEvent):void
+			{
+				var gSelectedIndex:int = this.list_macro.selectedIndex;
+				if(gSelectedIndex < 0) return;				
+				removeSelectedMacroKey();
+				this.list_macro.selectedIndex = gSelectedIndex;
+			}
+			
+			protected function __onClickRemoveAll(event:MouseEvent):void
+			{
+				clearMacroIndex(_macroIndex);
+				changeMacroIndex(_macroIndex);
+				calcMacroKeyLength();
+			}
+			
+			protected function __onClickDeselect(event:MouseEvent):void
+			{
+				this.list_macro.selectedIndex = -1;
+			}
+			
+			protected function __onClickSaveHex(event:MouseEvent):void
+			{
+                var gHexStr:String =__getHexData();
+				var gFile:FileReference = new FileReference();
+				var gDate:Date = new Date();
+				
+				var gName:String ;
+				if(__loadedFileName && __loadedFileName.hasName())
+				{
+					gName = __loadedFileName.name + _currentMacroInfo.fileExt;
+				}else{
+					
+					gName = _currentMacroInfo.fileName + Util.dateToString(gDate)+ _currentMacroInfo.fileExt;
+				}
+				gFile.save(gHexStr, gName);
+			}
+            
+            public function getHexData():String{
+                return __getHexData(true);
+            }
+            
+            protected function __getHexData(xExceptNewline:Boolean = false):String{
+                // serialize -> parse
+                var gMacroNum:int = _currentMacroInfo.macroNum;
+                var gMacroLenMax:int = _currentMacroInfo.macroLength;
+                gMacroLenMax = gMacroLenMax * 2;	// 1byte 당 2글자를 사용하므로;
+                
+                var gMacroLen:int;
+                var gDataStr:String = "";
+                var gMacroStr:String = "";			
+                var gStr:String;
+                var gObj:Object;
+                var gVal:int;
+                var gList:IList;
+                var gMacroKey:MacroKey;
+                for(var i:int = 0;i < gMacroNum; ++i){	
+                    gList = macroVector[i];
+                    if(!gList) {
+                        gList = new ArrayList();
+                    }		
+                    gMacroLen = gList.length;
+                    gMacroStr = "";
+                    for(var k:int = 0;k < gMacroLen; ++k){
+                        
+                        gObj = null;
+                        gObj = gList.getItemAt(k);
+                        
+                        gMacroKey = gObj.macroKey as MacroKey;
+                        gStr = HexParser.getHexString(gMacroKey);
+                        
+                        gMacroStr += gStr;
+                        
+                    }
+                    
+                    while(gMacroStr.length < gMacroLenMax){
+                        gMacroStr += "00";
+                    }
+                    
+                    gDataStr += gMacroStr;							
+                }
+                
+                //				trace(gDataStr.length, gDataStr.substr(0, 100));
+                //				return;
+                
+                var gHexStr:String = HexParser.convertToHex(gDataStr, gMacroNum * gMacroLenMax/2, parseInt(_currentMacroInfo.startAddress, 16), xExceptNewline);
+                return gHexStr;
+            }
+            
+			protected function __onClickLoadHex(event:MouseEvent):void
+			{
+				fileReference = new FileReference();
+				fileReference.addEventListener(Event.SELECT, __onFileReference);
+				fileReference.addEventListener(Event.CANCEL, __onFileReference);
+				fileReference.addEventListener(Event.COMPLETE, __onFileReference);
+				fileReference.browse([new FileFilter("ps2avrU macor.hex file (*.hex)", "*.hex")]);
+			}
+			
+			protected function __onFileReference(event:Event):void
+			{
+				switch(event.type){
+					case Event.SELECT:
+						fileReference.load();
+						
+						break;
+					case Event.CANCEL:
+						break;
+					case Event.COMPLETE:
+						try{
+							__loadedFileName = new LoadedFileName();
+							__loadedFileName.name = fileReference.name;
+							
+							if(__loadedFileName.type == "hex"){
+								hexData = fileReference.data.toString();
+								
+								if(HexParser.getStartAddress(hexData) != _currentMacroInfo.startAddress){
+									throw new Error("\""+fileReference.name + "\" is not macro file");
+								}
+								parse();
+							}else{
+								__loadedFileName = null;
+								throw new Error("invalid file type");
+							}
+							
+						}catch(e:Error){							
+							Alert.show(e.message);
+							return;
+						}
+						break;
+					
+				}
+			}
+			
+			private function parse():void
+			{	
+				MacroKey.resetSplitIndex();
+				var gMacroVec:Vector.<IList> = HexParser.parseMacro(hexData, _currentMacroInfo);
+				if(gMacroVec == null) {
+					Alert.show("invalid macro target");
+					return;
+				}
+				
+				macroVector = gMacroVec;
+				
+				start();
+				
+				
+			}
+			
+			private function clearViewStack():void
+			{				
+				this.viewStack.removeAllElements();
+			}
+			
+			private function applyTargetList():void
+			{
+				this.ddl_target.labelField = "targetName";
+				this.ddl_target.dataProvider = new ArrayList(jsonDataArray);
+				this.ddl_target.selectedIndex = 0;
+				applyTarget();
+			}
+			protected function __onTargetValueCommit(event:Event):void
+			{				
+				applyTarget();
+			}
+			private function applyTarget():void
+			{
+				if(this.ddl_target.selectedIndex > -1){
+					_currentMacroInfo = new HexInfoMacro(jsonDataArray[this.ddl_target.selectedIndex]);	
+					
+					var gLen:int = _currentMacroInfo.macroNum;
+					
+					macroVector = new Vector.<IList>(gLen);
+					
+					clearViewStack();
+					
+                    var gHeaderStr:String = "CstMac";
+                    var gCopyToArr:Array = [];
+					for(var i:int = 0; i < gLen; ++i){
+                        // macro index
+						var gContent:NavigatorContent = new NavigatorContent();
+						gContent.label = gHeaderStr+ (i+1);
+						this.viewStack.addElement(gContent);
+                        
+                        // copy to 
+                        gCopyToArr.push({label:gHeaderStr+(i+1), data:i});
+					}
+                    
+                    this.ddl_copy_to.prompt = "Destination";
+                    this.ddl_copy_to.dataProvider = new ArrayList(gCopyToArr);
+                        
+                    
+					start();
+                                        
+                    dispatchEvent(new Event(ConstString.CHANGE_TARGET));
+				}
+			}
+			
+			protected function __onClickDelay(event:MouseEvent):void
+			{				
+				// apply delay	
+				var gArrayList:IList = this.list_macro.dataProvider;	
+				var gSelectedIndex:int = this.list_macro.selectedIndex;
+				if(gSelectedIndex < 0){					
+					
+				}else{
+					trace(this.name, "apply delay: my index = ", gSelectedIndex);
+					applyDelay(gSelectedIndex);
+				}
+			}
+            
+            protected function __onClickDelayAll(event:MouseEvent):void
+            {
+                var gList:IList = macroVector[_macroIndex];
+                var gLen:int = gList.length;
+                var gItem:Object;
+                for(var i:int = 0;i < gLen; ++i){
+                    applyDelay(i);
+                }     
+            }
+			
+			private function addMacroKey(xMacroKey:MacroKey):void
+			{				
+				var gArrayList:IList = this.list_macro.dataProvider;	
+				var gSelectedIndex:int = this.list_macro.selectedIndex;
+				if(gSelectedIndex < 0){
+					gArrayList.addItem(Util.getListObjectProxy(xMacroKey));
+				}else{
+					++_countSelectedPush;
+					gArrayList.addItemAt(Util.getListObjectProxy(xMacroKey), gSelectedIndex + _countSelectedPush);
+				}
+				
+				calcMacroKeyLength();
+			}
+			
+			private function applyDelay(xSelectedIndex:int):void
+			{
+				var gArrayList:IList = this.list_macro.dataProvider;
+				var gItem:Object = gArrayList.getItemAt(xSelectedIndex);
+				var gSelectedMacroKey:MacroKey = gItem.macroKey as MacroKey;
+				gSelectedMacroKey.delay = Util.getDelay(Number(this.ns_delay.value));
+				trace(this.name, "gSelectedMacroKey.delay : ", gSelectedMacroKey.delay);
+				gItem.label = Util.getLabel(gSelectedMacroKey);
+			}
+            
+            public function getCurrnetMacroLength():int{
+                return _currentMacroInfo.macroLength;
+            }
+            
+            public function get currentMacroInfo():HexInfoMacro
+            {
+                return _currentMacroInfo;
+            }
+            
+            public function applySerializeData(xDataStr:String):void{
+                MacroKey.resetSplitIndex();
+                var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo);
+                if(gMacroVec == null) {
+                    Alert.show("invalid macro target");
+                    return;
+                }
+                
+                macroVector = gMacroVec;
+                
+                start();	
+            }
+            
+            protected function __onClickParseString(event:MouseEvent):void
+            {
+                /*
+                1char를 비교해서
+                소문자, 숫자 -> keyindex 반환
+                대문자, 특수문자 -> shift down + keyindex => 다음 char가 다른 종류(소문자/숫자/eos)라면 + shift up, 같은 종류라면 유지 
+                
+                keyindex는 keyindex.json에 지정 
+                
+                */
+                var gStr:String = this.ta_string.text;
+                var gLen:int = gStr.length;
+                
+                const upperString:String = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
+                const lowerString:String = "`1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./ ";
+                
+//TODO: 다음에 this.keycodeSelector.getIndexByCharacter에서 upper/lower까지 판별하도록 수정;
+                                
+                
+                var gChar:String;
+                var gIsUppercase:Boolean = false;
+                var gMacroKey:MacroKey;
+                var gSplitIdx:uint;
+                for(var i:int = 0; i < gLen; ++i){
+                    if(isFullMacroKey()) return;
+                    
+                    gChar = gStr.charAt(i);
+                    
+//                    if(gChar == " ") continue;
+                    
+//                    trace(this.name, "char : ", gChar);
+                    
+                    if(upperString.indexOf(gChar) > -1){
+                        
+                        // 대문자 이고 아직 shift가 눌린 상태가 아니라면
+                        if(gIsUppercase == false){
+                            
+                            gSplitIdx = MacroKey.getNextSplitIndex();
+                            
+                            // shift down;
+                            gMacroKey = new MacroKey();
+                            gMacroKey.keyIndex = 104; // l shift;
+                            gMacroKey.delay = 0;
+                            gMacroKey.mode = MacroKey.MODE_DOWN;
+                            gMacroKey.splitIndex = gSplitIdx;
+                            addMacroKey(gMacroKey);
+                            
+                            gIsUppercase = true;
+                        }
+                        
+                    }else if(lowerString.indexOf(gChar) > -1){
+                        
+                        // 이전까지 대문자 였다면 
+                        if(gIsUppercase == true){
+                            
+                            //shift up
+                            gMacroKey = new MacroKey();
+                            gMacroKey.keyIndex = 104; // l shift;
+                            gMacroKey.delay = 0;
+                            gMacroKey.mode = MacroKey.MODE_UP;
+                            gMacroKey.splitIndex = gSplitIdx;
+                            addMacroKey(gMacroKey);
+                            
+                            gIsUppercase = false;
+                        }
+                    }else{
+                        //not supported char
+                        continue;
+                    }
+                    
+                    
+                    
+                    gMacroKey = new MacroKey();
+                    gMacroKey.keyIndex = this.keycodeSelector.getIndexByCharacter(gChar);
+                    gMacroKey.delay = 0;
+                    gMacroKey.mode = MacroKey.MODE_DOWN_UP;
+                    trace(this.name, "index : ", gMacroKey.keyIndex);
+                    addMacroKey(gMacroKey);
+                }
+                
+                if(gIsUppercase == true){
+                    //shift up
+                    gMacroKey = new MacroKey();
+                    gMacroKey.keyIndex = 104; // l shift;
+                    gMacroKey.delay = 0;
+                    gMacroKey.mode = MacroKey.MODE_UP;
+                    gMacroKey.splitIndex = gSplitIdx;
+                    addMacroKey(gMacroKey);
+                }
+            }
+            
+            protected function __onClickCopyTo(event:MouseEvent):void
+            {
+                // TODO Auto-generated method stub
+                /**
+                * 현재 매크로 값을 ddl_copy_to 의 값 매크로로 복사
+                 */
+                var gIndex:int = this.ddl_copy_to.selectedIndex;
+                
+                var gList:IList = macroVector[_macroIndex];
+                var gLen:int = gList.length;
+                var gItem:Object;
+                var gSelectedMacroKey:MacroKey;
+                var gKeyCount:int = 0;
+                var gListClone:ArrayList = new ArrayList();
+                for(var i:int = 0;i < gLen; ++i){
+                    gItem = gList.getItemAt(i);
+                    gSelectedMacroKey = gItem.macroKey as MacroKey;
+                    gListClone.addItemAt(Util.getListObjectProxy(gSelectedMacroKey.clone()), i); 
+                }                
+                
+                macroVector[gIndex] = gListClone;
+                
+                this.ddl_copy_to.selectedIndex = -1;
+            }
+            
+        ]]>
+	</fx:Script>
+	
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+    <s:Scroller width="100%" height="100%">
+	<s:Group id="grp_ui" width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout gap="0">
+				
+			</s:VerticalLayout>
+		</s:layout>
+		<s:HGroup verticalAlign="middle" width="100%">		
+			<local:KeycodeDropDownList id="ddl_keycodes" width="150" prompt="Key codes...">
+			</local:KeycodeDropDownList>
+			<s:Spacer width="100%" />	
+			<s:Label id="lb_target" text="{resourceManager.getString('lang','STR_TARGET')}:"/>
+			<s:DropDownList id="ddl_target" width="200" change="__onTargetValueCommit(event)" />
+		</s:HGroup>
+		<s:Spacer height="5"/>
+		<local:BMBorderContainer width="100%" height="100%" minHeight="300">	
+			<s:Spacer height="5"/>
+			<s:ButtonBar id="tabbar" dataProvider="{viewStack}" valueCommit="__onValueCommit(event)" requireSelection="true"/>
+			<s:Spacer height="10" />
+			<s:HGroup height="100%" width="100%" >
+	            <s:VGroup width="300" height ="100%">
+	                <s:Label text = "{resourceManager.getString('lang','STR_STRING_PARSING')}" />                
+	                <s:HGroup width="100%" >
+	                    <s:TextArea id="ta_string" width="100%" height ="100" />    
+	                </s:HGroup>               
+					<s:HGroup width="100%" >
+						<s:Spacer width="100%" />	
+						<s:Button label="{resourceManager.getString('lang','STR_PARSE_STRING')} >>" click="__onClickParseString(event)"/>
+					</s:HGroup>
+	                <s:Spacer height="5" />
+	                <s:Label text = "{resourceManager.getString('lang','STR_TEST_AREA')}" />                
+	                <s:TextArea width="100%" height ="100%" />
+	            </s:VGroup>
+				<s:List width="300" height="100%" id="list_macro" dragEnabled="true" dragMoveEnabled="true" dropEnabled="false"
+						dragDrop="__onDrag(event)" dragEnter="__onDrag(event)" dragComplete="__onDrag(event)" dragExit="__onDrag(event)" dragOver="__onDrag(event)" dragStart="__onDrag(event)"
+						click="__onClickList(event)" itemRenderer="MacroKeyListRenderer"
+						/>
+				<s:VGroup width="100%" height="100%">
+					<s:Button label="{resourceManager.getString('lang','STR_SPLIT')}" click="__onClickSplit(event)"/>
+					<s:Spacer height="5" />
+					<s:HGroup width="100%" verticalAlign="middle">
+						<s:Button label="{resourceManager.getString('lang','STR_APPLY_DELAY')}" click="__onClickDelay(event)"/>
+						<s:Spacer height="5" />
+						
+	                    <s:NumericStepper id="ns_delay" width="55" value="1" stepSize="0.1" maximum="5"
+	                                      snapInterval="0.1" allowValueWrap="false"/><s:Label text="{resourceManager.getString('lang','STR_SEC_MAX_STEP')}"/>
+					</s:HGroup>
+					<s:HGroup width="100%" verticalAlign="middle">
+						<s:Spacer width="100%" />
+						<s:Button label="{resourceManager.getString('lang','STR_APPLY_ALL')}" click="__onClickDelayAll(event)"/>
+					</s:HGroup>
+					<s:Spacer height="5" />
+					<s:Button label="{resourceManager.getString('lang','STR_DESELECT')}" click="__onClickDeselect(event)"/>
+					<s:Spacer height="5" />
+					<s:HGroup width="100%" verticalAlign="middle">
+						<s:Button label="{resourceManager.getString('lang','STR_REMOVE')}" click="__onClickRemove(event)"/>
+						<s:Spacer width="100%" />
+						<s:Button label="{resourceManager.getString('lang','STR_REMOVE_ALL')}" click="__onClickRemoveAll(event)"/>
+					</s:HGroup>
+					<s:Label text="" id="lb_char" />
+	                <s:Spacer height="10" />
+				</s:VGroup>			
+			</s:HGroup>
+			<mx:ViewStack id="viewStack" borderStyle="none" width="100%" />
+		</local:BMBorderContainer>	
+		<s:Spacer height="5"/>
+		
+		<s:Group width="100%">
+			<s:layout>
+				<s:HorizontalLayout verticalAlign="middle"/>
+			</s:layout>
+			
+			<s:Button label="Save .hex" click="__onClickSaveHex(event)"/>
+			<s:Button label="Load .hex" click="__onClickLoadHex(event)"/>
+			
+			<s:Spacer width="100%" />
+			
+			<s:HGroup verticalAlign="middle">
+				<s:Label text="{resourceManager.getString('lang','STR_MACRO_COPY')}:" />
+				<s:DropDownList id="ddl_copy_to" width="200">
+					<s:layout>
+						<s:VerticalLayout gap="0"
+										  horizontalAlign="contentJustify"
+										  requestedRowCount="12" />
+					</s:layout>
+				</s:DropDownList>
+				<s:Button label="{resourceManager.getString('lang','STR_EXCUTE')}" click="__onClickCopyTo(event)"/>
+			</s:HGroup>  
+			<s:Spacer width="5"/>
+			
+		</s:Group>
+		
+		<s:Spacer height="5"/>
+		<local:BMBorderContainer width="100%" >	
+			
+			<local:KeycodeSelector id="keycodeSelector" width="100%" height="324"/>
+		</local:BMBorderContainer>
+	</s:Group>
+    </s:Scroller>
+</local:TabUI>
