@@ -177,12 +177,13 @@
 						this.slider_debounce.value = 0;
 					}
 					
-					var fn3lock:int = xInfoArr[42] & 0x0F;
-					var fn2lock:int = xInfoArr[42] >> 4;
-					trace("fn2lock: ", fn2lock, " fn3lock: ", fn3lock);
-					// fn lock 1.4.0
-					if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 4, 0))
+					// fn lock 1.4.0 && RGB
+					if(gHasRgb && Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 4, 0))
 					{
+						var fn3lock:int = xInfoArr[42] & 0x0F;
+						var fn2lock:int = xInfoArr[42] >> 4;
+						trace("fn2lock: ", fn2lock, " fn3lock: ", fn3lock);
+						
 						this.gp_fn_lock.enabled = true;
 						this.ddl_fn2_lock.selectedIndex = Util.getItemIndexWithData(this.fn_lock_led_options, fn2lock);
 						this.ddl_fn3_lock.selectedIndex = Util.getItemIndexWithData(this.fn_lock_led_options, fn3lock);			

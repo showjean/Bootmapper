@@ -19,7 +19,7 @@
 			import spark.events.IndexChangeEvent;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "Bootmapper Client Ver 0.10.0"
+            protected var VERSION_CLIENT:String = "Bootmapper Client Ver 0.10.1"
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;

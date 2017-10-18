@@ -24,8 +24,8 @@
     <buildTarget buildTargetName="default">
       <airSettings airCertificatePath="bin_release/bootmapper.p12" airTimestamp="false" anePathSet="true" version="1">
         <airExcludes>
-          <pathEntry path="assets"/>
           <pathEntry path="style.css"/>
+          <pathEntry path="assets"/>
         </airExcludes>
         <anePaths/>
       </airSettings>
