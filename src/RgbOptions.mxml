@@ -43,6 +43,8 @@
 			protected const PS2_REPEAT_SPEED_SET_MIDD:int     	=		2;
 			protected const PS2_REPEAT_SPEED_SET_LOW:int     	=		3;
 			
+			protected const RGB_BRIGHTNESS_TOTAL:int 			= 	1860; // 5580(LED2_MAX_400MA_SUM) / 3(rgb);
+			
 			protected var rainbowFadeTypeDataProvider:ArrayList;
 			private var __optionsData:Object;
 			
@@ -104,6 +106,7 @@
 				{
 					this.cb_lednum.selectedItem = xInfoArr[0];
 					this.radio_grp_led_mode.selectedIndex = xInfoArr[1];
+					setRgbBrightnessMaximum(xInfoArr[0]);
 					this.slider_brightness.value = xInfoArr[2];
 					this.lbl_brightness.text = xInfoArr[2];
 					
@@ -213,6 +216,13 @@
 				}
 			}
 			
+			private function setRgbBrightnessMaximum(xNumOfRgbs:int):void
+			{
+				/* var max:int = int(RGB_BRIGHTNESS_TOTAL / xNumOfRgbs);
+				if(max > 255) max = 255;
+				this.slider_brightness.maximum = max;
+				this.lbl_brightness.text = String((this.slider_brightness.value > max) ? max : this.slider_brightness.value);
+			 */}
 			private function hasRgbOptions(xId:String):Boolean
 			{
 				switch(int(xId))
@@ -326,10 +336,7 @@
 				var gListener:Function = __print;
 				
 				switch(event.currentTarget)
-				{			
-					case this.btn_donation:
-						
-						break;			
+				{							
 					case this.btn_disconnect:
 						processArgs.push("-action");
 						break;
@@ -349,6 +356,8 @@
 						processArgs.push("-led");
 						processArgs.push("num");
 						processArgs.push(this.cb_lednum.selectedItem);
+						
+						setRgbBrightnessMaximum(int(this.cb_lednum.selectedItem));
 						break;
 					
 					case this.btn_connect:
@@ -552,6 +561,8 @@
 			}
 			protected function __onFileSelected(event:Event):void 
 			{
+				__setUiEnabled(false);
+				
 				var gFile:File = event.target as File;
 				
 				var stream:FileStream = new FileStream();
@@ -769,6 +780,7 @@
 				
 		<mx:ArrayList id="fn_lock_led_options">
 			<fx:Object label="None" data="0x0F"/>
+			<!-- 일부 컬러 직접 선택 옵션 -->
 			<fx:Object label="RGB Color 1" data="0"/>
 			<fx:Object label="RGB Color 2" data="1"/>
 			<fx:Object label="RGB Color 3" data="2"/>
@@ -1073,12 +1085,19 @@
 					<s:Label text="Utils"/>
 					<s:VGroup width="100%" height="100%">
 						<local:BMBorderContainer width="100%">
-							<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%"  height="100%">
-						        <s:Button id="btn_firmup" width="200" height="50" label="Firm Up(Select .hex File)"
-						                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
-						        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
-						        <s:Spacer height="30"/>
-							</s:VGroup>
+							<s:HGroup verticalAlign="top" width="100%" height="100%"> 
+								<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="200"  height="100%">
+							        <s:Button id="btn_firmup" width="190" height="50" label="Firm Up(Select .hex File)"
+							                  click="_onClickFirmup(event)" skinClass="skins.RedButtonSkin"/>
+							        <s:Button id="btn_bootloader" label="Set Bootloader" click="_onClick(event)"/>
+							        <s:Spacer height="30"/>
+								</s:VGroup>
+								<!--<s:VGroup paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" width="100%"  height="100%">
+									<s:Label width="100%" height="100%"
+												text="{resourceManager.getString('lang','STR_BOOTLOADER_MANUALLY')}" />
+									
+								</s:VGroup>-->
+							</s:HGroup>
 						</local:BMBorderContainer>
 					</s:VGroup>
 					<s:Spacer height="5"/>
