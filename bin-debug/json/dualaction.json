@@ -77,6 +77,10 @@
         {
             "label":"漢字", 
             "index":141
+        },
+        {
+            "label":"Apps", 
+            "index":101
         }
     ]
     
