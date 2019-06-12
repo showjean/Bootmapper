@@ -75,7 +75,7 @@
    
     
     <!-- layer 2: fill -->
-	<s:BitmapImage id="background" source="@Embed('assets/img/bt_bg_red.png', scaleGridLeft='10', scaleGridTop='10', scaleGridRight='11', scaleGridBottom='11')"
+	<s:BitmapImage id="background" source="@Embed('/assets/img/bt_bg_red.png', scaleGridLeft='10', scaleGridTop='10', scaleGridRight='11', scaleGridBottom='11')"
 			 left="0" right="0" top="0" bottom="0" />
 
     <!-- layer 3: fill lowlight -->

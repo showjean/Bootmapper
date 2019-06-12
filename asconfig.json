@@ -1,0 +1,46 @@
+{
+	"config": "air",
+	"compilerOptions": {
+		"output": "bin-debug/BootmapperClient.swf",
+		"accessible": true,
+		"source-path": [
+			"src"
+		]
+	},
+	"files": [
+		"src/BootmapperClient.mxml"
+	],
+	"application": "src/BootmapperClient-app.xml",
+	"copySourcePathAssets": true,
+	"additionalOptions": "-locale=en_US,ko_KR -allow-source-path-overlap=true -source-path=locale/{locale}",
+	"airOptions": {
+		"windows": {
+			"output": "bin_release/BootmapperClient",
+			"signingOptions": {
+				"storetype": "pkcs12",
+				"keystore": "bin_release/bootmapper_newcert.p12"
+			}
+		},
+		"mac": {
+			"output": "bin_release/BootmapperClient.app",
+			"signingOptions": {
+				"storetype": "pkcs12",
+				"keystore": "bin_release/bootmapper_newcert.p12"
+			}
+		},
+		"files": [
+			{
+				"file": "src/icons/",
+				"path": "icons/"
+			},
+			{
+				"file": "src/bin/",
+				"path": "bin/"
+			},
+			{
+				"file": "src/json/",
+				"path": "json/"
+			}
+		]
+	}
+}
