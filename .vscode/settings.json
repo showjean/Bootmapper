@@ -1,3 +1,10 @@
 {
-    "as3mxml.sdk.framework": "d:\\sdk\\apache-flex-sdk-4.16.0-bin_air_27"
+    "as3mxml.sdk.framework": "d:\\sdk\\apache-flex-sdk-4.16.0-bin_air_27",
+
+    "beautify.language": {
+        "html": {
+            "html.format.wrapAttributes": "preserve-aligned",
+            "ext": ["mxml"]
+        }
+    },
 }
