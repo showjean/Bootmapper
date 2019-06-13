@@ -7,7 +7,7 @@
         {
             "type": "swf",
             "request": "launch",
-            "name": "Launch SWF"
+            "name": "Launch AIR desktop"
         }
     ]
 }
