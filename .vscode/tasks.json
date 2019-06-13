@@ -6,20 +6,16 @@
         {
             "type": "actionscript",
             "debug": true,
-            "problemMatcher": []
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "type": "actionscript",
             "debug": false,
             "group": "build"
-        },
-        {
-            "type": "actionscript",
-            "clean": true,
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
         }
     ]
 }
