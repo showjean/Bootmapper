@@ -2,7 +2,12 @@
 <skins:DataGridSkin xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					xmlns:s="library://ns.adobe.com/flex/spark" 
 					xmlns:mx="library://ns.adobe.com/flex/mx"
-					xmlns:skins="spark.skins.spark.*" xmlns:local="*">
+					xmlns:local="*">
+					
+					<!-- xmlns:skins="spark.skins.spark.*"  
+					vscode 에서 위 항목으로 인해 코드 inspection 이 진행되지 않아서 제거
+					skins:DataGridSkin 를 상속받는 방식을 vscode as3&mxml plugin 에서 지원하지 않음
+					-->
 	
 	<fx:Declarations>
 		
