@@ -15,17 +15,17 @@
 	"additionalOptions": "-locale=en_US,ko_KR -allow-source-path-overlap=true -source-path=locale/{locale}",
 	"airOptions": {
 		"windows": {
-			"output": "bin_release/BootmapperClient",
+			"output": "bin-release/BootmapperClient",
 			"signingOptions": {
 				"storetype": "pkcs12",
-				"keystore": "bin_release/bootmapper_newcert.p12"
+				"keystore": "keystore/bootmapper_newcert.p12"
 			}
 		},
 		"mac": {
-			"output": "bin_release/BootmapperClient.app",
+			"output": "bin-release/BootmapperClient.app",
 			"signingOptions": {
 				"storetype": "pkcs12",
-				"keystore": "bin_release/bootmapper_newcert.p12"
+				"keystore": "keystore/bootmapper_newcert.p12"
 			}
 		},
 		"files": [
