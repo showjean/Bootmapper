@@ -7,4 +7,5 @@
             "ext": ["mxml"]
         }
     },
+    "files.autoSave": "afterDelay",
 }
