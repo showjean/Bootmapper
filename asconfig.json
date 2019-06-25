@@ -11,7 +11,7 @@
 		"src/BootmapperClient.mxml"
 	],
 	"application": "src/BootmapperClient-app.xml",
-	"copySourcePathAssets": true,
+	"copySourcePathAssets": false,
 	"additionalOptions": "-locale=en_US,ko_KR -allow-source-path-overlap=true -source-path=locale/{locale}",
 	"airOptions": {
 		"windows": {
