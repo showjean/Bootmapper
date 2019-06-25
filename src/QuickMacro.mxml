@@ -6,6 +6,9 @@
 		 >
 	<fx:Script>
 		<![CDATA[
+
+			// todo 퀵매크로와 커스텀 매크로 리팩토링 필요
+			
 			import mx.collections.ArrayList;
 			import mx.collections.IList;
 			import mx.controls.Alert;
@@ -703,7 +706,6 @@
             
             protected function __onClickCopyTo(event:MouseEvent):void
             {
-                // TODO Auto-generated method stub
                 /**
                 * 현재 매크로 값을 ddl_copy_to 의 값 매크로로 복사
                  */

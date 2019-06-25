@@ -384,7 +384,6 @@
 			}
 			protected function __onClickCopyTo(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
 				/**
 				 * 현재 키맵 값을 ddl_copy_to 의 값 키맵으로 복사
 				 */

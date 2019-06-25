@@ -684,7 +684,6 @@
             
             protected function __onClickCopyTo(event:MouseEvent):void
             {
-                // TODO Auto-generated method stub
                 /**
                 * 현재 매크로 값을 ddl_copy_to 의 값 매크로로 복사
                  */

@@ -407,7 +407,6 @@
             {
                 //                trace(this.tabbar.selectedIndex, (this.options)?this.options.isReady():"");
                 //                trace(this.keymap, this.macro, this.options);
-                // TODO Auto-generated method stub
                 if(bootMapperData){
                     if(this.keymap && this.viewStack.selectedChild == this.nc_keymap && !this.keymap.isReady()){
                         this.keymap.addEventListener(ConstString.CHANGE_TARGET, __changeTarget);
