@@ -17,9 +17,10 @@
 			
 			import spark.components.Alert;
 			import spark.events.IndexChangeEvent;
+			import mx.core.Application;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "Bootmapper Client Ver 0.10.1"
+            protected var VERSION_CLIENT:String = "Bootmapper Client Ver " ;    // 버젼 변경은 app.xml 에서 해준다.
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
@@ -71,6 +72,11 @@
             
             private function initDesktop():void
             {
+                var xml : XML = NativeApplication.nativeApplication.applicationDescriptor;
+                var ns : Namespace = xml.namespace();
+                var version : String = xml.ns::versionNumber;
+                VERSION_CLIENT += version;
+
 				var locale:String;
 				so = SharedObject.getLocal("__BMC_LOCALE__");
 				if(so.data.locale == undefined)
