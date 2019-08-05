@@ -4,6 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build_debug",
             "type": "actionscript",
             "debug": true,
             "problemMatcher": [],
@@ -13,9 +14,16 @@
             }
         },
         {
+            "label": "Build_product",
             "type": "actionscript",
             "debug": false,
             "group": "build"
+        },
+        {
+            "label": "Build",
+            "dependsOn": [
+                "build_debug"
+            ]
         }
     ]
 }
