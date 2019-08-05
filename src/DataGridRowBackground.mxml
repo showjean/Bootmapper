@@ -3,12 +3,17 @@
 						   xmlns:s="library://ns.adobe.com/flex/spark" 
 						   xmlns:mx="library://ns.adobe.com/flex/halo"
 						   implements="spark.components.gridClasses.IGridVisualElement"
-						   backgroundColor="{data.color}" background="true" top="0" bottom="0" left="0" right="0">
+						   backgroundColor="{getColor()}" background="true" top="0" bottom="0" left="0" right="0">
 	
 	<fx:Script>
 		<![CDATA[
 			
 			import spark.components.Grid;
+
+			private function getColor():int
+			{
+				return data.color;
+			}
 			
 			protected var _color:uint = 0;
 			public function prepareGridVisualElement(grid:Grid, rowIndex:int, columnIndex:int):void
