@@ -27,6 +27,7 @@
 			protected const OPTION_INDEX_NUMLOCK_LAYER:int     = 136; //0x88;
 			protected const OPTION_INDEX_DEBOUNCE_VALUE:int     = 137; //0x89;
 			protected const OPTION_INDEX_FNLOCK_LED:int     = 138; //0x8A;
+			protected const OPTION_INDEX_LED_OFF_DEFAULT:int     = 139; //0x8B;
 			
 			protected const FIRMWARE_GB:int     =              0;
 			protected const FIRMWARE_GB4U:int     =            1;
@@ -42,6 +43,9 @@
 			protected const PS2_REPEAT_SPEED_SET_HIGH:int     	=		1;
 			protected const PS2_REPEAT_SPEED_SET_MIDD:int     	=		2;
 			protected const PS2_REPEAT_SPEED_SET_LOW:int     	=		3;
+
+			protected const TOGGLE_ESC_TO_TILDE:int = 3;
+			protected const TOGGLE_LED_OFF_DEFAULT:int = 5;
 			
 			protected const RGB_BRIGHTNESS_TOTAL:int 			= 	1860; // 5580(LED2_MAX_400MA_SUM) / 3(rgb);
 			
@@ -76,7 +80,7 @@
 			}
 			
 			protected function parseInfo(xInfoArr:Array):void{
-				//				trace(xInfoArr.length);
+				trace(xInfoArr.length);
                 trace(xInfoArr);
 				//[10,4,186, 136,255,0, 255,136,0 ,255,255,255, 0,255,0,0,0,255,0,255,170,255,0,0,0,0,0,255,255,255,255,255,0]
 				//num, mode, brightness, colol1,2,3, rainbow, key color1
@@ -131,7 +135,12 @@
 				this.ddl_full_led_mode.selectedIndex = xInfoArr[39];                
 				this.slider_full_led_brightness.value = xInfoArr[40];
 				
-				this.radio_grp_esc_tilde.selectedIndex = xInfoArr[41];
+				// xInfoArr[41]: enableOption by bit 0=true, 1=false
+				var gOption:uint = xInfoArr[41];
+				trace("option: " + gOption);
+				gOption = ~(gOption & 0xFF);	// 0xff 만 사용
+				this.radio_grp_esc_tilde.selectedIndex = (gOption >> TOGGLE_ESC_TO_TILDE) & 0x1;
+				this.radio_grp_led_off_default.selectedIndex = (gOption >> TOGGLE_LED_OFF_DEFAULT) & 0x1;	// 0= led on, 1= led off
 				//                this.ddl_fn_led.selectedIndex = xInfoArr[42];
 				
 				// firmware ver 1.2
@@ -621,6 +630,23 @@
 				GBManager.getInstance().runProcess(processArgs, __print);
 			}
 			
+			protected function __onChangeLedOffDefault(evnet:Event):void{
+				var processArgs:Vector.<String> = new Vector.<String>();
+				processArgs.push("-option");
+				processArgs.push(OPTION_INDEX_LED_OFF_DEFAULT);
+				//                trace(this.name, this.radio_grp_led_keymode.selection.id);
+				switch(this.radio_grp_led_off_default.selection){
+					case this.rb_led_off_disable:
+						processArgs.push("0");	// false
+						break;
+					case this.rb_led_off_enable:
+						processArgs.push("1");	// true
+						break;
+				}
+				GBManager.getInstance().runProcess(processArgs, __print);
+			}
+
+			
 			//            protected function __onChangeFnLed(event:IndexChangeEvent):void
 			//            {
 			//                var processArgs:Vector.<String> = new Vector.<String>();
@@ -790,6 +816,7 @@
 		<s:RadioButtonGroup id="radio_grp_led_mode" itemClick="__onChangeMode(event)"/>
 		<s:RadioButtonGroup id="radio_grp_led_keymode" itemClick="__onChangeKeyMode(event)"/>
 		<s:RadioButtonGroup id="radio_grp_esc_tilde" itemClick="__onChangeEscTilde(event)"/>
+		<s:RadioButtonGroup id="radio_grp_led_off_default" itemClick="__onChangeLedOffDefault(event)"/>
 	</fx:Declarations>
     
     <s:Scroller width="100%" height="100%">
@@ -810,7 +837,7 @@
 	        
 			
 			<s:Spacer height="10"/>
-	        <s:Group id="grp_option_ui" width="100%" height="100%" enabled="false">
+	        <s:Group id="grp_option_ui" width="100%" enabled="false">
 	            <s:layout>
 	                <s:HorizontalLayout/>
 	            </s:layout>
@@ -926,7 +953,7 @@
 				
 				<s:VGroup width="50%" height="100%" minWidth="400">
 					<s:Label text="{resourceManager.getString('lang','STR_FULL_LED_SETTINGS')}"/>
-					<local:BMBorderContainer width="100%" height="30%" id="gp_full_led">
+					<local:BMBorderContainer width="100%" id="gp_full_led">
 						<s:HGroup height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" gap="50">
 							
 							<s:VGroup>
@@ -958,7 +985,7 @@
 					
 					<s:Spacer height="5"/>
 					<s:Label text="{resourceManager.getString('lang','STR_LOCK_LED_SETTINGS')}"/>
-					<local:BMBorderContainer width="100%" height="50%">
+					<local:BMBorderContainer width="100%" >
 						<s:HGroup id="gp_3_lock" width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="10">							
 							<s:VGroup width="100%">
 								<s:Label text="Num lock"/>
@@ -1030,7 +1057,7 @@
 					
 					<s:Spacer height="5"/>
 					<s:Label text="{resourceManager.getString('lang','STR_OPTIONS')}"/>
-					<local:BMBorderContainer width="100%" height="70%" >
+					<local:BMBorderContainer width="100%">
 						<s:HGroup width="100%" height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="50">
 							
 							<s:VGroup width="160">
@@ -1060,7 +1087,8 @@
 								</s:DropDownList>
 							</s:VGroup>
 						</s:HGroup>
-						<s:HGroup height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="50">
+						<local:HLine />
+						<s:HGroup height="100%" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5" gap="10">
 							<s:VGroup width="180">
 								<s:Label text="{resourceManager.getString('lang','STR_DEBOUNCE_SETTING')}"/>
 								<s:HGroup id="gp_debounce">
@@ -1071,17 +1099,29 @@
 										  click="__onChangeDebounce(event)"/>
 								<!--<s:HSlider id="slider_debounce" change="__onChangeDebounce(event)"
 										   dataTipPrecision="0" liveDragging="false" maximum="100"
-										   minimum="1" snapInterval="1" stepSize="1" value="1"/>-->
-								</s:HGroup>
-								<s:Label text="{resourceManager.getString('lang','STR_IF_YOU_UP_THE_SENSITIVITY')}"/>
+										   minimum="1" snapInterval="1" stepSize="1" value="1"/>-->		
+								</s:HGroup>								   
+								<s:Label text="{resourceManager.getString('lang','STR_IF_YOU_UP_THE_SENSITIVITY')}" />
 							</s:VGroup>
 						</s:HGroup>
+					
+						<local:HLine />
+
+						<s:HGroup paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5"> 
+							<s:Label text="LED on/off at Booting"/>
+							<s:Spacer width="10"/>
+							<s:RadioButton id="rb_led_off_disable" width="150" label="On"
+											groupName="radio_grp_led_off_default"/>
+							<s:RadioButton id="rb_led_off_enable" width="150" label="Off"
+											groupName="radio_grp_led_off_default"/>
+						</s:HGroup>
+					
 					</local:BMBorderContainer>
 				</s:VGroup>
 	        </s:Group>
 	        
 	        <s:Spacer height="10"/>
-			<s:HGroup verticalAlign="top" width="100%" height="100%">
+			<s:HGroup verticalAlign="top" width="100%">
 				<s:VGroup width="50%" height="100%">
 					<s:Label text="Utils"/>
 					<s:VGroup width="100%" height="100%">
