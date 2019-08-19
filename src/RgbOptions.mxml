@@ -140,15 +140,6 @@
 				trace("option: " + gOption);
 				gOption = ~(gOption & 0xFF);	// 0xff 만 사용
 				this.radio_grp_esc_tilde.selectedIndex = (gOption >> TOGGLE_ESC_TO_TILDE) & 0x1;
-
-				// 1.5.0 booting led on/off
-				if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 5, 0)) {
-					this.gp_led_off_default.enabled = true;
-					this.radio_grp_led_off_default.selectedIndex = (gOption >> TOGGLE_LED_OFF_DEFAULT) & 0x1;	// 0= led on, 1= led off
-				}
-				else {
-					this.gp_led_off_default.enabled = false;
-				}
 				//                this.ddl_fn_led.selectedIndex = xInfoArr[42];				
 				
 				// firmware ver 1.2
@@ -212,6 +203,15 @@
 						this.gp_fn_lock.enabled = false;
 						this.ddl_fn2_lock.selectedIndex = 0;
 						this.ddl_fn3_lock.selectedIndex = 0;
+					}
+
+					// 1.5.0 booting led on/off
+					if(Util.isVersionGreaterOrEqual(verMajor, verMinor, verPatch, 1, 5, 0)) {
+						this.gp_led_off_default.enabled = true;
+						this.radio_grp_led_off_default.selectedIndex = (gOption >> TOGGLE_LED_OFF_DEFAULT) & 0x1;	// 0= led on, 1= led off
+					}
+					else {
+						this.gp_led_off_default.enabled = false;
 					}
 					
 					this.grp_rgb.enabled = gHasRgb;
