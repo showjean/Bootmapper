@@ -43,15 +43,10 @@
 				
 				applySplit();
 			} 
-			
-			private function getLabel():String
-			{
-				return data.label;
-			}
 		]]>
 	</fx:Script>
 	
 	<s:Graphic id="gr_bg" x="0" y="0" alpha=".2"/>
-	<s:Label text="{getLabel()}" id="lb_label" paddingBottom="3" paddingTop="3" paddingLeft="4" paddingRight="4"/>
+	<s:Label text="{data.label}" id="lb_label" paddingBottom="3" paddingTop="3" paddingLeft="4" paddingRight="4"/>
 	
 </s:ItemRenderer>
