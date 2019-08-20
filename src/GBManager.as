@@ -202,6 +202,33 @@ package
 			runRelayProecss([new <String>["-ready"], new <String>["-dualaction"], new <String>["-action"]], xListener);
 			
 		}
+
+        public function downloadVersion(xListener:Function = null):void {
+			runRelayProecss([new <String>["-ready"], new <String>["-info"], new <String>["-action"]], xListener);
+        }
+
+        public function getVersionStrings(xStr:String):Array {
+            var gObj:Object = JSON.parse(xStr);
+            var infoArr:Array = gObj.result;
+
+            var gSize:uint = infoArr[0];
+            
+            if(gSize > 50)
+            {
+                // ver 1.2 이상
+                // infoArr.shift();
+                // var verMajor:int = infoArr[43];
+				// 	var verMinor:int = infoArr[44];
+				// 	var verPatch:int = infoArr[45];
+                return infoArr.slice(44, 47);
+            }
+            else
+            {
+                // ver 1.1.0
+                return [1, 1, 0];
+            }
+
+        }
 		
 		/**
 		 * vector를 이용하면 mxml에서 파싱이 제대로 안되서 문법 오류나 난다. 실행에는 문제가 없지만, 코딩이 번거로워 array로 변경;
