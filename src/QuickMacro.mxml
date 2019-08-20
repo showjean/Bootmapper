@@ -19,7 +19,7 @@
 			private var fileReference:FileReference;
 			private var hexData:String;
 			private var __loadedFileName:LoadedFileName;
-			private var hasExtraMacro:Boolean = false;
+			private var _hasExtraMacro:Boolean = false;
 			
             override protected function getConfigStr():String {
                 return "qmacroConfigArr";
@@ -43,8 +43,23 @@
 				/*
 				  extra 데이터가 있는 경우 매크로 수 조정
 				 */
-                return _currentMacroInfo.macroLength + (hasExtraMacro ? _currentMacroInfo.macroExtraLength : 0);
+                return _currentMacroInfo.macroLength + (_hasExtraMacro ? _currentMacroInfo.macroExtraLength : 0);
             }
+
+			override public function init():void {
+				WaitAlert.getInstance().showWaiting("init...");
+				GBManager.getInstance().downloadVersion(__init);
+			}
+			protected function __init(xSuc:int, xStr:String):void {
+				if(xSuc == GBManager.SUCCESS_INDEX_LED2_INFO){
+					var vers:Array = GBManager.getInstance().getVersionStrings(xStr);
+					if(Util.isVersionGreaterOrEqual(vers[0], vers[1], vers[2], 1, 5, 0)) {							
+						_hasExtraMacro = true;
+					}
+					WaitAlert.getInstance().removeWaiting();
+					super.init();
+				}
+			}
 			
 			protected function __onClickSaveJson(event:MouseEvent):void
 			{				
@@ -63,6 +78,13 @@
 					gName = _currentMacroInfo.fileName + Util.dateToString(gDate)+ _currentMacroInfo.fileExt;
 				}
 				gFile.save(gJsonStr, gName);
+			}
+
+			/**
+			 * 1.5.0 이상은 extra data가 있다.
+			 */
+			public function hasExtraMacro():Boolean {
+				return _hasExtraMacro;
 			}
             
             public function getHexData():String{
@@ -174,10 +196,9 @@
             
             public function applySerializeData(xDataStr:String):void{
 				/*
-				todo datastr 에 '+'가 있다면 extra data 가 추가된 것.
+				datastr 에 '+'가 있다면 extra data 가 추가된 것.
 				'+' 이후의 데이터를 이전 데이터와 병합해야함.
 				 */
-				hasExtraMacro = xDataStr.indexOf("+") > -1;
 
                 MacroKey.resetSplitIndex();
                 var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo, true);

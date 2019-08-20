@@ -306,20 +306,15 @@
 						GBManager.getInstance().downloadMacro( __print);
 						break;
 					case this.btn_download_qmacro:
-                    /*
-                     1.5.0 이상부터는 quick macro extra 까지 로드해야한다.
-                    */
-                        GBManager.getInstance().downloadVersion(function (xSuc:int, xStr:String):void {
-                            if(xSuc == GBManager.SUCCESS_INDEX_LED2_INFO){
-                                var vers:Array = GBManager.getInstance().getVersionStrings(xStr);
-                                if(Util.isVersionGreaterOrEqual(vers[0], vers[1], vers[2], 1, 5, 0)) {
-                                    GBManager.getInstance().downloadQuickMacroWithExtra(__print);
-                                }
-                                else {
-                                    GBManager.getInstance().downloadQuickMacro(__print);
-                                }
-                            }
-                        });
+                        /*
+                        1.5.0 이상부터는 quick macro extra 까지 로드해야한다.
+                        */
+                        if(this.qmacro.hasExtraMacro()) {
+                            GBManager.getInstance().downloadQuickMacroWithExtra(__print);
+                        }
+                        else {
+                            GBManager.getInstance().downloadQuickMacro(__print);
+                        }
 						break;
                     case this.btn_download_dualaction:
                         GBManager.getInstance().downloadDualaction(__print);
