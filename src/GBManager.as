@@ -14,6 +14,21 @@ package
     
     public class GBManager
     {
+        public static const SUCCESS_INDEX_ERROR:uint =  0;
+        public static const SUCCESS_INDEX_COMPLETED:uint =  1;
+        public static const SUCCESS_INDEX_WARNING:uint =  2;
+        public static const SUCCESS_INDEX_LED2_INFO:uint =  3;
+        public static const SUCCESS_INDEX_DEVICE_READY:uint =  4;
+        public static const SUCCESS_INDEX_DEVICE_ACTION:uint =  5;
+        public static const SUCCESS_INDEX_BOOTMAPPER_START:uint =  6;
+        public static const SUCCESS_INDEX_BOOTMAPPER_STOP:uint =  7;
+        public static const SUCCESS_INDEX_KEYMAP_DOWNLOAD:uint =  8;
+        public static const SUCCESS_INDEX_MACRO_DOWNLOAD:uint =  9;
+        public static const SUCCESS_INDEX_DUALACTION_DOWNLOAD:uint =  10;
+        public static const SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD:uint =  11;
+        public static const SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD_WITH_EXTRA:uint =  1011;
+        public static const SUCCESS_INDEX_QUICK_MACRO_EXTRA_DOWNLOAD:uint =  12;
+
         private var process:NativeProcess;
         private var nativeProcessStartupInfo:NativeProcessStartupInfo;
 //        private var nextProcessIndex:int;

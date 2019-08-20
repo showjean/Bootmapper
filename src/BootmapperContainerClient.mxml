@@ -237,10 +237,10 @@
 				#define SUCCESS_INDEX_TOGGLE_BOOTMAPPER 11
                 */
                 var gObj:Object = JSON.parse(xStr);
-                if(xSuc == 1){  // complete
+                if(xSuc == GBManager.SUCCESS_INDEX_COMPLETED){  // complete
                     trace("complete : ", gObj.message);
                     removeWaiting();
-                }else if(xSuc == 0){    // error
+                }else if(xSuc == GBManager.SUCCESS_INDEX_ERROR){    // error
                     //                    trace(gObj.message);
 					// 에러라면 초기화;
 					isBootmapper = false;
@@ -248,7 +248,7 @@
 					
                     removeWaiting();
                     Alert.show(gObj.message, "error");
-                }else if(xSuc == 2){    // warning
+                }else if(xSuc == GBManager.SUCCESS_INDEX_WARNING){    // warning
                     
                     // 어떤 것이든 업로드가 시작되면 초기화
                     isBootmapper = false;
@@ -256,32 +256,32 @@
                     
                     showWaiting(gObj.message, "uploading...");
 //                    trace("warning : ", gObj.message);
-                }else if(xSuc == 6){    // bootmapper start
+                }else if(xSuc == GBManager.SUCCESS_INDEX_BOOTMAPPER_START){    // bootmapper start
                     this.cb_bootmapper_state.selected = true;
-                }else if(xSuc == 7){    // bootmapper stop
+                }else if(xSuc == GBManager.SUCCESS_INDEX_BOOTMAPPER_STOP){    // bootmapper stop
                     this.cb_bootmapper_state.selected = false;  
-                }else if(xSuc == 8){    // keymap download
+                }else if(xSuc == GBManager.SUCCESS_INDEX_KEYMAP_DOWNLOAD){    // keymap download
                     removeWaiting();
 					
 //                    trace(String(gObj.result).toUpperCase());
 //                    trace(String(gObj.result).length/2);  
 
                     this.keymap.applySerializeData(gObj.result);
-                }else if(xSuc == 9){    // macro download
+                }else if(xSuc == GBManager.SUCCESS_INDEX_MACRO_DOWNLOAD){    // macro download
                     removeWaiting();
 //                    trace(String(gObj.result).toUpperCase());
 //                    trace(String(gObj.result).length/2); 
                     
                     this.macro.applySerializeData(gObj.result);
                 }
-				else if(xSuc == 10){    // SUCCESS_INDEX_DUALACTION_DOWNLOAD
+				else if(xSuc == GBManager.SUCCESS_INDEX_DUALACTION_DOWNLOAD){    // SUCCESS_INDEX_DUALACTION_DOWNLOAD
 					removeWaiting();
 					//                    trace(String(gObj.result).toUpperCase());
 					//                    trace(String(gObj.result).length/2); 
 					
 					this.dualaction.applySerializeData(gObj.result);
 				}
-				else if(xSuc == 11){	// SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD
+				else if(xSuc == GBManager.SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD){	// SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD
 					removeWaiting();
 					
 //					trace("__print   :   ", gObj.result);

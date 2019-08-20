@@ -318,17 +318,17 @@
 				#define SUCCESS_INDEX_DEVICE_ACTION 5
 				*/
 				var gObj:Object = JSON.parse(xStr);
-				if(xSuc == 1){  // complete
+				if(xSuc == GBManager.SUCCESS_INDEX_COMPLETED){  // complete
 					trace("Complete : ", gObj.message);
 					removeWaiting();
-				}else if(xSuc == 0){    // error
+				}else if(xSuc == GBManager.SUCCESS_INDEX_ERROR){    // error
 					//                    trace(gObj.message);
 					removeWaiting();
 					Alert.show(gObj.message, "Error");
-				}else if(xSuc == 2){    // warning                    
+				}else if(xSuc == GBManager.SUCCESS_INDEX_WARNING){    // warning                    
 					showWaiting(gObj.message, "Uploading...");
 					trace("warning : ", gObj.message);
-				}else if(xSuc == 3){    // led2 info
+				}else if(xSuc == GBManager.SUCCESS_INDEX_LED2_INFO){    // led2 info
 					
 					parseInfo(gObj.result);
 					
