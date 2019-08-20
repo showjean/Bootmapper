@@ -177,6 +177,7 @@ package
 			runRelayProecss([new <String>["-ready"], processArgs2, new <String>["-action"]], xListener);
             
         }
+
 		public function downloadMacro(xListener:Function = null):void 
 		{
 			
@@ -186,6 +187,7 @@ package
 			runRelayProecss([new <String>["-ready"], processArgs2, new <String>["-action"]], xListener);
 			
 		}
+
 		public function downloadQuickMacro(xListener:Function = null):void 
 		{
 			
@@ -216,6 +218,19 @@ package
             });
 			
 		}
+        
+        public function uploadQuickMacroExtra(xMacroData:String, xMacroExtraData:String, xListener:Function = null):void 
+        {
+			var processArgs2:Vector.<String> = new Vector.<String>();
+			processArgs2.push("-uqmacro");
+			processArgs2.push(xMacroData);
+           
+			var processArgs3:Vector.<String> = new Vector.<String>();
+			processArgs3.push("-uqmacro-extra");
+			processArgs3.push(xMacroExtraData);
+			
+			runRelayProecss([new <String>["-ready"], processArgs2, processArgs3, new <String>["-action"]], xListener);
+        }
 		
 		public function downloadDualaction(xListener:Function = null):void 
 		{
@@ -283,7 +298,7 @@ package
             
             nativeProcessStartupInfo.arguments = xVec;
             
-           trace(this, xVec);
+           trace(this, "----------   ", xVec);
             
             if(!process.running) 
             { 				
@@ -302,7 +317,7 @@ package
             }
             bufferString = xStr;
             
-            trace(this, "-----------", xStr);
+            // trace(this, "-----------", xStr);
 
             var gReg:RegExp = new RegExp("\{.*?\"success\".+?\}", "gm");
             gArr = xStr.match(gReg);

@@ -86,6 +86,10 @@
 			public function hasExtraMacro():Boolean {
 				return _hasExtraMacro;
 			}
+			
+			public function getSplitData():Array {
+				return QuickMacroParser.split(__getHexData(true), _currentMacroInfo.macroNum, _currentMacroInfo.macroLength, _currentMacroInfo.macroExtraLength);	
+			}
             
             public function getHexData():String{
                 return __getHexData(true);
@@ -132,10 +136,7 @@
                 }
                 
                 trace(gDataStr.length/2, gDataStr);
-				return gDataStr;
-                
-//                var gHexStr:String = HexParser.convertToHex(gDataStr, gMacroNum * gMacroLenMax/2, parseInt(_currentMacroInfo.startAddress, 16), xExceptNewline);
-//                return gHexStr;
+				return gDataStr;                
             }
             
 			protected function __onClickLoadJson(event:MouseEvent):void
@@ -199,6 +200,15 @@
 				datastr 에 '+'가 있다면 extra data 가 추가된 것.
 				'+' 이후의 데이터를 이전 데이터와 병합해야함.
 				 */
+
+				// trace("origin -> ", xDataStr);
+
+				// data migration
+				if(_hasExtraMacro) {
+					xDataStr = QuickMacroParser.migrateToMass(xDataStr, _currentMacroInfo.macroNum, _currentMacroInfo.macroLength, _currentMacroInfo.macroExtraLength);
+				}
+				
+				// trace("migrated -> ", xDataStr);
 
                 MacroKey.resetSplitIndex();
                 var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo.macroNum, getCurrnetMacroLength(), true);
