@@ -19,7 +19,7 @@
 			private var fileReference:FileReference;
 			private var hexData:String;
 			private var __loadedFileName:LoadedFileName;
-			
+			private var hasExtraMacro:Boolean = false;
 			
             override protected function getConfigStr():String {
                 return "qmacroConfigArr";
@@ -37,6 +37,13 @@
             override protected function getShiftedCount(xCount:uint):uint {
 				// 퀵매크로는 2byte 를 사용하기 때문에 / 2 해줌
                 return xCount >> 1;
+            }
+            
+            override public function getCurrnetMacroLength():int{
+				/*
+				  extra 데이터가 있는 경우 매크로 수 조정
+				 */
+                return _currentMacroInfo.macroLength + (hasExtraMacro ? _currentMacroInfo.macroExtraLength : 0);
             }
 			
 			protected function __onClickSaveJson(event:MouseEvent):void
@@ -65,7 +72,7 @@
             protected function __getHexData(xExceptNewline:Boolean = false):String{
                 // serialize -> parse
                 var gMacroNum:int = _currentMacroInfo.macroNum;
-                var gMacroLenMax:int = _currentMacroInfo.macroLength;
+                var gMacroLenMax:int = getCurrnetMacroLength();
                 gMacroLenMax = gMacroLenMax * 2;	// 1byte 당 2글자를 사용하므로;
                 
                 var gMacroLen:int;
@@ -166,6 +173,12 @@
 			}
             
             public function applySerializeData(xDataStr:String):void{
+				/*
+				todo datastr 에 '+'가 있다면 extra data 가 추가된 것.
+				'+' 이후의 데이터를 이전 데이터와 병합해야함.
+				 */
+				hasExtraMacro = xDataStr.indexOf("+") > -1;
+
                 MacroKey.resetSplitIndex();
                 var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo, true);
                 if(gMacroVec == null) {

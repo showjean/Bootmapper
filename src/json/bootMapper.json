@@ -43,14 +43,16 @@
             "fileName" : "quick_macro_gb_",
             "fileExt" : ".json",
             "macroNum" : 12,
-            "macroLength" : 48
+            "macroLength" : 48,
+            "macroExtraLength" : 28
         }, 
         {
             "targetName" : "ps2avrGB4U",
             "fileName" : "quick_macro_gb4u_",
             "fileExt" : ".json",
             "macroNum" : 12,
-            "macroLength" : 48
+            "macroLength" : 48,
+            "macroExtraLength" : 28
         }
     ],
     "macroConfigArr": [

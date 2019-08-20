@@ -179,7 +179,7 @@
 					gSelectedMacroKey = gItem.macroKey as MacroKey;
 					gKeyCount += getShiftedCount(gSelectedMacroKey.getMacroLength());
 				}
-				var gMacroLen:int = _currentMacroInfo.macroLength;
+				var gMacroLen:int = getCurrnetMacroLength();
 				if(gKeyCount >= gMacroLen){
 					_isFullMacroKey = true;
 				}else{

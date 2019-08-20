@@ -8,6 +8,7 @@ package
 		public var fileExt:String;
 		public var startAddress:String;
 		public var macroLength:int;
+		public var macroExtraLength:int;
 		public var macroNum:int;
 
 		
@@ -20,6 +21,7 @@ package
 			startAddress = xHexInfo.startAddress;
 			macroLength = parseInt(xHexInfo.macroLength, 10);
 			macroNum = xHexInfo.macroNum;
+			macroExtraLength = null == xHexInfo.macroExtraLength ? 0 : parseInt(xHexInfo.macroExtraLength, 10);
 		}
 	}
 }
