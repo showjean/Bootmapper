@@ -283,35 +283,27 @@ package
             
             nativeProcessStartupInfo.arguments = xVec;
             
-//            trace(this, xVec);
+           trace(this, xVec);
             
             if(!process.running) 
-            { 					
+            { 				
+                bufferString = "";  // buffer clear	
                 process.start(nativeProcessStartupInfo);                    
             }
         }
         
         
-        //            private var dataString:String = "";
+        private var bufferString:String = "";
         protected function __print (xStr:String):void {
                       
             var gArr:Array;
-            //                if(dataString.length > 0){
-            //                    str = dataString + str;
-            //                    dataString = "";
-            //                }
-            //                
-            //                gArr = str.split("\n");
-            //                var gLastLine:String = gArr.pop();
-            //                trace(this.name, "last line : ", gLastLine);
-            //                
-            //                if(gLastLine.search(/}(?:[^\}])/gm) == -1){
-            //                    dataString = gLastLine;		
-            //                    str = gArr.join("\n");
-            //                    trace(this.name, "line saved...");
-            //                    //				Alert.show(gLastLine);
-            //                }
+            if(bufferString.length > 0){
+                xStr = bufferString + xStr;
+            }
+            bufferString = xStr;
             
+            trace(this, "-----------", xStr);
+
             var gReg:RegExp = new RegExp("\{.*?\"success\".+?\}", "gm");
             gArr = xStr.match(gReg);
             var gLen:int = gArr.length;
