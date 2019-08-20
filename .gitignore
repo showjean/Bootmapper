@@ -23,3 +23,4 @@
 # bin folders
 bin-debug/
 bin-release/
+keystore/
