@@ -1116,11 +1116,11 @@
 						<local:HLine />
 
 						<s:HGroup id="gp_led_off_default" paddingBottom="5" paddingLeft="10" paddingRight="10" paddingTop="5"> 
-							<s:Label text="LED on/off at Booting"/>
+							<s:Label text="{resourceManager.getString('lang','STR_LED_OFF_DEFAULT')}"/>
 							<s:Spacer width="10"/>
-							<s:RadioButton id="rb_led_off_disable" width="150" label="On"
+							<s:RadioButton id="rb_led_off_disable" width="150" label="{resourceManager.getString('lang','STR_LED_OFF_DEFAULT_ON')}"
 											groupName="radio_grp_led_off_default"/>
-							<s:RadioButton id="rb_led_off_enable" width="150" label="Off"
+							<s:RadioButton id="rb_led_off_enable" width="150" label="{resourceManager.getString('lang','STR_LED_OFF_DEFAULT_OFF')}"
 											groupName="radio_grp_led_off_default"/>
 						</s:HGroup>
 					
