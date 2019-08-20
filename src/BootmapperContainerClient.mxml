@@ -302,12 +302,8 @@
                         /*
                         1.5.0 이상부터는 quick macro extra 까지 로드해야한다.
                         */
-                        if(this.qmacro.hasExtraMacro()) {
-                            GBManager.getInstance().downloadQuickMacroWithExtra(__print);
-                        }
-                        else {
-                            GBManager.getInstance().downloadQuickMacro(__print);
-                        }
+                        // 다운로드 할 때마다 버젼을 체크한다.
+                        GBManager.getInstance().updateVersion(__downloadQuickMacro);
 						break;
                     case this.btn_download_dualaction:
                         GBManager.getInstance().downloadDualaction(__print);
@@ -316,6 +312,18 @@
                 showWaiting("downloading...");
             }
             
+            protected function __downloadQuickMacro(xSuc:int, xStr:String):void {
+                if(xSuc == GBManager.SUCCESS_INDEX_VERSION_UPDATED){
+                    this.qmacro.updateExtraMacroEnabled();
+                    if(this.qmacro.hasExtraMacro()) {
+                        GBManager.getInstance().downloadQuickMacroWithExtra(__print);
+                    }
+                    else {
+                        GBManager.getInstance().downloadQuickMacro(__print);
+                    }
+                }
+            }
+
             protected function __changeTarget(event:Event):void
             {
                 if(event == null) return;

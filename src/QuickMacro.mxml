@@ -48,14 +48,12 @@
 
 			override public function init():void {
 				WaitAlert.getInstance().showWaiting("init...");
-				GBManager.getInstance().downloadVersion(__init);
+				GBManager.getInstance().updateVersion(__init);
 			}
 			protected function __init(xSuc:int, xStr:String):void {
-				if(xSuc == GBManager.SUCCESS_INDEX_LED2_INFO){
-					var vers:Array = GBManager.getInstance().getVersionStrings(xStr);
-					if(Util.isVersionGreaterOrEqual(vers[0], vers[1], vers[2], 1, 5, 0)) {							
-						_hasExtraMacro = true;
-					}
+				if(xSuc == GBManager.SUCCESS_INDEX_VERSION_UPDATED){
+					updateExtraMacroEnabled();
+
 					WaitAlert.getInstance().removeWaiting();
 					super.init();
 				}
@@ -85,6 +83,11 @@
 			 */
 			public function hasExtraMacro():Boolean {
 				return _hasExtraMacro;
+			}
+
+			public function updateExtraMacroEnabled():void {				
+				var vers:Array = GBManager.getInstance().getVersion();
+				_hasExtraMacro = Util.isVersionGreaterOrEqual(vers[0], vers[1], vers[2], 1, 5, 0);
 			}
 			
 			public function getSplitData():Array {
@@ -200,6 +203,8 @@
 				datastr 에 '+'가 있다면 extra data 가 추가된 것.
 				'+' 이후의 데이터를 이전 데이터와 병합해야함.
 				 */
+				
+				updateExtraMacroEnabled();
 
 				// trace("origin -> ", xDataStr);
 

@@ -18,6 +18,7 @@ package
         public static const SUCCESS_INDEX_COMPLETED:uint =  1;
         public static const SUCCESS_INDEX_WARNING:uint =  2;
         public static const SUCCESS_INDEX_LED2_INFO:uint =  3;
+        public static const SUCCESS_INDEX_VERSION_UPDATED:uint =  1003;
         public static const SUCCESS_INDEX_DEVICE_READY:uint =  4;
         public static const SUCCESS_INDEX_DEVICE_ACTION:uint =  5;
         public static const SUCCESS_INDEX_BOOTMAPPER_START:uint =  6;
@@ -33,6 +34,7 @@ package
         private var nativeProcessStartupInfo:NativeProcessStartupInfo;
 //        private var nextProcessIndex:int;
         private var __listener:Function;
+        private var versions:Array = [0, 0, 0];
         
         private static var _instance:GBManager = new GBManager()
         
@@ -238,8 +240,18 @@ package
 			
 		}
 
-        public function downloadVersion(xListener:Function = null):void {
-			runRelayProecss([new <String>["-ready"], new <String>["-info"], new <String>["-action"]], xListener);
+        public function updateVersion(xListener:Function = null):void {
+			runRelayProecss([new <String>["-ready"], new <String>["-info"], new <String>["-action"]], function (xSuc:int, xStr:String):void {                
+                var gObj:Object = JSON.parse(xStr);
+                if(xSuc == GBManager.SUCCESS_INDEX_LED2_INFO){
+                    versions = GBManager.getInstance().getVersionStrings(xStr);
+                    if(null != xListener) xListener(SUCCESS_INDEX_VERSION_UPDATED, "");
+                }
+            });
+        }
+
+        public function getVersion():Array {
+            return versions;
         }
 
         public function getVersionStrings(xStr:String):Array {
