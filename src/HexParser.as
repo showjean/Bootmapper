@@ -158,16 +158,12 @@ package
          * @return 
          * 
          */        
-        static public function parseToListDataForMacro(xStr:String, xData:HexInfoMacro, xIsQuickMacro:Boolean = false):Vector.<IList>{
+        static public function parseToListDataForMacro(xStr:String, xMacroNum:uint, xMacroLen:uint, xIsQuickMacro:Boolean = false):Vector.<IList>{
             // col, row별로 정렬;
             var gMacroVec:Vector.<IList> = new Vector.<IList>;
             
-            var gMacroNum:int = xData.macroNum;
-            var gMacroLen:int = xData.macroLength >> 1 ;
-			if(xIsQuickMacro) 
-			{
-				gMacroLen = xData.macroLength;				
-			}
+            var gMacroNum:int = xMacroNum;
+            var gMacroLen:int = xIsQuickMacro ? xMacroLen : xMacroLen >> 1 ;
 			var gUpDownArray:Vector.<int> = new Vector.<int>;
 			
             var gByteIndex:int = 0;
@@ -264,6 +260,7 @@ package
             return gMacroVec;
         }
 		/**
+		 * Custom Macro parsing
 		 * 
 		 * @param xHexData
 		 * @param xData
@@ -282,7 +279,7 @@ package
             }
 			//			trace("gMatrixStr: ", gMatrixStr);
 			
-			return parseToListDataForMacro(gMacroStr, xData);
+			return parseToListDataForMacro(gMacroStr, xData.macroNum, xData.macroLength);
 		}
 		
 		static public function parseToListDataForDualAction(xStr:String, xData:HexInfoDualAction):Vector.<uint>{

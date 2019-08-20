@@ -201,7 +201,7 @@
             
             public function applySerializeData(xDataStr:String):void{
                 MacroKey.resetSplitIndex();
-                var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo);
+                var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo.macroNum, _currentMacroInfo.macroLength);
                 if(gMacroVec == null) {
                     Alert.show("invalid macro target");
                     return;

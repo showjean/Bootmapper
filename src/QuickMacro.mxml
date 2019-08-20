@@ -170,7 +170,7 @@
 								}
 																
 								// {delays:[], keyHexData:getHexData()}
-								var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(gJsonData.hexData, _currentMacroInfo, true);
+								var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(gJsonData.hexData, _currentMacroInfo.macroNum, getCurrnetMacroLength(), true);
 								if(gMacroVec == null) {
 									Alert.show("invalid macro target");
 									return;
@@ -201,7 +201,7 @@
 				 */
 
                 MacroKey.resetSplitIndex();
-                var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo, true);
+                var gMacroVec:Vector.<IList> = HexParser.parseToListDataForMacro(xDataStr, _currentMacroInfo.macroNum, getCurrnetMacroLength(), true);
                 if(gMacroVec == null) {
                     Alert.show("invalid macro target");
                     return;
