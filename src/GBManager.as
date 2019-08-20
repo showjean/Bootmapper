@@ -194,6 +194,26 @@ package
 			
 			runRelayProecss([new <String>["-ready"], processArgs2, new <String>["-action"]], xListener);
 			
+		}
+        
+		public function downloadQuickMacroWithExtra(xListener:Function = null):void 
+		{
+            var result:String = "";
+			runRelayProecss([new <String>["-ready"], new <String>["-qmacro"], new <String>["-qmacro-extra"], new <String>["-action"]], function (xSuc:int, xStr:String):void {
+                
+                var gObj:Object = JSON.parse(xStr);
+                if(xSuc == GBManager.SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD){
+                    result = gObj.result;
+                    // trace("result=> " + result);
+                }
+                else if(xSuc == GBManager.SUCCESS_INDEX_QUICK_MACRO_EXTRA_DOWNLOAD){
+                    result += "+" + gObj.result;
+                    gObj.success = SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD_WITH_EXTRA;
+                    gObj.result = result;
+                    // trace("result2=> " + result);
+                    if(null != xListener) xListener(SUCCESS_INDEX_QUICK_MACRO_DOWNLOAD_WITH_EXTRA, JSON.stringify(gObj));
+                }
+            });
 			
 		}
 		
