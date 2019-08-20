@@ -265,7 +265,7 @@ package
             //                    //				Alert.show(gLastLine);
             //                }
             
-            var gReg:RegExp = new RegExp("\{.+?\}", "gm");
+            var gReg:RegExp = new RegExp("\{.*?\"success\".+?\}", "gm");
             gArr = xStr.match(gReg);
             var gLen:int = gArr.length;
 //            trace(this, "gLengh : ", gLen);
