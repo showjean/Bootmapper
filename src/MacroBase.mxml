@@ -347,22 +347,24 @@
                 * 현재 매크로 값을 ddl_copy_to 의 값 매크로로 복사
                  */
                 var gIndex:int = this.ddl_copy_to.selectedIndex;
-                
-                var gList:IList = macroVector[_macroIndex];
-                var gLen:int = gList.length;
-                var gItem:Object;
-                var gSelectedMacroKey:MacroKey;
-                var gKeyCount:int = 0;
-                var gListClone:ArrayList = new ArrayList();
-                for(var i:int = 0;i < gLen; ++i){
-                    gItem = gList.getItemAt(i);
-                    gSelectedMacroKey = gItem.macroKey as MacroKey;
-                    gListClone.addItemAt(Util.getListObjectProxy(gSelectedMacroKey.clone()), i); 
-                }                
-                
-                macroVector[gIndex] = gListClone;
-                
-                this.ddl_copy_to.selectedIndex = -1;
+
+                if(gIndex > -1) {                
+                    var gList:IList = macroVector[_macroIndex];
+                    var gLen:int = gList.length;
+                    var gItem:Object;
+                    var gSelectedMacroKey:MacroKey;
+                    var gKeyCount:int = 0;
+                    var gListClone:ArrayList = new ArrayList();
+                    for(var i:int = 0;i < gLen; ++i){
+                        gItem = gList.getItemAt(i);
+                        gSelectedMacroKey = gItem.macroKey as MacroKey;
+                        gListClone.addItemAt(Util.getListObjectProxy(gSelectedMacroKey.clone()), i); 
+                    }                
+                    
+                    macroVector[gIndex] = gListClone;
+                    
+                    this.ddl_copy_to.selectedIndex = -1;
+                }
             }
 			protected function __onValueCommit(event:FlexEvent):void
 			{
