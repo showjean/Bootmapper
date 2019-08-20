@@ -152,28 +152,15 @@ package
 		
 		public function uploadQuickMacro(xData:String, xListener:Function = null):void
 		{
-			var processArgs:Vector.<String> = new Vector.<String>();
-			processArgs.push("-ready");
-			
 			var processArgs2:Vector.<String> = new Vector.<String>();
 			processArgs2.push("-uqmacro");
 			processArgs2.push(xData);
-			//            processArgs2.push(String(xInfo.macroNum));
-			//            processArgs2.push(String(xInfo.macroLength));
 			
-			var processArgs3:Vector.<String> = new Vector.<String>();
-			processArgs3.push("-action");            
-			
-			
-			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([new <String>["-ready"], processArgs2, new <String>["-action"]], xListener);
 		}
 		
         public function downloadKeymap(xInfo:HexInfoKeymap, xListener:Function = null):void 
         {
-            
-            var processArgs:Vector.<String> = new Vector.<String>();
-            processArgs.push("-ready");
-            
             var processArgs2:Vector.<String> = new Vector.<String>();
             processArgs2.push("-keymap");
 			if(xInfo.rows == 17)
@@ -187,66 +174,32 @@ package
 //            processArgs2.push(String(xInfo.columns));
 //            processArgs2.push(String(xInfo.rows));
             
-            var processArgs3:Vector.<String> = new Vector.<String>();
-            processArgs3.push("-action");            
-            
-            
-            runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([new <String>["-ready"], processArgs2, new <String>["-action"]], xListener);
             
         }
-		public function downloadMacro(xInfo:HexInfoMacro, xListener:Function = null):void 
+		public function downloadMacro(xListener:Function = null):void 
 		{
-			
-			var processArgs:Vector.<String> = new Vector.<String>();
-			processArgs.push("-ready");
 			
 			var processArgs2:Vector.<String> = new Vector.<String>();
 			processArgs2.push("-macro");
-			//            processArgs2.push(String(xInfo.macroNum));
-			//            processArgs2.push(String(xInfo.macroLength));
 			
-			var processArgs3:Vector.<String> = new Vector.<String>();
-			processArgs3.push("-action");            
-			
-			
-			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([new <String>["-ready"], processArgs2, new <String>["-action"]], xListener);
 			
 		}
-		public function downloadQuickMacro(xInfo:HexInfoMacro, xListener:Function = null):void 
+		public function downloadQuickMacro(xListener:Function = null):void 
 		{
-			
-			var processArgs:Vector.<String> = new Vector.<String>();
-			processArgs.push("-ready");
 			
 			var processArgs2:Vector.<String> = new Vector.<String>();
 			processArgs2.push("-qmacro");
-			//            processArgs2.push(String(xInfo.macroNum));
-			//            processArgs2.push(String(xInfo.macroLength));
 			
-			var processArgs3:Vector.<String> = new Vector.<String>();
-			processArgs3.push("-action");            
+			runRelayProecss([new <String>["-ready"], processArgs2, new <String>["-action"]], xListener);
 			
-			
-			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
 			
 		}
 		
-		public function downloadDualaction(xInfo:HexInfoDualAction, xListener:Function = null):void 
+		public function downloadDualaction(xListener:Function = null):void 
 		{
-			
-			var processArgs:Vector.<String> = new Vector.<String>();
-			processArgs.push("-ready");
-			
-			var processArgs2:Vector.<String> = new Vector.<String>();
-			processArgs2.push("-dualaction");
-			//            processArgs2.push(String(xInfo.macroNum));
-			//            processArgs2.push(String(xInfo.macroLength));
-			
-			var processArgs3:Vector.<String> = new Vector.<String>();
-			processArgs3.push("-action");            
-			
-			
-			runRelayProecss([processArgs, processArgs2, processArgs3], xListener);
+			runRelayProecss([new <String>["-ready"], new <String>["-dualaction"], new <String>["-action"]], xListener);
 			
 		}
 		

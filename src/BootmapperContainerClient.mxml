@@ -298,13 +298,13 @@
                         GBManager.getInstance().downloadKeymap(this.keymap.currentHexFileInfo, __print);
                         break;
 					case this.btn_download_macro:
-						GBManager.getInstance().downloadMacro(this.macro.currentMacroInfo, __print);
+						GBManager.getInstance().downloadMacro( __print);
 						break;
 					case this.btn_download_qmacro:
 						GBManager.getInstance().downloadQuickMacro(this.qmacro.currentMacroInfo, __print);
 						break;
                     case this.btn_download_dualaction:
-                        GBManager.getInstance().downloadDualaction(this.dualaction.currentDualactionInfo, __print);
+                        GBManager.getInstance().downloadDualaction(__print);
                         break;
                 }
                 showWaiting("downloading...");
