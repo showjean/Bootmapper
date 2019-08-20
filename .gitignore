@@ -12,8 +12,14 @@
 *.dylib
 
 # Executables
-# *.exe
+#*.exe
 *.out
 *.app
 
 *.swf
+*.zip
+#!/src/bin/gbmgr.exe
+
+# bin folders
+bin-debug/
+bin-release/
