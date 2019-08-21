@@ -247,6 +247,9 @@ package
                     versions = GBManager.getInstance().getVersionStrings(xStr);
                     if(null != xListener) xListener(SUCCESS_INDEX_VERSION_UPDATED, "");
                 }
+                else if(xSuc == GBManager.SUCCESS_INDEX_ERROR) {
+                    if(null != xListener) xListener(SUCCESS_INDEX_ERROR, xStr);
+                }
             });
         }
 

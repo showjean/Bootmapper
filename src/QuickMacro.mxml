@@ -53,10 +53,9 @@
 			protected function __init(xSuc:int, xStr:String):void {
 				if(xSuc == GBManager.SUCCESS_INDEX_VERSION_UPDATED){
 					updateExtraMacroEnabled();
-
-					WaitAlert.getInstance().removeWaiting();
-					super.init();
 				}
+				WaitAlert.getInstance().removeWaiting();
+				super.init();
 			}
 			
 			protected function __onClickSaveJson(event:MouseEvent):void
