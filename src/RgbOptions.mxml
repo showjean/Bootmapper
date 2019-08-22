@@ -1155,7 +1155,7 @@
 						<s:VGroup width="100%" height="100%" paddingLeft="10" >						
 							<s:Label text="Do you like coffee?" fontSize="16" fontWeight="bold"/>
 							<s:TextArea width="370" minWidth="200" height="52" borderVisible="false" editable="false" selectable="false" 
-										text="Thank you for using 'Bootmapper Client'. If you are satisfied with this program, please buy me a coffee! Your donation motivates me to come up with a better idea. You can make donations via PayPal." />
+										text="Thank you for using 'Bootmapper'. If you are satisfied with this program, please buy me a coffee! Your donation motivates me to come up with a better idea. You can make donations via PayPal." />
 							<s:Button id="btn_donation" label="Buy me a coffee" click="_onClickDonation(event)"  skinClass="skins.YellowButtonSkin"/>
 						</s:VGroup>
 					</s:HGroup>

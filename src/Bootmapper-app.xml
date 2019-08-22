@@ -14,22 +14,22 @@
 
 	<!-- A universally unique application identifier. Must be unique across all AIR applications.
 	Using a reverse DNS-style name as the id is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-	<id>BootmapperClient</id>
+	<id>Bootmapper</id>
 
 	<!-- Used as the filename for the application. Required. -->
-	<filename>BootmapperClient</filename>
+	<filename>Bootmapper</filename>
 
 	<!-- The name that is displayed in the AIR application installer. 
 	May have multiple values for each language. See samples or xsd schema file. Optional. -->
-	<name>BootmapperClient</name>
+	<name>Bootmapper</name>
 	
 	<!-- A string value of the format <0-999>.<0-999>.<0-999> that represents application version which can be used to check for application upgrade. 
 	Values can also be 1-part or 2-part. It is not necessary to have a 3-part value.
 	An updated version of application must have a versionNumber value higher than the previous version. Required for namespace >= 2.5 . -->
-	<versionNumber>0.10.1</versionNumber>
+	<versionNumber>0.11.0</versionNumber>
 		         
 	<!-- A string value (such as "v1", "2.5", or "Alpha 1") that represents the version of the application, as it should be shown to users. Optional. -->
-	<versionLabel>V0.10.1</versionLabel>
+	<versionLabel>V0.11.0</versionLabel>
 
 	<!-- Description, displayed in the AIR application installer.
 	May have multiple values for each language. See samples or xsd schema file. Optional. -->
@@ -45,10 +45,10 @@
 	<initialWindow>
 		<!-- The main SWF or HTML file of the application. Required. -->
 		<!-- Note: In Flash Builder, the SWF reference is set automatically. -->
-		<content>BootmapperClient.swf</content>
+		<content>Bootmapper.swf</content>
 		
 		<!-- The title of the main window. Optional. -->
-		<title>Bootmapper Client</title>
+		<title>Bootmapper</title>
 
 		<!-- The type of system chrome to use (either "standard" or "none"). Optional. Default standard. -->
 		<!-- <systemChrome></systemChrome> -->

@@ -20,7 +20,7 @@
 			import mx.core.Application;
             
             [Bindable]
-            protected var VERSION_CLIENT:String = "Bootmapper Client Ver " ;    // 버젼 변경은 app.xml 에서 해준다.
+            protected var VERSION_CLIENT:String = "Bootmapper Ver " ;    // 버젼 변경은 app.xml 에서 해준다.
             
             private var isBootmapper:Boolean = false;
             private var optionsData:Object;
