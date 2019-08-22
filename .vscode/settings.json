@@ -1,5 +1,9 @@
 {
-    "as3mxml.sdk.framework": "d:\\sdk\\apache-flex-sdk-4.16.0-bin_air_27",
+    "as3mxml.sdk.framework": "/Users/showjean/sdk/apache-flex-sdk-4.16.1-bin_air_32",
+    "as3mxml.sdk.searchPaths": [
+        "d:\\sdk\\apache-flex-sdk-4.16.0-bin_air_27",
+        "/Users/showjean/sdk/apache-flex-sdk-4.16.1-bin_air_32"
+    ],
 
     "beautify.language": {
         "html": {
