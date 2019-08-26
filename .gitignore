@@ -20,6 +20,9 @@
 *.zip
 !/src/bin/gbmgr.exe
 
+# log files
+*.log
+
 # bin folders
 bin-debug/
 bin-release/
